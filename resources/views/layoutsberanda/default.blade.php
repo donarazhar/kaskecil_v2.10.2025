@@ -85,7 +85,7 @@
                 <div class="modal-body">Silahkan pilih keluar untuk mengakhiri sesi ini.</div>
                 <div class="modal-footer">
                     <button class="btn btn-info" type="button" data-dismiss="modal">Batal</button>
-                    <a class="btn btn-danger" href="{{ route('logout') }}">Keluar</a>
+                    <a class="btn btn-danger" href="/proseslogout">Keluar</a>
                 </div>
             </div>
         </div>

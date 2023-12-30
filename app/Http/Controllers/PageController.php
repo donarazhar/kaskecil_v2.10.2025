@@ -10,10 +10,6 @@ use Carbon\Carbon;
 
 class PageController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
 
     public function beranda()
     {

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Kas Kecil | Login</title>
+    <title>Kas Kecil App - E.Maa v.2.0 | Login</title>
 
     <!-- Custom fonts for this template-->
     <link href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -50,7 +50,7 @@
                                             Login !!!</span>
                                         <hr>
                                     </div>
-                                    <form class="user" action="{{ route('post-login') }}" method="POST">
+                                    <form action="/proseslogin" method="post" autocomplete="off" novalidate>
                                         @csrf
                                         <div class="form-group">
                                             <label for="email">Masukkan Email</label>

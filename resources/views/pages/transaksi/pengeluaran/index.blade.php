@@ -4,13 +4,24 @@
 
 @section('content')
     <div class="card shadow mb-4">
+        {{-- Pesan error --}}
+        @if (Session::get('success'))
+            <div class="alert alert-success">
+                {{ Session::get('success') }}
+            </div>
+        @endif
+        @if (Session::get('warning'))
+            <div class="alert alert-warning">
+                {{ Session::get('warning') }}
+            </div>
+        @endif
         <div class="card-body">
-            {{-- <a href="{{ route('transaksi.pengeluaran.create') }}" class="btn btn-success mb-4"> --}}
-            <a href="{{ route('transaksi.pengeluaran.create') }}" class="btn btn-primary mb-4">
+            <a href="#" class="btn btn-primary mb-4" id="btnTambahPengeluaran">
                 <b>Tambah</b>
                 <i class="fa fa-plus" aria-hidden="true"></i>
             </a>
-            {{-- <form action="{{ route('transaksi.cari') }}" method="GET"> --}}
+
+            {{-- Form cari pemasukan --}}
             <form action="" method="GET">
                 <input type="hidden" name="kategori" value="pengeluaran">
                 <div class="form-row">
@@ -39,6 +50,8 @@
             </form>
         </div>
     </div>
+
+    {{-- Data table pemasukan --}}
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-black">Data Pengeluaran</h6>
@@ -58,9 +71,7 @@
                             <th>Tanggal</th>
                             <th>Perincian</th>
                             <th>Jumlah (Rp)</th>
-                            @can('isAdminOrBendahara', App\Transaksi::class)
-                                <th>Tindakan</th>
-                            @endcan
+                            <th>Tindakan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,29 +85,25 @@
                                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMMM YYYY') }}</td>
                                 <td>{!! $item->perincian !!}</td>
                                 <td>{{ number_format($item->jumlah, 2, ',', '.') }}</td>
-                                @can('isAdminOrBendahara', App\Transaksi::class)
-                                    <td>
-                                        <a class="btn btn-info btn-sm d-inline mr-1 mb-1"
-                                            href="{{ route('transaksi.edit', $item->id) }}">
-                                            <i class="fas fa-pencil-alt">
+                                <td>
+                                    <a class="btn btn-info btn-sm d-inline mr-1 mb-1" href="">
+                                        <i class="fas fa-pencil-alt">
+                                        </i>
+                                        Ubah
+                                    </a>
+                                    <form action="" method="post" class="d-inline"
+                                        id="{{ 'form-hapus-transaksi-' . $item->id }}">
+                                        @method('DELETE')
+                                        @csrf
+                                        <button class="btn btn-danger btn-sm btn-hapus" data-id="{{ $item->id }}"
+                                            data-jumlah="{{ 'Rp ' . number_format($item->jumlah, 2, ',', '.') }}"
+                                            type="submit">
+                                            <i class="fas fa-trash">
                                             </i>
-                                            Ubah
-                                        </a>
-                                        <form action="{{ route('transaksi.destroy', $item->id) }}" method="post"
-                                            class="d-inline" id="{{ 'form-hapus-transaksi-' . $item->id }}">
-                                            @method('DELETE')
-                                            @csrf
-                                            <button class="btn btn-danger btn-sm btn-hapus" data-id="{{ $item->id }}"
-                                                data-jumlah="{{ 'Rp ' . number_format($item->jumlah, 2, ',', '.') }}"
-                                                type="submit">
-                                                <i class="fas fa-trash">
-                                                </i>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </td>
-                                @endcan
-
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </td>
                                 @php
                                     $total += $item->jumlah;
                                 @endphp
@@ -114,6 +121,48 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal input pengeluaran --}}
+    <div class="modal modal-blur fade" id="modal-frmpengeluaran" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Input Pengeluaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="card shadow col-lg-12">
+                    <div class="card-body">
+
+                        <form action="{{ route('transaksi.store') }}" method="post" id="frmpengeluaran">
+                            @csrf
+                            <div class="form-group">
+                                <label for="jumlah">Jumlah</label>
+                                <input type="text" name="jumlah" id="jumlah" class="form-control">
+                            </div>
+                            <input type="hidden" name="kategori" value="pengeluaran">
+                            <div class="form-group">
+                                <label for="">Tanggal</label>
+                                <input type="date" name="tanggal" id="tanggal"
+                                    class="form-control @error('tanggal') is-invalid @enderror"
+                                    value="{{ old('tanggal') }}">
+                                @error('tanggal')
+                                    <div class="text-danger">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="perincian">Perincian</label>
+                                <textarea name="perincian" rows="3" id="perincian" class="form-control"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Kirim</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('after-style')
@@ -125,32 +174,59 @@
     <!-- Page level plugins -->
     <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
-
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
     {{-- @include('sweetalert::alert') --}}
     <script>
-        $('.btn-hapus').on('click', function(e) {
-            e.preventDefault();
-            let id = $(this).data('id');
-            let form = $('#form-hapus-transaksi-' + id);
-            let jumlah = $(this).data('jumlah');
+        $(function() {
+            // Validasi Juery Mask
+            $('.jumlah').mask('000.000.000.000.000,00', {
+                reverse: true
+            });
 
-            Swal.fire({
-                title: 'Apakah anda yakin?',
-                text: 'Pengeluaran sebesar ' + jumlah + ' akan dihapus',
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonColor: '#5bc0de',
-                confirmButtonColor: '#d9534f ',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal',
-                reverseButtons: true,
-            }).then((result) => {
-                if (result.value) {
-                    form.submit();
+            //Script takan tombol tambah
+            $("#btnTambahPengeluaran").click(function() {
+                // alert('test');
+                $("#modal-frmpengeluaran").modal("show");
+            });
+
+            // Script validasi inpuan form
+            $("#frmpengeluaran").submit(function() {
+                var jumlah = $("#jumlah").val();
+                var tanggal = $("#tanggal").val();
+                var perincian = $("#perincian").val();
+                if (jumlah == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Jumlah Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#jumlah").focus();
+                    });
+                    return false;
+                } else if (tanggal == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Tanggal Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#tanggal").focus();
+                    });
+                    return false;
+                } else if (perincian == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Perincian Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#perincian").focus();
+                    });
+                    return false;
                 }
-            })
+            });
 
         });
     </script>

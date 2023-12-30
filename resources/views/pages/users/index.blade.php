@@ -53,7 +53,7 @@
                                             </i>
                                             Ubah
                                         </a>
-                                        <form action="{{ route('users.destroy', $user->id) }}" method="post" class="d-inline"
+                                        <form action="" method="post" class="d-inline"
                                             id="{{ 'form-hapus-user-' . $user->id }}">
                                             @csrf
                                             @method('DELETE')
@@ -64,8 +64,7 @@
                                                 Hapus
                                             </button>
                                         </form>
-                                        <a href="{{ route('users.reset-password', $user->id) }}"
-                                            class="btn btn-warning btn-sm">
+                                        <a href="" class="btn btn-warning btn-sm">
                                             <i class="fa fa-key"></i>
                                             Reset password
                                         </a>
