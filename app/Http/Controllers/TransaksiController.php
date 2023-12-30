@@ -3,88 +3,134 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\TransaksiRequest;
-use App\Http\Requests\CariTransaksiRequest;
-use App\Http\Requests\LaporanTransaksiRequest;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\Models\Saldo;
-use App\Models\Transaksi;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\TryCatch;
 
 class TransaksiController extends Controller
 {
     public function index()
     {
-        $items = Transaksi::with('saldo')->latest()->get();
-        $saldo = Saldo::latest()->first();
+        $items = DB::table('transaksi')
+            ->select('transaksi.*', 'saldo.total as saldo')
+            ->leftJoin('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
+            ->orderByRaw("YEAR(transaksi.created_at) DESC, MONTH(transaksi.created_at) DESC")
+            ->orderBy('transaksi.created_at', 'asc')
+            ->get();
 
-        session()->forget('info');
-        return view('pages.transaksi.index', ['items' => $items, 'saldo' => $saldo]);
+
+        return view('pages.transaksi.index', compact('items'));
     }
 
     public function indexPemasukan()
     {
-        $items = Transaksi::where('kategori', 'pemasukan')->latest()->get();
+        $items = DB::table('transaksi')
+            ->where('kategori', 'pemasukan')
+            ->orderBy('transaksi.created_at', 'asc')
+            ->get();
 
         session()->forget('info');
-        return view('pages.transaksi.pemasukan.index', ['items' => $items]);
+        return view('pages.transaksi.pemasukan.index', compact('items'));
     }
 
     public function createPemasukan()
     {
-        // $this->authorize('isAdminOrBendahara', Transaksi::class);
+
         return view('pages.transaksi.pemasukan.create');
     }
 
     public function indexPengeluaran()
     {
-        $items = Transaksi::where('kategori', 'pengeluaran')->latest()->get();
+        $items = DB::table('transaksi')
+            ->where('kategori', 'pengeluaran')
+            ->orderBy('transaksi.created_at', 'asc')
+            ->get();
 
         session()->forget('info');
-        return view('pages.transaksi.pengeluaran.index', ['items' => $items]);
+        return view('pages.transaksi.pengeluaran.index', compact('items'));
     }
 
     public function createPengeluaran()
     {
-        // $this->authorize('isAdminOrBendahara', Transaksi::class);
+
         return view('pages.transaksi.pengeluaran.create');
     }
 
-    public function store(TransaksiRequest $request)
+    public function store(Request $request)
     {
-        // $this->authorize('isAdminOrBendahara', Transaksi::class);
-        $saldo_sekarang = Saldo::latest()->first();
-        if ($saldo_sekarang === null) {
-            $saldo_sekarang = 0;
-        } else {
-            $saldo_sekarang = $saldo_sekarang->total;
+        try {
+            $saldo_sekarang = DB::table('saldo')
+                ->latest('created_at')
+                ->first();
+
+            if ($saldo_sekarang === null) {
+                $saldo_sekarang = 0;
+            } else {
+                $saldo_sekarang = $saldo_sekarang->total;
+            }
+
+            // Membersihkan tanda koma dari $request->jumlah
+            $jumlah_cleaned = str_replace(['.', ','], '', $request->jumlah);
+            // Konversi ke integer
+            $jumlah_numeric = intval($jumlah_cleaned);
+
+            // Validasi nilai numerik sebelum operasi matematika
+            if (!is_numeric($saldo_sekarang) || !is_numeric($jumlah_numeric)) {
+                // Tangani jika salah satu atau keduanya bukan numerik
+                return redirect()->back()->with('pesan', "Salah input");
+            }
+
+            // Lakukan operasi matematika hanya jika keduanya numerik
+            $total = ($request->kategori == 'pemasukan') ? $saldo_sekarang + $jumlah_numeric : $saldo_sekarang - $jumlah_numeric;
+
+            // Insert data saldo
+            $saldo_id = DB::table('saldo')->insertGetId([
+                'total' => $total,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Insert data transaksi dengan ID saldo yang baru saja dibuat
+            DB::table('transaksi')->insert([
+                'saldo_id' => $saldo_id,
+                'jumlah' => $jumlah_numeric, // Menggunakan nilai numerik
+                'perincian' => $request->perincian,
+                'kategori' => $request->kategori,
+                'tanggal' => $request->tanggal,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return redirect()->back()->with('success', "Input data {$request->kategori} sukses");
+        } catch (\Exception $e) {
+            // Tangani exception dan tampilkan pesan error jika terjadi kesalahan
+            return redirect()->back()->with('pesan', "Terjadi kesalahan: " . $e->getMessage());
         }
-
-        if ($request->kategori == 'pemasukan') {
-            $total = $saldo_sekarang + $request->jumlah;
-        } else {
-            $total = $saldo_sekarang - $request->jumlah;
-        }
-
-        $saldo = Saldo::create([
-            'total' => $total,
-        ]);
-
-        $saldo->transaksi()->create($request->all());
-
-        return redirect()->back()->with('pesan', "Input data {$request->kategori} sukses");
     }
 
-    public function cari(CariTransaksiRequest $request)
+    public function cari(Request $request)
     {
-        $saldo = Saldo::latest()->first();
+        $saldo = DB::table('saldo')
+            ->latest('created_at')
+            ->first();
+
         $tanggal_awal = date('d-m-Y', strtotime($request->tanggal_awal));
         $tanggal_akhir = date('d-m-Y', strtotime($request->tanggal_akhir));
 
         if ($request->kategori == 'transaksi') {
-            $items = TransaksiRequest::with('saldo')->whereBetween('tanggal', [$request->tanggal_awal, $request->tanggal_akhir])->get();
+            $items = DB::table('transaksi_requests')
+                ->select('transaksi_requests.*')
+                ->join('saldo', 'transaksi_requests.saldo_id', '=', 'saldo.id')
+                ->whereBetween('transaksi_requests.tanggal', [$request->tanggal_awal, $request->tanggal_akhir])
+                ->get();
         } else {
-            $items = TransaksiRequest::with('saldo')->where('kategori', $request->kategori)->whereBetween('tanggal', [$request->tanggal_awal, $request->tanggal_akhir])->get();
+            $items = DB::table('transaksi_requests')
+                ->select('transaksi_requests.*')
+                ->join('saldo', 'transaksi_requests.saldo_id', '=', 'saldo.id')
+                ->where('transaksi_requests.kategori', $request->kategori)
+                ->whereBetween('transaksi_requests.tanggal', [$request->tanggal_awal, $request->tanggal_akhir])
+                ->get();
         }
 
         session()->flash('info', "Hasil {$request->kategori} tanggal {$tanggal_awal} sampai {$tanggal_akhir}");
@@ -100,16 +146,31 @@ class TransaksiController extends Controller
 
     public function edit($id)
     {
-        // $this->authorize('isAdminOrBendahara', Transaksi::class);
-        $item = Transaksi::findOrfail($id);
+
+        $item = DB::table('transaksi')->where('id', $id)->first();
+
+        if (!$item) {
+            abort(404); // Atau tindakan lain sesuai kebutuhan aplikasi Anda
+        }
+
         return view('pages.transaksi.edit', ['item' => $item]);
     }
 
-    public function update(TransaksiRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        // $this->authorize('isAdminO                      rBendahara', Transaksi::class);
-        $transaksi = Transaksi::findOrfail($id);
-        $saldo = Saldo::where('id', $transaksi->saldo_id)->first();
+
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+
+        if (!$transaksi) {
+            abort(404); // Atau tindakan lain sesuai kebutuhan aplikasi Anda
+        }
+
+        $saldo = DB::table('saldo')->where('id', $transaksi->saldo_id)->first();
+
+        if (!$saldo) {
+            abort(404); // Atau tindakan lain sesuai kebutuhan aplikasi Anda
+        }
+
 
         if ($request->kategori == 'pemasukan') {
             if ($request->jumlah == $transaksi->jumlah) {
@@ -118,7 +179,7 @@ class TransaksiController extends Controller
                 $selisih = $request->jumlah - $transaksi->jumlah;
                 $saldo_total = $saldo->total + $selisih;
 
-                $saldo_terdampak = Saldo::where('id', '>', $saldo->id)->get();
+                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
                 foreach ($saldo_terdampak as $item) {
                     $item->update([
                         'total' => $item->total + $selisih
@@ -135,7 +196,8 @@ class TransaksiController extends Controller
                 $selisih = $transaksi->jumlah - $request->jumlah;
                 $saldo_total = $saldo->total - $selisih;
 
-                $saldo_terdampak = Saldo::where('id', '>', $saldo->id)->get();
+                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
+
                 foreach ($saldo_terdampak as $item) {
                     $item->update([
                         'total' => $item->total - $selisih
@@ -160,7 +222,8 @@ class TransaksiController extends Controller
                 $selisih = $request->jumlah - $transaksi->jumlah;
                 $saldo_total = $saldo->total - $selisih;
 
-                $saldo_terdampak = Saldo::where('id', '>', $saldo->id)->get();
+                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
+
                 foreach ($saldo_terdampak as $item) {
                     $item->update([
                         'total' => $item->total - $selisih
@@ -177,7 +240,8 @@ class TransaksiController extends Controller
                 $selisih = $transaksi->jumlah - $request->jumlah;
                 $saldo_total = $saldo->total + $selisih;
 
-                $saldo_terdampak = Saldo::where('id', '>', $saldo->id)->get();
+                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
+
                 foreach ($saldo_terdampak as $item) {
                     $item->update([
                         'total' => $item->total + $selisih
@@ -198,12 +262,28 @@ class TransaksiController extends Controller
 
     public function destroy($id)
     {
-        // $this->authorize('isAdmin', Transaksi::class);
-        $transaksi = Transaksi::with('saldo')->findOrFail($id);
-        $saldo = Saldo::findOrFail($transaksi->saldo_id);
+        $transaksi = DB::table('transaksi')
+            ->select('transaksi.*', 'saldo.*') // Include columns from both tables
+            ->join('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
+            ->where('transaksi.id', $id)
+            ->first();
+
+        if (!$transaksi) {
+            abort(404); // Or handle not found case as needed for your application
+        }
+
+        $saldo = DB::table('saldo')
+            ->where('id', $transaksi->saldo_id)
+            ->first();
+
+        if (!$saldo) {
+            abort(404); // Or handle not found case as needed for your application
+        }
+
 
         if ($transaksi->kategori == 'pemasukan') {
-            $saldo_terdampak = Saldo::where('id', '>', $saldo->id)->get();
+            $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
+
             foreach ($saldo_terdampak as $item) {
                 $item->update([
                     'total' => $item->total - $transaksi->jumlah,
@@ -212,7 +292,8 @@ class TransaksiController extends Controller
         }
 
         if ($transaksi->kategori == 'pengeluaran') {
-            $saldo_terdampak = Saldo::where('id', '>', $saldo->id)->get();
+            $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
+
             foreach ($saldo_terdampak as $item) {
                 $item->update([
                     'total' => $item->total + $transaksi->jumlah,
@@ -230,26 +311,37 @@ class TransaksiController extends Controller
 
     public function laporan()
     {
-        // $this->authorize('isAdminOrBendahara', Transaksi::class);
+
         return view('pages.transaksi.laporan');
     }
 
-    public function laporanPDF(LaporanTransaksiRequest $request)
+    public function laporanPDF(Request $request)
     {
-        // $this->authorize('isAdminOrBendahara', Transaksi::class);
+
         $kategori = $request->kategori;
         $tanggal_awal = date('d-m-Y', strtotime($request->tanggal_awal));
         $tanggal_akhir = date('d-m-Y', strtotime($request->tanggal_akhir));
         $periode = $tanggal_awal . " sampai " . $tanggal_akhir;
-        $transaksi_terakhir = Transaksi::whereDate('tanggal', '<', $request->tanggal_awal)->latest()->first();
+        $transaksi_terakhir = DB::table('transaksi')
+            ->whereDate('tanggal', '<', $request->tanggal_awal)
+            ->latest('tanggal')
+            ->first();
+
         if ($transaksi_terakhir == null) {
             $saldo_terakhir = 0;
         } else {
-            $saldo_terakhir = Saldo::where('id', $transaksi_terakhir->saldo_id)->first();
+            $saldo_terakhir = DB::table('saldo')
+                ->where('id', $transaksi_terakhir->saldo_id)
+                ->first();
         }
 
         if ($kategori == 'semua') {
-            $items = Transaksi::with('saldo')->whereBetween('tanggal', [$request->tanggal_awal, $request->tanggal_akhir])->get();
+            $items = DB::table('transaksi')
+                ->select('transaksi.*', 'saldo.*') // Include columns from both tables
+                ->join('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
+                ->whereBetween('transaksi.tanggal', [$request->tanggal_awal, $request->tanggal_akhir])
+                ->get();
+
             $pdf = FacadePdf::loadView('pages.transaksi.laporan_pdf', [
                 'items' => $items,
                 'periode' => $periode,
@@ -257,14 +349,26 @@ class TransaksiController extends Controller
             ]);
             return $pdf->stream("Laporan Transaksi {$periode}");
         } elseif ($kategori == 'pemasukan') {
-            $items = Transaksi::with('saldo')->where('kategori', 'pemasukan')->whereBetween('tanggal', [$request->tanggal_awal, $request->tanggal_akhir])->get();
+            $items = DB::table('transaksi')
+                ->select('transaksi.*', 'saldo.*') // Include columns from both tables
+                ->join('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
+                ->where('transaksi.kategori', 'pemasukan')
+                ->whereBetween('transaksi.tanggal', [$request->tanggal_awal, $request->tanggal_akhir])
+                ->get();
+
             $pdf = FacadePdf::loadView('pages.transaksi.pemasukan.laporan_pdf', [
                 'items' => $items,
                 'periode' => $periode
             ]);
             return $pdf->stream("Laporan Pemasukan {$periode}");
         } elseif ($kategori == 'pengeluaran') {
-            $items = Transaksi::with('saldo')->where('kategori', 'pengeluaran')->whereBetween('tanggal', [$request->tanggal_awal, $request->tanggal_akhir])->get();
+            $items = DB::table('transaksi')
+                ->select('transaksi.*', 'saldo.*') // Include columns from both tables
+                ->join('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
+                ->where('transaksi.kategori', 'pengeluaran')
+                ->whereBetween('transaksi.tanggal', [$request->tanggal_awal, $request->tanggal_akhir])
+                ->get();
+
             $pdf = FacadePdf::loadView('pages.transaksi.pengeluaran.laporan_pdf', [
                 'items' => $items,
                 'periode' => $periode

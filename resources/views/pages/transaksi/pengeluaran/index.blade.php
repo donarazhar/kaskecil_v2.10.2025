@@ -81,7 +81,7 @@
                         @forelse ($items as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
-                                <td>{{ $item->created_at->isoFormat('DD/MM/YYYY HH:mm:ss') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($item->created_at)->isoFormat('DD/MM/YYYY HH:mm:ss') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMMM YYYY') }}</td>
                                 <td>{!! $item->perincian !!}</td>
                                 <td>{{ number_format($item->jumlah, 2, ',', '.') }}</td>
@@ -180,7 +180,7 @@
     <script>
         $(function() {
             // Validasi Juery Mask
-            $('.jumlah').mask('000.000.000.000.000,00', {
+            $('#jumlah').mask('000.000.000', {
                 reverse: true
             });
 

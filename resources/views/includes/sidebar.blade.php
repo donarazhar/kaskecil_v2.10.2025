@@ -4,10 +4,9 @@
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
         <div class="sidebar-brand-icon">
-            {{-- <i class="fas fa-book"></i> --}}
-            <i class="fas fa-balance-scale"></i>
+            <i class="fas fa-book"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Pettycash</div>
+        <div class="sidebar-brand-text mx-3">Kas kecil</div>
     </a>
 
     <!-- Divider -->

@@ -45,16 +45,19 @@
                         {{ session()->get('info') }}
                     </div>
                 @endif
-                <table class="table table-striped table-bordered" id="dataTable">
+                <table class="table table-striped table-bordered" id="dataTable" style="text-align: center;">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>Input Data</th>
-                            <th>Tanggal</th>
-                            <th>Perincian</th>
-                            <th>Pemasukan (Rp)</th>
-                            <th>Pengeluaran (Rp)</th>
-                            <th>Saldo (Rp)</th>
+                            <th rowspan="2" style="vertical-align: middle;">No.</th>
+                            <th rowspan="2"style="vertical-align: middle;">Akun AAS</th>
+                            <th rowspan="2"style="vertical-align: middle;">Mata Anggran</th>
+                            <th rowspan="2"style="vertical-align: middle;">Uraian</th>
+                            <th colspan="2">Besaran (Rp)</th>
+                            <th rowspan="2"style="vertical-align: middle;">Saldo (Rp)</th>
+                        </tr>
+                        <tr>
+                            <th>Debet</th>
+                            <th>Kredit</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,19 +68,9 @@
                         @forelse ($items as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
-                                <td>{{ $item->created_at->isoFormat('DD/MM/YYYY HH:mm:ss') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMMM YYYY') }}</td>
-
+                                <td></td>
+                                <td></td>
                                 <td>{!! $item->perincian !!}</td>
-                                <td>
-                                    @if ($item->kategori == 'pemasukan')
-                                        {{ number_format($item->jumlah, 2, ',', '.') }}
-                                        @php
-                                            $total_pemasukan += $item->jumlah;
-                                        @endphp
-                                    @else
-                                    @endif
-                                </td>
                                 <td>
                                     @if ($item->kategori == 'pengeluaran')
                                         {{ number_format($item->jumlah, 2, ',', '.') }}
@@ -87,7 +80,16 @@
                                     @else
                                     @endif
                                 </td>
-                                <td>{{ number_format($item->saldo->total, 2, ',', '.') }}</td>
+                                <td>
+                                    @if ($item->kategori == 'pemasukan')
+                                        {{ number_format($item->jumlah, 2, ',', '.') }}
+                                        @php
+                                            $total_pemasukan += $item->jumlah;
+                                        @endphp
+                                    @else
+                                    @endif
+                                </td>
+                                <td>{{ number_format($item->saldo, 2, ',', '.') }}</td>
                             </tr>
                         @empty
                         @endforelse
