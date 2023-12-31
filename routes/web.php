@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InstansiController;
+use App\Http\Controllers\MasterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UserController;
@@ -44,6 +44,19 @@ Route::middleware(['auth:user'])->group(
         Route::resource('users', UserController::class)->only('index', 'create', 'destroy', 'store', 'update', 'edit');
         Route::get('/users/{user}/reset-password', [UserController::class, 'resetPassword']);
         Route::put('/users/{user}/update-password', [UserController::class, 'updatePassword']);
+
+        Route::get('/master/aas', [MasterController::class, 'indexaas']);
+        Route::post('/master/storeaas', [MasterController::class, 'storeaas']);
+        Route::post('/master/editaas', [MasterController::class, 'editaas']);
+        Route::post('/master/aas/{id}/updateaas', [MasterController::class, 'updateaas']);
+        Route::post('/master/aas/{id}/deleteaas', [MasterController::class, 'deleteaas']);
+
+
+        Route::get('/master/matanggaran', [MasterController::class, 'indexmatanggaran']);
+        Route::post('/master/storematanggaran', [MasterController::class, 'storematanggaran']);
+        Route::post('/master/editmatanggaran', [MasterController::class, 'editmatanggaran']);
+        Route::post('/master/matanggaran/{id}/updatematanggaran', [MasterController::class, 'updatematanggaran']);
+        Route::post('/master/matanggaran/{id}/deletematanggaran', [MasterController::class, 'deletematanggaran']);
 
 
         Route::resource('transaksi', TransaksiController::class)->only('index', 'store', 'update', 'destroy', 'cari');
