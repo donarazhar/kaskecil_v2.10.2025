@@ -13,7 +13,9 @@ class TransaksiController extends Controller
     public function index()
     {
         $items = DB::table('transaksi')
-            ->select('transaksi.*', 'saldo.total as saldo')
+            ->select('transaksis.*', 'saldo.total as saldo', 'akun_aas.*', 'akun_matanggaran.*')
+            ->leftJoin('akun_aas', 'transaksi.kode_aas', '=', 'akun_aas.kode_aas')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
             ->orderByRaw("YEAR(transaksi.created_at) DESC, MONTH(transaksi.created_at) DESC")
             ->orderBy('transaksi.created_at', 'asc')
@@ -23,22 +25,26 @@ class TransaksiController extends Controller
         return view('pages.transaksi.index', compact('items'));
     }
 
-    public function indexPemasukan()
+    public function indexPembentukan()
     {
-        $items = DB::table('transaksi')
-            ->where('kategori', 'pemasukan')
-            ->orderBy('transaksi.created_at', 'asc')
+        $pembentukan = DB::table('transaksi')
+            ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.kategori', '=', 'pembentukan')
+            ->orderBy('transaksi.created_at', 'ASC')
             ->get();
 
-        session()->forget('info');
-        return view('pages.transaksi.pemasukan.index', compact('items'));
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+
+        return view('pages.transaksi.pembentukan.index', compact('pembentukan', 'matanggaran'));
     }
 
-    public function createPemasukan()
-    {
-
-        return view('pages.transaksi.pemasukan.create');
-    }
 
     public function indexPengeluaran()
     {
@@ -49,12 +55,6 @@ class TransaksiController extends Controller
 
         session()->forget('info');
         return view('pages.transaksi.pengeluaran.index', compact('items'));
-    }
-
-    public function createPengeluaran()
-    {
-
-        return view('pages.transaksi.pengeluaran.create');
     }
 
     public function store(Request $request)
@@ -82,8 +82,8 @@ class TransaksiController extends Controller
             }
 
             // Lakukan operasi matematika hanya jika keduanya numerik
-            $total = ($request->kategori == 'pemasukan') ? $saldo_sekarang + $jumlah_numeric : $saldo_sekarang - $jumlah_numeric;
-
+            $total = ($request->kategori == 'pembentukan') ? $saldo_sekarang + $jumlah_numeric : $saldo_sekarang - $jumlah_numeric;
+            $kode_matanggaran = $request->kode_matanggaran;
             // Insert data saldo
             $saldo_id = DB::table('saldo')->insertGetId([
                 'total' => $total,
@@ -94,6 +94,7 @@ class TransaksiController extends Controller
             // Insert data transaksi dengan ID saldo yang baru saja dibuat
             DB::table('transaksi')->insert([
                 'saldo_id' => $saldo_id,
+                'kode_matanggaran' => $kode_matanggaran, // Menggunakan nilai numerik
                 'jumlah' => $jumlah_numeric, // Menggunakan nilai numerik
                 'perincian' => $request->perincian,
                 'kategori' => $request->kategori,
@@ -172,7 +173,7 @@ class TransaksiController extends Controller
         }
 
 
-        if ($request->kategori == 'pemasukan') {
+        if ($request->kategori == 'pembentukan') {
             if ($request->jumlah == $transaksi->jumlah) {
                 $transaksi->update($request->all());
             } elseif ($request->jumlah > $transaksi->jumlah) {
@@ -263,51 +264,42 @@ class TransaksiController extends Controller
     public function destroy($id)
     {
         $transaksi = DB::table('transaksi')
-            ->select('transaksi.*', 'saldo.*') // Include columns from both tables
             ->join('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
+            ->select('transaksi.*', 'saldo.*')
             ->where('transaksi.id', $id)
             ->first();
 
         if (!$transaksi) {
-            abort(404); // Or handle not found case as needed for your application
+            abort(404);
         }
 
-        $saldo = DB::table('saldo')
-            ->where('id', $transaksi->saldo_id)
-            ->first();
+        $saldo = DB::table('saldo')->where('id', $transaksi->saldo_id)->first();
 
         if (!$saldo) {
-            abort(404); // Or handle not found case as needed for your application
+            abort(404);
         }
 
+        $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
 
-        if ($transaksi->kategori == 'pemasukan') {
-            $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
-
-            foreach ($saldo_terdampak as $item) {
-                $item->update([
+        foreach ($saldo_terdampak as $item) {
+            if ($transaksi->kategori == 'pembentukan' || $transaksi->kategori == 'pemasukan') {
+                DB::table('saldo')->where('id', $item->id)->update([
                     'total' => $item->total - $transaksi->jumlah,
                 ]);
-            }
-        }
-
-        if ($transaksi->kategori == 'pengeluaran') {
-            $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
-
-            foreach ($saldo_terdampak as $item) {
-                $item->update([
+            } elseif ($transaksi->kategori == 'pengeluaran') {
+                DB::table('saldo')->where('id', $item->id)->update([
                     'total' => $item->total + $transaksi->jumlah,
                 ]);
             }
         }
 
-
-        $saldo->transaksi->delete();
-        $saldo->delete();
+        DB::table('transaksi')->where('id', $transaksi->id)->delete();
+        DB::table('saldo')->where('id', $saldo->id)->delete();
 
         Alert::success('Sukses', 'Hapus transaksi berhasil');
         return redirect()->back();
     }
+
 
     public function laporan()
     {
@@ -356,7 +348,7 @@ class TransaksiController extends Controller
                 ->whereBetween('transaksi.tanggal', [$request->tanggal_awal, $request->tanggal_akhir])
                 ->get();
 
-            $pdf = FacadePdf::loadView('pages.transaksi.pemasukan.laporan_pdf', [
+            $pdf = FacadePdf::loadView('pages.transaksi.pembentukan.laporan_pdf', [
                 'items' => $items,
                 'periode' => $periode
             ]);

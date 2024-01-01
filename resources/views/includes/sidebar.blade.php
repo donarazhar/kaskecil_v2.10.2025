@@ -1,7 +1,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/panel/beranda">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-book"></i>
         </div>
@@ -13,7 +13,7 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="/panel/beranda">
             <i class="fas fa-home"></i>
             <span>Home</span></a>
     </li>
@@ -30,8 +30,7 @@
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
             aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
-            <span>Master
-
+            <span>Master <i class="fas fa-fw fa-plus"></i>
             </span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#collapseTwo">
@@ -55,15 +54,15 @@
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUtilities"
             aria-expanded="true" aria-controls="collapseUtilities">
             <i class="fas fa-fw fa-wrench"></i>
-            <span>Transaksi
-
+            <span>Transaksi <i class="fas fa-fw fa-plus"></i>
             </span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
             data-bs0parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Transaksi Kas Kecil</h6>
-                <a class="collapse-item" href="/transaksi/pemasukan"><i class="fas fa-wallet"></i> <span>Pembentukan Kas
+                <a class="collapse-item" href="/transaksi/pembentukan"><i class="fas fa-wallet"></i> <span>Pembentukan
+                        Kas
                         Kecil</span></a>
                 <a class="collapse-item" href="/transaksi/pengeluaran"><i class="fas fa-wallet"></i> <span>Pengeluaran
                         Kas

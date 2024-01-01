@@ -8,6 +8,23 @@
         <label for="nama_aas">Nama Akun AAS</label>
         <input name="nama_aas" rows="3" id="nama_aas" class="form-control" value="{{ $aas->nama_aas }}"></input>
     </div>
+    <div class="form-group">
+        <label for="status">Status Akun</label>
+        <select name="status" id="status" class="form-select">
+            <option value="{{ $aas->status }}">{{ $aas->status }}</option>
+            <option value="d">Debit</option>
+            <option value="k">Kredit</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="kategori">Kategori Akun</label>
+        <select name="kategori" id="kategori" class="form-select">
+            <option value="{{ $aas->kategori }}">{{ $aas->kategori }}</option>
+            <option value="pembentukan">Pembentukan Kas</option>
+            <option value="pengisian">Pengisian Kas</option>
+            <option value="pengeluaran">Pengeluaran Kas</option>
+        </select>
+    </div>
     <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
 </form>
 

@@ -61,8 +61,8 @@ Route::middleware(['auth:user'])->group(
 
         // Transaksi
         Route::resource('transaksi', TransaksiController::class)->only('index', 'store', 'update', 'destroy', 'cari');
-        Route::get('/transaksi/pemasukan', [TransaksiController::class, 'indexPemasukan'])->name('transaksi.pemasukan.index');
-        Route::get('/transaksi/pemasukan/create', [TransaksiController::class, 'createPemasukan'])->name('transaksi.pemasukan.create');
+        Route::get('/transaksi/pembentukan', [TransaksiController::class, 'indexPembentukan'])->name('transaksi.pembentukan.index');
+        Route::get('/transaksi/pembentukan/create', [TransaksiController::class, 'createPembentukan'])->name('transaksi.pembentukan.create');
         Route::get('/transaksi/pengeluaran', [TransaksiController::class, 'indexPengeluaran'])->name('transaksi.pengeluaran.index');
         Route::get('/transaksi/pengeluaran/create', [TransaksiController::class, 'createPengeluaran'])->name('transaksi.pengeluaran.create');
         Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan'])->name('transaksi.laporan');

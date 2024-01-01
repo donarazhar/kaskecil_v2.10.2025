@@ -45,6 +45,8 @@
                                         <th>No.</th>
                                         <th>Kode AAS</th>
                                         <th>Nama Akun</th>
+                                        <th>Status</th>
+                                        <th>Kategori</th>
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>
@@ -54,6 +56,24 @@
                                             <td>{{ $loop->iteration }}.</td>
                                             <td>{{ $d->kode_aas }}
                                             <td>{{ $d->nama_aas }}</td>
+                                            <td>
+                                                @if ($d->status == 'k')
+                                                    Kredit
+                                                @elseif ($d->status == 'd')
+                                                    Debit
+                                                @endif
+                                            </td>
+
+                                            <td>
+                                                @if ($d->kategori == 'pembentukan')
+                                                    Pembentukan Kas
+                                                @elseif ($d->kategori == 'pengisian')
+                                                    Pengisian Kas Kecil
+                                                @elseif ($d->kategori == 'pengeluaran')
+                                                    Pengeluaran Kas Kecil
+                                                @endif
+                                            </td>
+
                                             <td>
                                                 <a class="btn btn-primary btn-sm mb-2 mr-1 d-inline edit" href="#"
                                                     id="{{ $d->id }}">
@@ -100,6 +120,23 @@
                                 <label for="nama_aas">Nama Akun AAS</label>
                                 <input name="nama_aas" rows="3" id="nama_aas" class="form-control"></input>
                             </div>
+                            <div class="form-group">
+                                <label for="status">Status Akun</label>
+                                <select name="status" id="status" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    <option value="d">Debit</option>
+                                    <option value="k">Kredit</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="kategori">Kategori Akun</label>
+                                <select name="kategori" id="kategori" class="form-select">
+                                    <option value="">- Pilih -</option>
+                                    <option value="pembentukan">Pembentukan Kas</option>
+                                    <option value="pengisian">Pengisian Kas</option>
+                                    <option value="pengeluaran">Pengeluaran Kas</option>
+                                </select>
+                            </div>
                             <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
                         </form>
                     </div>
@@ -145,6 +182,8 @@
 
                 var kode_aas = $("#kode_aas").val();
                 var nama_aas = $("#nama_aas").val();
+                var status = $("#status").val();
+                var kategori = $("#kategori").val();
 
                 if (kode_aas == "") {
                     Swal.fire({
@@ -166,6 +205,26 @@
                         $("#nama_aas").focus();
                     });
                     return false;
+                } else if (status == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Status Akun Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#status").focus();
+                    });
+                    return false;
+                } else if (kategori == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Kategori Akun Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#kategori").focus();
+                    });
+                    return false;
                 }
 
                 $.ajax({
@@ -174,7 +233,9 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         kode_aas: kode_aas,
-                        nama_aas: nama_aas
+                        nama_aas: nama_aas,
+                        status: status,
+                        kategori: kategori
                     },
                     cache: false,
                     success: function(respond) {

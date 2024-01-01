@@ -1,61 +1,22 @@
 @extends('layoutsberanda.default')
-@section('title', 'Data Pemasukan')
-@section('header-title', 'Data Pemasukan')
+@section('title', 'Pembentukan Kas Kecil')
+@section('header-title', 'Pembentukan Kas Kecil')
 
 @section('content')
-    <div class="card shadow mb-4">
-        {{-- Pesan error --}}
-        @if (Session::get('success'))
-            <div class="alert alert-success">
-                {{ Session::get('success') }}
-            </div>
-        @endif
-        @if (Session::get('warning'))
-            <div class="alert alert-warning">
-                {{ Session::get('warning') }}
-            </div>
-        @endif
+    <div class="card shadow">
         {{-- Tombol tambah --}}
         <div class="card-body">
-            <a href="#" class="btn btn-primary mb-4" id="btnTambahPemasukan">
+            <a href="#" class="btn btn-primary" id="btnTambahPemasukan">
                 <b>Tambah</b>
                 <i class="fa fa-plus" aria-hidden="true"></i>
             </a>
-
-            {{-- Form cari pemasukan --}}
-            <form action="" method="GET">
-                <input type="hidden" name="kategori" value="pemasukan">
-                <div class="form-row">
-                    <div class="form-group col-md-3">
-                        <label for="">Tanggal Awal</label>
-                        <input type="date" class="form-control @error('tanggal_awal') is-invalid @enderror"
-                            name="tanggal_awal" value="{{ old('tanggal_awal') }}">
-                        @error('tanggal_awal')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="">Tanggal Akhir</label>
-                        <input type="date" class="form-control @error('tanggal_akhir') is-invalid @enderror"
-                            name="tanggal_akhir" value="{{ old('tanggal_akhir') }}">
-                        @error('tanggal_akhir')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary"><b>Cari</b></button>
-            </form>
         </div>
     </div>
 
     {{-- Data table pemasukan --}}
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-black">Data Pemasukan</h6>
+            <h6 class="m-0 font-weight-bold text-black">Pembentukan Kas Kecil</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">

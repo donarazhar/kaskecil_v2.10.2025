@@ -24,11 +24,15 @@ class MasterController extends Controller
     {
         $kode_aas = $request->kode_aas;
         $nama_aas = $request->nama_aas;
+        $status = $request->status;
+        $kategori = $request->kategori;
 
         try {
             $data = [
                 'kode_aas' => $kode_aas,
                 'nama_aas' => $nama_aas,
+                'status' => $status,
+                'kategori' => $kategori
 
             ];
 
@@ -55,11 +59,15 @@ class MasterController extends Controller
 
         $kode_aas = $request->kode_aas;
         $nama_aas = $request->nama_aas;
+        $status = $request->status;
+        $kategori = $request->kategori;
 
         try {
             $data = [
                 'kode_aas' => $kode_aas,
                 'nama_aas' => $nama_aas,
+                'status' => $status,
+                'kategori' => $kategori
 
             ];
 
