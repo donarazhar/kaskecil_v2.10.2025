@@ -67,7 +67,7 @@
                 <a class="collapse-item" href="/transaksi/pengeluaran"><i class="fas fa-wallet"></i> <span>Pengeluaran
                         Kas
                         Kecil</span></a>
-                <a class="collapse-item" href="utilities-animation.html"><i class="fas fa-wallet"></i> <span>Pengisian
+                <a class="collapse-item" href="/transaksi/pengisian"><i class="fas fa-wallet"></i> <span>Pengisian
                         Kas
                         Kecil</span></a>
                 <a class="collapse-item" href="/transaksi"><i class="fas fa-wallet"></i> <span>Laporan Kas

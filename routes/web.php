@@ -59,15 +59,23 @@ Route::middleware(['auth:user'])->group(
         Route::post('/master/matanggaran/{id}/updatematanggaran', [MasterController::class, 'updatematanggaran']);
         Route::post('/master/matanggaran/{id}/deletematanggaran', [MasterController::class, 'deletematanggaran']);
 
-        // Transaksi
+        // Pembentukan Kas Kecil
         Route::resource('transaksi', TransaksiController::class)->only('index', 'store', 'destroy', 'cari');
         Route::get('/transaksi/pembentukan', [TransaksiController::class, 'indexPembentukan']);
-        Route::get('/transaksi/pembentukan/create', [TransaksiController::class, 'createPembentukan']);
         Route::post('/transaksi/pembentukan/edit', [TransaksiController::class, 'editPembentukan']);
         Route::post('/transaksi/pembentukan/{id}/update', [TransaksiController::class, 'updatePembentukan']);
 
+        // Pengeluaran Kas Kecil
         Route::get('/transaksi/pengeluaran', [TransaksiController::class, 'indexPengeluaran']);
-        Route::get('/transaksi/pengeluaran/create', [TransaksiController::class, 'createPengeluaran']);
+        Route::post('/transaksi/pengeluaran/edit', [TransaksiController::class, 'editPengeluaran']);
+        Route::post('/transaksi/pengeluaran/{id}/update', [TransaksiController::class, 'updatePengeluaran']);
+
+        // Pengisian Kas Kecil
+        Route::get('/transaksi/pengisian', [TransaksiController::class, 'indexPengisian']);
+        Route::post('/transaksi/pengisian/edit', [TransaksiController::class, 'editindexPengisian']);
+        Route::post('/transaksi/pengisian/{id}/update', [TransaksiController::class, 'updateindexPengisian']);
+
+
         Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan']);
         Route::post('/transaksi/laporan/download', [TransaksiController::class, 'laporanPDF']);
 

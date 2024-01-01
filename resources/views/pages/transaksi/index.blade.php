@@ -51,9 +51,9 @@
                             <th rowspan="2" style="vertical-align: middle;">No.</th>
                             <th rowspan="2"style="vertical-align: middle;">Akun AAS</th>
                             <th rowspan="2"style="vertical-align: middle;">Mata Anggran</th>
-                            <th rowspan="2"style="vertical-align: middle;">Uraian</th>
+                            <th rowspan="2"style="vertical-align: middle;">Perincian</th>
                             <th colspan="2">Besaran (Rp)</th>
-                            <th rowspan="2"style="vertical-align: middle;">Saldo (Rp)</th>
+                            <th rowspan="2"style="vertical-align: middle;">Saldo Awal (Rp)</th>
                         </tr>
                         <tr>
                             <th>Debet</th>
@@ -61,35 +61,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $total_pemasukan = 0;
-                            $total_pengeluaran = 0;
-                        @endphp
-                        @forelse ($items as $item)
+                        @forelse ($transaksi as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
-                                <td></td>
-                                <td></td>
+                                <td>{{ $item->kode_aas }}</td>
+                                <td>{{ $item->kode_matanggaran }}</td>
                                 <td>{!! $item->perincian !!}</td>
                                 <td>
-                                    @if ($item->kategori == 'pengeluaran')
-                                        {{ number_format($item->jumlah, 2, ',', '.') }}
-                                        @php
-                                            $total_pengeluaran += $item->jumlah;
-                                        @endphp
+                                    @if ($item->status == 'd' && $item->kategori == 'pengeluaran')
+                                        {{ number_format($item->jumlah, 0, ',', '.') }}
                                     @else
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($item->kategori == 'pemasukan')
-                                        {{ number_format($item->jumlah, 2, ',', '.') }}
-                                        @php
-                                            $total_pemasukan += $item->jumlah;
-                                        @endphp
+                                    @if ($item->status == 'k' && $item->kategori == 'pengisian')
+                                        {{ number_format($item->jumlah, 0, ',', '.') }}
                                     @else
                                     @endif
                                 </td>
-                                <td>{{ number_format($item->saldo, 2, ',', '.') }}</td>
+                                <td>
+                                    @if ($item->status == 'k' && $item->kategori == 'pembentukan')
+                                        {{ number_format($item->jumlah, 0, ',', '.') }}
+                                    @else
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                         @endforelse
@@ -97,13 +92,19 @@
                     <tfoot>
                         <tr>
                             <th colspan="4" class="text-center"><b>Total</b></th>
-                            <th><b>{{ 'Rp ' . number_format($total_pemasukan, 2, ',', '.') }}</b></th>
-                            <th colspan="2"><b>{{ 'Rp ' . number_format($total_pengeluaran, 2, ',', '.') }}</b></th>
+                            <th><b>{{ 'Rp ' . number_format($total_pengeluaran, 0, ',', '.') }}</b></th>
+                            <th><b>{{ 'Rp ' . number_format($total_pengisian, 0, ',', '.') }}</b></th>
+                            <th colspan="2"><b>{{ 'Rp ' . number_format($total_result, 0, ',', '.') }}</b>
+                            </th>
                         </tr>
                     </tfoot>
                 </table>
             </div>
         </div>
+    </div>
+
+    </div>
+    </div>
     </div>
 @endsection
 

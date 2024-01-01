@@ -62,7 +62,7 @@
                                     @if ($d->status == 'k')
                                         Kredit
                                     @elseif ($d->status == 'd')
-                                        Debit
+                                        Debet
                                     @endif
                                 </td>
                                 <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
@@ -77,7 +77,6 @@
                                         @method('DELETE')
                                         @csrf
                                         <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
-                                            data-jumlah="{{ 'Rp ' . number_format($d->jumlah, 0, ',', '.') }}"
                                             type="submit">
                                             <i class="fas fa-trash">
                                             </i>
@@ -173,7 +172,7 @@
 
     <script>
         $(function() {
-            $('#jumlah').mask('000.000.000', {
+            $('#jumlah').mask('00.000.000', {
                 reverse: true
             });
             //Script takan tombol tambah
@@ -182,7 +181,7 @@
                 $("#modal-frmpembentukan").modal("show");
             });
 
-            // Script validasi inptuan form
+            // Script validasi inputan form
             $("#frmpembentukan").submit(function() {
                 var kode_matanggaran = $("#kode_matanggaran").val();
                 var jumlah = $("#jumlah").val();

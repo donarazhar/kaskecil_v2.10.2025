@@ -1,37 +1,47 @@
 @extends('layoutsberanda.default')
-@section('title', 'Pembentukan Kas Kecil')
-@section('header-title', 'Pembentukan Kas Kecil')
+@section('title', 'Pengisian Kas Kecil')
+@section('header-title', 'Pengisian Kas Kecil')
 
 @section('content')
     <div class="card shadow">
+        {{-- Pesan error --}}
+        @if (Session::get('success'))
+            <div class="alert alert-success">
+                {{ Session::get('success') }}
+            </div>
+        @endif
+        @if (Session::get('warning'))
+            <div class="alert alert-warning">
+                {{ Session::get('warning') }}
+            </div>
+        @endif
+
         {{-- Tombol tambah --}}
         <div class="card-body">
-            <a href="#" class="btn btn-primary" id="btnTambahPemasukan">
+            <a href="#" class="btn btn-primary" id="btnTambahPengisian">
                 <b>Tambah</b>
                 <i class="fa fa-plus" aria-hidden="true"></i>
             </a>
         </div>
     </div>
 
-    {{-- Data table pemasukan --}}
+    {{-- Data Table Pengisian Kas Kecil --}}
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-black">Pembentukan Kas Kecil</h6>
+            <h6 class="m-0 font-weight-bold text-black">Pengisian Kas Kecil</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                @if (session()->has('info'))
-                    <div class="alert alert-info">
-                        {{ session()->get('info') }}
-                    </div>
-                @endif
-                <table class="table table-striped table-bordered" id="dataTable">
+                <table class="table table-striped table-bordered text-center" id="dataTable">
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Input Data</th>
-                            <th>Tanggal</th>
+                            <th>Tgl</th>
+                            <th>Akun AAS</th>
+                            <th>Mata Anggaran</th>
+                            <th>Nama Akun</th>
                             <th>Perincian</th>
+                            <th>Status</th>
                             <th>Jumlah (Rp)</th>
                             <th>Tindakan</th>
                         </tr>
@@ -40,76 +50,84 @@
                         @php
                             $total = 0;
                         @endphp
-                        @forelse ($items as $item)
+                        @forelse ($pengisian as $d)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
-                                <td>{{ \Carbon\Carbon::parse($item->created_at)->isoFormat('DD/MM/YYYY HH:mm:ss') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMMM YYYY') }}</td>
-                                <td>{!! $item->perincian !!}</td>
-                                <td>{{ number_format($item->jumlah, 2, ',', '.') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YYYY') }}</td>
+                                <td>{{ $d->kode_aas }}</td>
+                                <td>{{ $d->kode_matanggaran }}</td>
+                                <td>{{ $d->nama_aas }}</td>
+                                <td>{{ $d->perincian }}</td>
                                 <td>
-                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline" href="">
+                                    @if ($d->status == 'k')
+                                        Kredit
+                                    @elseif ($d->status == 'd')
+                                        Debet
+                                    @endif
+                                </td>
+                                <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
+                                <td>
+                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
+                                        id="{{ $d->id }}">
                                         <i class="fas fa-pencil-alt">
                                         </i>
-                                        Ubah
                                     </a>
-                                    <form action="" method="post" class="d-inline"
-                                        id="{{ 'form-hapus-transaksi-' . $item->id }}">
+                                    <form action="{{ route('transaksi.destroy', $d->id) }}" method="post" class="d-inline"
+                                        id="">
+                                        @method('DELETE')
                                         @csrf
-                                        <button class="btn btn-danger btn-sm btn-hapus" data-id="{{ $item->id }}"
-                                            data-jumlah="{{ 'Rp ' . number_format($item->jumlah, 2, ',', '.') }}"
+                                        <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
                                             type="submit">
                                             <i class="fas fa-trash">
                                             </i>
-                                            Hapus
-                                        </button>
+                                        </a>
                                     </form>
                                 </td>
                                 @php
-                                    $total += $item->jumlah;
+                                    $total += $d->jumlah;
                                 @endphp
                             </tr>
                         @empty
                         @endforelse
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="4" class="text-center"><b>Total</b></th>
-                            <th colspan="2"><b>{{ 'Rp ' . number_format($total, 2, ',', '.') }}</b></th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
     </div>
 
-    {{-- Modal input pemasukan --}}
-    <div class="modal modal-blur fade" id="modal-frmpemasukan" tabindex="-1" role="dialog" aria-hidden="true">
+    {{-- Modal Input Pengisian Kas Kecil --}}
+    <div class="modal modal-blur fade" id="modal-frmpengisian" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Input Pemasukan</h5>
+                    <h5 class="modal-title">Pengisian Kas Kecil</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="{{ route('transaksi.store') }}" method="post" id="frmpemasukan">
+                        <form action="{{ route('transaksi.store') }}" method="post" id="frmpengisian">
                             @csrf
+                            <div class="form-group">
+                                <label for="nama_matanggaran">Mata Anggaran</label>
+                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select">
+                                    <option value="">- Akun Mata Anggaran -</option>
+                                    @foreach ($matanggaran as $d)
+                                        @if ($d->status == 'k' && $d->kategori == 'pengisian')
+                                            <option value="{{ $d->kode_matanggaran }}">
+                                                {{ $d->kode_matanggaran }} | {{ $d->nama_aas }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="form-group">
                                 <label for="jumlah">Jumlah</label>
                                 <input type="text" name="jumlah" id="jumlah" class="form-control">
                             </div>
-                            <input type="hidden" name="kategori" id="kategori" value="pemasukan">
+                            <input type="hidden" name="kategori" id="kategori" value="pengisian">
                             <div class="form-group">
                                 <label for="">Tanggal</label>
-                                <input type="date" name="tanggal" id="tanggal"
-                                    class="form-control @error('tanggal') is-invalid @enderror"
-                                    value="{{ old('tanggal') }}">
-                                @error('tanggal')
-                                    <div class="text-danger">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                                <input type="date" name="tanggal" id="tanggal" class="form-control">
                             </div>
 
                             <div class="form-group">
@@ -123,7 +141,23 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Edit Pengisian Kas Kecil --}}
+    <div class="modal modal-blur fade" id="modal-editpengisian" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Pengisian Kas Kecil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="loadeditform">
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
+
 @push('after-style')
     <!-- Custom styles for this page -->
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
@@ -138,21 +172,32 @@
 
     <script>
         $(function() {
-            $('#jumlah').mask('000.000.000', {
+            $('#jumlah').mask('00.000.000', {
                 reverse: true
             });
             //Script takan tombol tambah
-            $("#btnTambahPemasukan").click(function() {
+            $("#btnTambahPengisian").click(function() {
                 // alert('test');
-                $("#modal-frmpemasukan").modal("show");
+                $("#modal-frmpengisian").modal("show");
             });
 
-            // Script validasi inpuan form
-            $("#frmpemasukan").submit(function() {
+            // Script validasi inputan form
+            $("#frmpengisian").submit(function() {
+                var kode_matanggaran = $("#kode_matanggaran").val();
                 var jumlah = $("#jumlah").val();
                 var tanggal = $("#tanggal").val();
                 var perincian = $("#perincian").val();
-                if (jumlah == "") {
+                if (kode_matanggaran == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Akun Mata Anggaran Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#kode_matanggaran").focus();
+                    });
+                    return false;
+                } else if (jumlah == "") {
                     Swal.fire({
                         title: 'Warning!',
                         text: 'Jumlah Harus Diisi',
@@ -183,6 +228,48 @@
                     });
                     return false;
                 }
+            });
+
+            // Proses edit dengan AJAX
+            $(".edit").click(function() {
+                var id = $(this).attr('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '/transaksi/pengisian/edit',
+                    cache: false,
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: id
+                    },
+                    success: function(respond) {
+                        $('#loadeditform').html(respond);
+                    }
+                });
+                $("#modal-editpengisian").modal("show");
+            });
+
+            // Proses delete dengan AJAX
+            $(".delete-confirm").click(function(e) {
+                var form = $(this).closest('form');
+                e.preventDefault();
+                Swal.fire({
+                    title: "Yakin Hapus Data?",
+                    text: "Data anda akan terhapus permanen!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Hapus"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                        Swal.fire({
+                            title: "Terhapus!",
+                            text: "Data anda berhasil terhapus",
+                            icon: "success"
+                        });
+                    }
+                });
             });
 
         });

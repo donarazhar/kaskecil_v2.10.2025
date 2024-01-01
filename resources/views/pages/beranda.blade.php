@@ -4,17 +4,17 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-4 mb-4">
+        <div class="col-md-3">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
-                                Saldo</div>
+                                Pembentukan Kas</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ 'Rp ' . number_format($saldo->total ?? 0, 2, ',', '.') }}</div>
+                                {{ 'Rp ' . number_format($total_pembentukan, 0, ',', '.') }}</div>
                             <p class="text-gray mt-2">
-                                {{ $tanggal }}
+                                Pada Bulan ini
                             </p>
 
                         </div>
@@ -22,34 +22,15 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
-                                Pemasukan</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ 'Rp ' . number_format($jumlah_pemasukan, 2, ',', '.') }}</div>
-                            <p class="text-gray mt-2">
-                                Bulan ini
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
+        <div class="col-md-3">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
-                                Pengeluaran</div>
+                                Pengeluaran Kas</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ 'Rp ' . number_format($jumlah_pengeluaran, 2, ',', '.') }}</div>
+                                {{ 'Rp ' . number_format($total_pengeluaran, 0, ',', '.') }}</div>
                             <p class="text-gray mt-2">
                                 Bulan ini
                         </div>
@@ -57,68 +38,127 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
+                                Pengisian Kas</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ 'Rp ' . number_format($total_pengisian ?? 0, 0, ',', '.') }}</div>
+                            <p class="text-gray mt-2">
+                                Bulan ini
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
+                                Saldo berjalan</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ 'Rp ' . number_format($total_result ?? 0, 0, ',', '.') }}</div>
+                            <p class="text-gray mt-2">
+                                Bulan ini
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr>
+        </div>
     </div>
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-black">10 Transaksi Terakhir</h6>
+            <h6 class="m-0 font-weight-bold text-black">Data Transaksi</h6>
         </div>
-
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped table-bordered" id="dataTable">
+                @if (session()->has('info'))
+                    <div class="alert alert-info">
+                        {{ session()->get('info') }}
+                    </div>
+                @endif
+                <table class="table table-striped table-bordered" id="dataTable" style="text-align: center;">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>Tanggal</th>
-                            <th>Perincian</th>
-                            <th>Pemasukan (Rp)</th>
-                            <th>Pengeluaran (Rp)</th>
-                            <th>Saldo</th>
+                            <th rowspan="2" style="vertical-align: middle;">No.</th>
+                            <th rowspan="2" style="vertical-align: middle;">Tgl</th>
+                            <th rowspan="2"style="vertical-align: middle;">Akun AAS</th>
+                            <th rowspan="2"style="vertical-align: middle;">Mata Anggran</th>
+                            <th rowspan="2"style="vertical-align: middle;">Perincian</th>
+                            <th colspan="2">Besaran (Rp)</th>
+                            <th rowspan="2"style="vertical-align: middle;">Saldo Awal (Rp)</th>
+                        </tr>
+                        <tr>
+                            <th>Debet</th>
+                            <th>Kredit</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $jumlah_pemasukan = 0;
-                            $jumlah_pengeluaran = 0;
-                        @endphp
-                        @forelse ($items as $item)
+                        @forelse ($transaksi as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
-                                <td>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMMM YYYY') }}</td>
+                                <td>{{ date('d-m-Y', strtotime($item->tanggal)) }}</td>
+                                <td>{{ $item->kode_aas }}</td>
+                                <td>{{ $item->kode_matanggaran }}</td>
                                 <td>{!! $item->perincian !!}</td>
                                 <td>
-                                    @if ($item->kategori == 'pemasukan')
-                                        {{ 'Rp ' . number_format($item->jumlah, 2, ',', '.') }}
-                                        @php
-                                            $jumlah_pemasukan += $item->jumlah;
-                                        @endphp
+                                    @if ($item->status == 'd' && $item->kategori == 'pengeluaran')
+                                        {{ number_format($item->jumlah, 0, ',', '.') }}
                                     @else
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($item->kategori == 'pengeluaran')
-                                        {{ number_format($item->jumlah, 2, ',', '.') }}
-                                        @php
-                                            $jumlah_pengeluaran += $item->jumlah;
-                                        @endphp
+                                    @if ($item->status == 'k' && $item->kategori == 'pengisian')
+                                        {{ number_format($item->jumlah, 0, ',', '.') }}
                                     @else
                                     @endif
                                 </td>
-                                <td>{{ number_format($item->saldo->total, 2, ',', '.') }}</td>
+                                <td><b>
+                                        @if ($item->status == 'k' && $item->kategori == 'pembentukan')
+                                            {{ number_format($item->jumlah, 0, ',', '.') }}
+                                        @else
+                                        @endif
+                                    </b>
+                                </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="6" class="text-center">Tidak ada data untuk saat ini</td>
-                            </tr>
                         @endforelse
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="7"></th>
+                            <th colspan="1">Saldo Berjalan (Rp)</th>
+                        </tr>
+                        <tr>
+                            <th colspan="5" class="text-center"><b>Total</b></th>
+                            <th><b>{{ 'Rp ' . number_format($total_pengeluaran, 0, ',', '.') }}</b></th>
+                            <th><b>{{ 'Rp ' . number_format($total_pengisian, 0, ',', '.') }}</b></th>
+                            <th colspan="2"><b>{{ 'Rp ' . number_format($total_result, 0, ',', '.') }}</b></th>
+                        </tr>
+                    </tfoot>
                 </table>
-
             </div>
         </div>
-
     </div>
+
+
+
+
+
 @endsection
 @push('after-script')
     <!-- Page level plugins -->

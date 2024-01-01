@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\TryCatch;
 
@@ -13,17 +14,33 @@ class TransaksiController extends Controller
     // Index Menu Home Transaksi
     public function index()
     {
-        $items = DB::table('transaksi')
+        $transaksi = DB::table('transaksi')
             ->select('transaksi.*', 'saldo.total as saldo', 'akun_aas.*', 'akun_matanggaran.*')
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->leftJoin('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
-            ->orderByRaw("YEAR(transaksi.created_at) DESC, MONTH(transaksi.created_at) DESC")
+            ->orderByRaw("YEAR(transaksi.created_at) ASC, MONTH(transaksi.created_at) ASC")
             ->orderBy('transaksi.created_at', 'asc')
             ->get();
 
+        $result = DB::table('transaksi')
+            ->select(
+                DB::raw('COALESCE(SUM(CASE WHEN kategori = "pembentukan" THEN jumlah ELSE 0 END), 0) AS total_pembentukan'),
+                DB::raw('COALESCE(SUM(CASE WHEN kategori = "pengisian" THEN jumlah ELSE 0 END), 0) AS total_pengisian'),
+                DB::raw('COALESCE(SUM(CASE WHEN kategori = "pengeluaran" THEN jumlah ELSE 0 END), 0) AS total_pengeluaran'),
+                DB::raw('COALESCE(SUM(CASE WHEN kategori IN ("pembentukan", "pengisian") THEN jumlah ELSE 0 END), 0) - 
+                COALESCE(SUM(CASE WHEN kategori = "pengeluaran" THEN jumlah ELSE 0 END), 0) AS total_result')
+            )
+            ->first();
 
-        return view('pages.transaksi.index', compact('items'));
+        // Access the results
+        $total_pembentukan = $result->total_pembentukan;
+        $total_pengisian = $result->total_pengisian;
+        $total_pengeluaran = $result->total_pengeluaran;
+        $total_result = $result->total_result;
+
+
+        return view('pages.transaksi.index', compact('transaksi', 'total_pembentukan', 'total_pengisian', 'total_pengeluaran', 'total_pengeluaran', 'total_result'));
     }
 
     // Menu GLOBAL store semua transaksi
@@ -81,6 +98,7 @@ class TransaksiController extends Controller
         }
     }
 
+    // MENU PEMBENTUKAN KAS KECIL
     // Index Menu Pembentukan Kas Kecil
     public function indexPembentukan()
     {
@@ -127,104 +145,212 @@ class TransaksiController extends Controller
     public function updatePembentukan(Request $request, $id)
     {
         $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $jumlah_cleaned = str_replace(['.', ','], '', $request->jumlah);
+        $data = [
+            'jumlah' => $jumlah_cleaned,
+            'kategori' => $request->kategori,
+            'tanggal' => $request->tanggal,
+            'perincian' => $request->perincian,
+        ];
 
-        if (!$transaksi) {
-            // Handle kesalahan, misalnya lempar exception atau tampilkan pesan
-            abort(404, 'Transaksi tidak ditemukan');
+        DB::table('transaksi')
+            ->where('id', $id)
+            ->update($data);
+
+        $saldo_id = $transaksi->saldo_id;
+        $saldo_total = DB::table('saldo')
+            ->where('id', $saldo_id)
+            ->value('total');
+
+        if ($jumlah_cleaned > $transaksi->jumlah) {
+            $saldo_total += ($jumlah_cleaned - $transaksi->jumlah);
+        } else if ($jumlah_cleaned < $transaksi->jumlah) {
+            $saldo_total -= ($transaksi->jumlah -   $jumlah_cleaned);
         }
 
-        // Lanjutkan dengan pengolahan data $transaksi
-        $saldo = DB::table('saldo')->where('id', $transaksi->saldo_id)->first();
+        DB::table('saldo')
+            ->where('id', $saldo_id)
+            ->update(['total' => $saldo_total]);
 
-        if ($request->kategori == 'pembentukan') {
-            if ($request->jumlah == $transaksi->jumlah) {
-                DB::table('transaksi')
-                    ->where('id', $transaksi->id)
-                    ->update($request->only(['jumlah', 'kategori', 'tanggal', 'perincian']));
-            } elseif ($request->jumlah > $transaksi->jumlah) {
-                $selisih = $request->jumlah - $transaksi->jumlah;
-                $saldo_total = $saldo->total + $selisih;
-
-                $saldo_terdampak = DB::table('saldo')
-                    ->where('id', '>', $saldo->id)
-                    ->get();
-
-                foreach ($saldo_terdampak as $item) {
-                    DB::table('saldo')
-                        ->where(
-                            'id',
-                            $item->id
-                        )
-                        ->update(['total' => $item->total + $selisih]);
-                }
-
-                DB::table('saldo')
-                    ->where('id', $saldo->id)
-                    ->update(['total' => $saldo_total]);
-
-                DB::table('transaksi')
-                    ->where('id', $transaksi->id)
-                    ->update([
-                        'jumlah' => $request->jumlah,
-                        'kategori' => "'" . $request->kategori . "'", // Tambahkan tanda kutip untuk nilai string
-                        'tanggal' => date('Y-m-d', strtotime($request->tanggal)),
-                        'perincian' => "'" . $request->perincian . "'", // Tambahkan tanda kutip untuk nilai string
-                    ]);
-            } elseif ($request->jumlah < $transaksi->jumlah) {
-                // Membersihkan tanda koma dari $request->jumlah
-                $jumlah_cleaned_request = str_replace(['.', ','], '', $request->jumlah);
-                // Konversi ke tipe data numerik
-                $jumlah_numeric_request = is_numeric($jumlah_cleaned_request) ? floatval($jumlah_cleaned_request) : null;
-                // Membersihkan tanda koma dari $transaksi->jumlah
-                $jumlah_cleaned_transaksi = str_replace(['.', ','], '', $transaksi->jumlah);
-                // Konversi ke tipe data numerik
-                $jumlah_numeric_transaksi = is_numeric($jumlah_cleaned_transaksi) ? floatval($jumlah_cleaned_transaksi) : null;
-                // Sekarang, Anda dapat menggunakan $jumlah_numeric_transaksi dan $jumlah_numeric_request untuk operasi matematika
-                $selisih = $jumlah_numeric_transaksi - $jumlah_numeric_request;
-
-                $saldo_total = $saldo->total - $selisih;
-
-                $saldo_terdampak = DB::table('saldo')
-                    ->where('id', '>', $saldo->id)
-                    ->get();
-
-                foreach ($saldo_terdampak as $item) {
-                    DB::table('saldo')
-                        ->where(
-                            'id',
-                            $item->id
-                        )
-                        ->update(['total' => $item->total - $selisih]);
-                }
-
-                DB::table('saldo')
-                    ->where('id', $saldo->id)
-                    ->update(['total' => $saldo_total]);
-
-                DB::table('transaksi')
-                    ->where('id', $transaksi->id)
-                    ->update([
-                        'jumlah' => $jumlah_cleaned_request,
-                        'kategori' => 'pembentukan',
-                        'tanggal' => $request->tanggal,
-                        'perincian' => $request->perincian,
-                    ]);
-            }
-
-            return redirect()->back()->with('pesan', 'Update transaksi berhasil');
-        }
+        return redirect()->back()->with('pesan', 'Update transaksi berhasil');
     }
 
+
+    // MENU PENGELUARAN KAS KECIL
     // Index Menu Pengeluaran Kas Kecil
     public function indexPengeluaran()
     {
-        $items = DB::table('transaksi')
-            ->where('kategori', 'pengeluaran')
-            ->orderBy('transaksi.created_at', 'asc')
+
+        $tanggal_sekarang = Date::now();
+        $bulan_sekarang = $tanggal_sekarang->format('m');
+
+        $pengeluaran = DB::table('transaksi')
+            ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.kategori', '=', 'pengeluaran')
+            ->orderBy('transaksi.created_at', 'ASC')
             ->get();
 
-        session()->forget('info');
-        return view('pages.transaksi.pengeluaran.index', compact('items'));
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+        $totalpengeluaran = DB::table('transaksi')
+            ->select(
+                DB::raw('SUM(jumlah) AS total_pengeluaran')
+            )
+            ->where('kategori', 'pengeluaran')
+            ->whereMonth('tanggal', $bulan_sekarang)
+            ->first();
+
+        return view('pages.transaksi.pengeluaran.index', compact('pengeluaran', 'matanggaran', 'totalpengeluaran'));
+    }
+
+    // Edit Menu Pengeluaran Kas Kecil
+    public function editPengeluaran(Request $request)
+    {
+        $id = $request->id;
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $pengeluaran = DB::table('transaksi')
+            ->select('transaksi.*', 'akun_matanggaran.kode_matanggaran', 'akun_aas.nama_aas')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.id', $id)
+            ->first();
+
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+        return view('pages.transaksi.pengeluaran.edit', compact('transaksi', 'pengeluaran', 'matanggaran'));
+    }
+
+    // Update Menu Pengeluaran Kas Kecil
+    public function updatePengeluaran($id, Request $request)
+    {
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $jumlah_cleaned = str_replace(['.', ','], '', $request->jumlah);
+        $data = [
+            'jumlah' => $jumlah_cleaned,
+            'kategori' => $request->kategori,
+            'tanggal' => $request->tanggal,
+            'perincian' => $request->perincian,
+        ];
+
+        DB::table('transaksi')
+            ->where('id', $id)
+            ->update($data);
+
+        $saldo_id = $transaksi->saldo_id;
+        $saldo_total = DB::table('saldo')
+            ->where('id', $saldo_id)
+            ->value('total');
+
+        if ($jumlah_cleaned > $transaksi->jumlah) {
+            $saldo_total += ($jumlah_cleaned - $transaksi->jumlah);
+        } else if ($jumlah_cleaned < $transaksi->jumlah) {
+            $saldo_total -= ($transaksi->jumlah -   $jumlah_cleaned);
+        }
+
+        DB::table('saldo')
+            ->where('id', $saldo_id)
+            ->update(['total' => $saldo_total]);
+
+        return redirect()->back()->with('pesan', 'Update transaksi berhasil');
+    }
+
+
+    // MENU PENGISIAN KAS KECIL
+    // Index Menu Pengisian Kas Kecil
+    public function indexPengisian()
+    {
+
+        $tanggal_sekarang = Date::now();
+        $bulan_sekarang = $tanggal_sekarang->format('m');
+
+        $pengisian = DB::table('transaksi')
+            ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.kategori', '=', 'pengisian')
+            ->orderBy('transaksi.created_at', 'ASC')
+            ->get();
+
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+        $totalpengisian = DB::table('transaksi')
+            ->select(
+                DB::raw('SUM(jumlah) AS total_pengisian')
+            )
+            ->where('kategori', 'pengisian')
+            ->whereMonth('tanggal', $bulan_sekarang)
+            ->first();
+
+        return view('pages.transaksi.pengisian.index', compact('pengisian', 'matanggaran', 'totalpengisian'));
+    }
+
+    // Edit Menu Pengisian Kas Kecil
+    public function editPengisian(Request $request)
+    {
+        $id = $request->id;
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $pengisian = DB::table('transaksi')
+            ->select('transaksi.*', 'akun_matanggaran.kode_matanggaran', 'akun_aas.nama_aas')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.id', $id)
+            ->first();
+
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+        return view('pages.transaksi.pengisian.edit', compact('transaksi', 'pengisian', 'matanggaran'));
+    }
+
+    // Update Menu Pengeluaran Kas Kecil
+    public function updatePengisian($id, Request $request)
+    {
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $jumlah_cleaned = str_replace(['.', ','], '', $request->jumlah);
+        $data = [
+            'jumlah' => $jumlah_cleaned,
+            'kategori' => $request->kategori,
+            'tanggal' => $request->tanggal,
+            'perincian' => $request->perincian,
+        ];
+
+        DB::table('transaksi')
+            ->where('id', $id)
+            ->update($data);
+
+        $saldo_id = $transaksi->saldo_id;
+        $saldo_total = DB::table('saldo')
+            ->where('id', $saldo_id)
+            ->value('total');
+
+        if ($jumlah_cleaned > $transaksi->jumlah) {
+            $saldo_total += ($jumlah_cleaned - $transaksi->jumlah);
+        } else if ($jumlah_cleaned < $transaksi->jumlah) {
+            $saldo_total -= ($transaksi->jumlah -   $jumlah_cleaned);
+        }
+
+        DB::table('saldo')
+            ->where('id', $saldo_id)
+            ->update(['total' => $saldo_total]);
+
+        return redirect()->back()->with('pesan', 'Update transaksi berhasil');
     }
 
     public function cari(Request $request)
