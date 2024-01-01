@@ -60,17 +60,20 @@ Route::middleware(['auth:user'])->group(
         Route::post('/master/matanggaran/{id}/deletematanggaran', [MasterController::class, 'deletematanggaran']);
 
         // Transaksi
-        Route::resource('transaksi', TransaksiController::class)->only('index', 'store', 'update', 'destroy', 'cari');
-        Route::get('/transaksi/pembentukan', [TransaksiController::class, 'indexPembentukan'])->name('transaksi.pembentukan.index');
-        Route::get('/transaksi/pembentukan/create', [TransaksiController::class, 'createPembentukan'])->name('transaksi.pembentukan.create');
-        Route::get('/transaksi/pengeluaran', [TransaksiController::class, 'indexPengeluaran'])->name('transaksi.pengeluaran.index');
-        Route::get('/transaksi/pengeluaran/create', [TransaksiController::class, 'createPengeluaran'])->name('transaksi.pengeluaran.create');
-        Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan'])->name('transaksi.laporan');
-        Route::post('/transaksi/laporan/download', [TransaksiController::class, 'laporanPDF'])->name('transaksi.download');
+        Route::resource('transaksi', TransaksiController::class)->only('index', 'store', 'destroy', 'cari');
+        Route::get('/transaksi/pembentukan', [TransaksiController::class, 'indexPembentukan']);
+        Route::get('/transaksi/pembentukan/create', [TransaksiController::class, 'createPembentukan']);
+        Route::post('/transaksi/pembentukan/edit', [TransaksiController::class, 'editPembentukan']);
+        Route::post('/transaksi/pembentukan/{id}/update', [TransaksiController::class, 'updatePembentukan']);
+
+        Route::get('/transaksi/pengeluaran', [TransaksiController::class, 'indexPengeluaran']);
+        Route::get('/transaksi/pengeluaran/create', [TransaksiController::class, 'createPengeluaran']);
+        Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan']);
+        Route::post('/transaksi/laporan/download', [TransaksiController::class, 'laporanPDF']);
 
         //Instansi
-        Route::get('/instansi', [InstansiController::class, 'index'])->name('instansi.index');
-        Route::get('/instansi/{id}/edit', [InstansiController::class, 'edit'])->name('instansi.edit');
-        Route::put('/instansi/{id}', [InstansiController::class, 'update'])->name('instansi.update');
+        Route::get('/instansi', [InstansiController::class, 'index']);
+        Route::get('/instansi/{id}/edit', [InstansiController::class, 'edit']);
+        Route::put('/instansi/{id}', [InstansiController::class, 'update']);
     }
 );

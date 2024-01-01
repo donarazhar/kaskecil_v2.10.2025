@@ -4,6 +4,18 @@
 
 @section('content')
     <div class="card shadow">
+        {{-- Pesan error --}}
+        @if (Session::get('success'))
+            <div class="alert alert-success">
+                {{ Session::get('success') }}
+            </div>
+        @endif
+        @if (Session::get('warning'))
+            <div class="alert alert-warning">
+                {{ Session::get('warning') }}
+            </div>
+        @endif
+
         {{-- Tombol tambah --}}
         <div class="card-body">
             <a href="#" class="btn btn-primary" id="btnTambahPembentukan">
@@ -55,7 +67,8 @@
                                 </td>
                                 <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
                                 <td>
-                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline" href="">
+                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
+                                        id="{{ $d->id }}">
                                         <i class="fas fa-pencil-alt">
                                         </i>
                                     </a>
@@ -63,12 +76,12 @@
                                         id="">
                                         @method('DELETE')
                                         @csrf
-                                        <button class="btn btn-danger btn-sm btn-hapus" data-id="{{ $d->id }}"
+                                        <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
                                             data-jumlah="{{ 'Rp ' . number_format($d->jumlah, 0, ',', '.') }}"
                                             type="submit">
                                             <i class="fas fa-trash">
                                             </i>
-                                        </button>
+                                        </a>
                                     </form>
                                 </td>
                                 @php
@@ -115,14 +128,7 @@
                             <input type="hidden" name="kategori" id="kategori" value="pembentukan">
                             <div class="form-group">
                                 <label for="">Tanggal</label>
-                                <input type="date" name="tanggal" id="tanggal"
-                                    class="form-control @error('tanggal') is-invalid @enderror"
-                                    value="{{ old('tanggal') }}">
-                                @error('tanggal')
-                                    <div class="text-danger">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                                <input type="date" name="tanggal" id="tanggal" class="form-control">
                             </div>
 
                             <div class="form-group">
@@ -132,6 +138,20 @@
                             <button type="submit" class="btn btn-primary btn-block">Kirim</button>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Edit Pembentukan Kas Kecil --}}
+    <div class="modal modal-blur fade" id="modal-editpembentukan" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Pembentukan Kas Kecil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="loadeditform">
                 </div>
             </div>
         </div>
@@ -162,7 +182,7 @@
                 $("#modal-frmpembentukan").modal("show");
             });
 
-            // Script validasi inpuan form
+            // Script validasi inptuan form
             $("#frmpembentukan").submit(function() {
                 var kode_matanggaran = $("#kode_matanggaran").val();
                 var jumlah = $("#jumlah").val();
@@ -209,6 +229,48 @@
                     });
                     return false;
                 }
+            });
+
+            // Proses edit dengan AJAX
+            $(".edit").click(function() {
+                var id = $(this).attr('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '/transaksi/pembentukan/edit',
+                    cache: false,
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: id
+                    },
+                    success: function(respond) {
+                        $('#loadeditform').html(respond);
+                    }
+                });
+                $("#modal-editpembentukan").modal("show");
+            });
+
+            // Proses delete dengan AJAX
+            $(".delete-confirm").click(function(e) {
+                var form = $(this).closest('form');
+                e.preventDefault();
+                Swal.fire({
+                    title: "Yakin Hapus Data?",
+                    text: "Data anda akan terhapus permanen!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Hapus"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                        Swal.fire({
+                            title: "Terhapus!",
+                            text: "Data anda berhasil terhapus",
+                            icon: "success"
+                        });
+                    }
+                });
             });
 
         });

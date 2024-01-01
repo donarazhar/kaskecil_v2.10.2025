@@ -10,12 +10,13 @@ use PhpParser\Node\Stmt\TryCatch;
 
 class TransaksiController extends Controller
 {
+    // Index Menu Home Transaksi
     public function index()
     {
         $items = DB::table('transaksi')
-            ->select('transaksis.*', 'saldo.total as saldo', 'akun_aas.*', 'akun_matanggaran.*')
-            ->leftJoin('akun_aas', 'transaksi.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('transaksi.*', 'saldo.total as saldo', 'akun_aas.*', 'akun_matanggaran.*')
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->leftJoin('saldo', 'transaksi.saldo_id', '=', 'saldo.id')
             ->orderByRaw("YEAR(transaksi.created_at) DESC, MONTH(transaksi.created_at) DESC")
             ->orderBy('transaksi.created_at', 'asc')
@@ -25,38 +26,7 @@ class TransaksiController extends Controller
         return view('pages.transaksi.index', compact('items'));
     }
 
-    public function indexPembentukan()
-    {
-        $pembentukan = DB::table('transaksi')
-            ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
-            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
-            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
-            ->where('transaksi.kategori', '=', 'pembentukan')
-            ->orderBy('transaksi.created_at', 'ASC')
-            ->get();
-
-        $matanggaran = DB::table('akun_matanggaran')
-            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
-            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
-            ->orderBy('kode_aas', 'ASC')
-            ->get();
-
-
-        return view('pages.transaksi.pembentukan.index', compact('pembentukan', 'matanggaran'));
-    }
-
-
-    public function indexPengeluaran()
-    {
-        $items = DB::table('transaksi')
-            ->where('kategori', 'pengeluaran')
-            ->orderBy('transaksi.created_at', 'asc')
-            ->get();
-
-        session()->forget('info');
-        return view('pages.transaksi.pengeluaran.index', compact('items'));
-    }
-
+    // Menu GLOBAL store semua transaksi
     public function store(Request $request)
     {
         try {
@@ -83,7 +53,8 @@ class TransaksiController extends Controller
 
             // Lakukan operasi matematika hanya jika keduanya numerik
             $total = ($request->kategori == 'pembentukan') ? $saldo_sekarang + $jumlah_numeric : $saldo_sekarang - $jumlah_numeric;
-            $kode_matanggaran = $request->kode_matanggaran;
+
+
             // Insert data saldo
             $saldo_id = DB::table('saldo')->insertGetId([
                 'total' => $total,
@@ -94,11 +65,11 @@ class TransaksiController extends Controller
             // Insert data transaksi dengan ID saldo yang baru saja dibuat
             DB::table('transaksi')->insert([
                 'saldo_id' => $saldo_id,
-                'kode_matanggaran' => $kode_matanggaran, // Menggunakan nilai numerik
-                'jumlah' => $jumlah_numeric, // Menggunakan nilai numerik
+                'jumlah' => $jumlah_numeric,
                 'perincian' => $request->perincian,
                 'kategori' => $request->kategori,
                 'tanggal' => $request->tanggal,
+                'kode_matanggaran' => $request->kode_matanggaran,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -106,8 +77,154 @@ class TransaksiController extends Controller
             return redirect()->back()->with('success', "Input data {$request->kategori} sukses");
         } catch (\Exception $e) {
             // Tangani exception dan tampilkan pesan error jika terjadi kesalahan
-            return redirect()->back()->with('pesan', "Terjadi kesalahan: " . $e->getMessage());
+            return redirect()->back()->with('warning', "Terjadi kesalahan: " . $e->getMessage());
         }
+    }
+
+    // Index Menu Pembentukan Kas Kecil
+    public function indexPembentukan()
+    {
+        $pembentukan = DB::table('transaksi')
+            ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.kategori', '=', 'pembentukan')
+            ->orderBy('transaksi.created_at', 'ASC')
+            ->get();
+
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+
+        return view('pages.transaksi.pembentukan.index', compact('pembentukan', 'matanggaran'));
+    }
+
+    // Edit Menu Pembentukan Kas Kecil
+    public function editPembentukan(Request $request)
+    {
+        $id = $request->id;
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $pembentukan = DB::table('transaksi')
+            ->select('transaksi.*', 'akun_matanggaran.kode_matanggaran', 'akun_aas.nama_aas')
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.id', $id)
+            ->first();
+
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas', 'akun_aas.status', 'akun_aas.kategori')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+        return view('pages.transaksi.pembentukan.edit', compact('transaksi', 'pembentukan', 'matanggaran'));
+    }
+
+    // Update Menu Pembentukan Kas Kecil
+    public function updatePembentukan(Request $request, $id)
+    {
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+
+        if (!$transaksi) {
+            // Handle kesalahan, misalnya lempar exception atau tampilkan pesan
+            abort(404, 'Transaksi tidak ditemukan');
+        }
+
+        // Lanjutkan dengan pengolahan data $transaksi
+        $saldo = DB::table('saldo')->where('id', $transaksi->saldo_id)->first();
+
+        if ($request->kategori == 'pembentukan') {
+            if ($request->jumlah == $transaksi->jumlah) {
+                DB::table('transaksi')
+                    ->where('id', $transaksi->id)
+                    ->update($request->only(['jumlah', 'kategori', 'tanggal', 'perincian']));
+            } elseif ($request->jumlah > $transaksi->jumlah) {
+                $selisih = $request->jumlah - $transaksi->jumlah;
+                $saldo_total = $saldo->total + $selisih;
+
+                $saldo_terdampak = DB::table('saldo')
+                    ->where('id', '>', $saldo->id)
+                    ->get();
+
+                foreach ($saldo_terdampak as $item) {
+                    DB::table('saldo')
+                        ->where(
+                            'id',
+                            $item->id
+                        )
+                        ->update(['total' => $item->total + $selisih]);
+                }
+
+                DB::table('saldo')
+                    ->where('id', $saldo->id)
+                    ->update(['total' => $saldo_total]);
+
+                DB::table('transaksi')
+                    ->where('id', $transaksi->id)
+                    ->update([
+                        'jumlah' => $request->jumlah,
+                        'kategori' => "'" . $request->kategori . "'", // Tambahkan tanda kutip untuk nilai string
+                        'tanggal' => date('Y-m-d', strtotime($request->tanggal)),
+                        'perincian' => "'" . $request->perincian . "'", // Tambahkan tanda kutip untuk nilai string
+                    ]);
+            } elseif ($request->jumlah < $transaksi->jumlah) {
+                // Membersihkan tanda koma dari $request->jumlah
+                $jumlah_cleaned_request = str_replace(['.', ','], '', $request->jumlah);
+                // Konversi ke tipe data numerik
+                $jumlah_numeric_request = is_numeric($jumlah_cleaned_request) ? floatval($jumlah_cleaned_request) : null;
+                // Membersihkan tanda koma dari $transaksi->jumlah
+                $jumlah_cleaned_transaksi = str_replace(['.', ','], '', $transaksi->jumlah);
+                // Konversi ke tipe data numerik
+                $jumlah_numeric_transaksi = is_numeric($jumlah_cleaned_transaksi) ? floatval($jumlah_cleaned_transaksi) : null;
+                // Sekarang, Anda dapat menggunakan $jumlah_numeric_transaksi dan $jumlah_numeric_request untuk operasi matematika
+                $selisih = $jumlah_numeric_transaksi - $jumlah_numeric_request;
+
+                $saldo_total = $saldo->total - $selisih;
+
+                $saldo_terdampak = DB::table('saldo')
+                    ->where('id', '>', $saldo->id)
+                    ->get();
+
+                foreach ($saldo_terdampak as $item) {
+                    DB::table('saldo')
+                        ->where(
+                            'id',
+                            $item->id
+                        )
+                        ->update(['total' => $item->total - $selisih]);
+                }
+
+                DB::table('saldo')
+                    ->where('id', $saldo->id)
+                    ->update(['total' => $saldo_total]);
+
+                DB::table('transaksi')
+                    ->where('id', $transaksi->id)
+                    ->update([
+                        'jumlah' => $jumlah_cleaned_request,
+                        'kategori' => 'pembentukan',
+                        'tanggal' => $request->tanggal,
+                        'perincian' => $request->perincian,
+                    ]);
+            }
+
+            return redirect()->back()->with('pesan', 'Update transaksi berhasil');
+        }
+    }
+
+    // Index Menu Pengeluaran Kas Kecil
+    public function indexPengeluaran()
+    {
+        $items = DB::table('transaksi')
+            ->where('kategori', 'pengeluaran')
+            ->orderBy('transaksi.created_at', 'asc')
+            ->get();
+
+        session()->forget('info');
+        return view('pages.transaksi.pengeluaran.index', compact('items'));
     }
 
     public function cari(Request $request)
@@ -145,122 +262,6 @@ class TransaksiController extends Controller
         }
     }
 
-    public function edit($id)
-    {
-
-        $item = DB::table('transaksi')->where('id', $id)->first();
-
-        if (!$item) {
-            abort(404); // Atau tindakan lain sesuai kebutuhan aplikasi Anda
-        }
-
-        return view('pages.transaksi.edit', ['item' => $item]);
-    }
-
-    public function update(Request $request, $id)
-    {
-
-        $transaksi = DB::table('transaksi')->where('id', $id)->first();
-
-        if (!$transaksi) {
-            abort(404); // Atau tindakan lain sesuai kebutuhan aplikasi Anda
-        }
-
-        $saldo = DB::table('saldo')->where('id', $transaksi->saldo_id)->first();
-
-        if (!$saldo) {
-            abort(404); // Atau tindakan lain sesuai kebutuhan aplikasi Anda
-        }
-
-
-        if ($request->kategori == 'pembentukan') {
-            if ($request->jumlah == $transaksi->jumlah) {
-                $transaksi->update($request->all());
-            } elseif ($request->jumlah > $transaksi->jumlah) {
-                $selisih = $request->jumlah - $transaksi->jumlah;
-                $saldo_total = $saldo->total + $selisih;
-
-                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
-                foreach ($saldo_terdampak as $item) {
-                    $item->update([
-                        'total' => $item->total + $selisih
-                    ]);
-                }
-                $saldo->update(['total' => $saldo_total]);
-                $saldo->transaksi()->update([
-                    'jumlah' => $request->jumlah,
-                    'kategori' => $request->kategori,
-                    'tanggal' => $request->tanggal,
-                    'perincian' => $request->perincian,
-                ]);
-            } elseif ($request->jumlah < $transaksi->jumlah) {
-                $selisih = $transaksi->jumlah - $request->jumlah;
-                $saldo_total = $saldo->total - $selisih;
-
-                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
-
-                foreach ($saldo_terdampak as $item) {
-                    $item->update([
-                        'total' => $item->total - $selisih
-                    ]);
-                }
-                $saldo->update(['total' => $saldo_total]);
-                $saldo->transaksi()->update([
-                    'jumlah' => $request->jumlah,
-                    'kategori' => $request->kategori,
-                    'tanggal' => $request->tanggal,
-                    'perincian' => $request->perincian,
-                ]);
-            }
-            Alert::success('Sukses', 'Update transaksi berhasil');
-            return redirect()->back()->with('pesan', 'Update transaksi berhasil');
-        }
-
-        if ($request->kategori == 'pengeluaran') {
-            if ($request->jumlah == $transaksi->jumlah) {
-                $transaksi->update($request->all());
-            } elseif ($request->jumlah > $transaksi->jumlah) {
-                $selisih = $request->jumlah - $transaksi->jumlah;
-                $saldo_total = $saldo->total - $selisih;
-
-                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
-
-                foreach ($saldo_terdampak as $item) {
-                    $item->update([
-                        'total' => $item->total - $selisih
-                    ]);
-                }
-                $saldo->update(['total' => $saldo_total]);
-                $saldo->transaksi()->update([
-                    'jumlah' => $request->jumlah,
-                    'kategori' => $request->kategori,
-                    'tanggal' => $request->tanggal,
-                    'perincian' => $request->perincian,
-                ]);
-            } elseif ($request->jumlah < $transaksi->jumlah) {
-                $selisih = $transaksi->jumlah - $request->jumlah;
-                $saldo_total = $saldo->total + $selisih;
-
-                $saldo_terdampak = DB::table('saldo')->where('id', '>', $saldo->id)->get();
-
-                foreach ($saldo_terdampak as $item) {
-                    $item->update([
-                        'total' => $item->total + $selisih
-                    ]);
-                }
-                $saldo->update(['total' => $saldo_total]);
-                $saldo->transaksi()->update([
-                    'jumlah' => $request->jumlah,
-                    'kategori' => $request->kategori,
-                    'tanggal' => $request->tanggal,
-                    'perincian' => $request->perincian,
-                ]);
-            }
-            Alert::success('Sukses', 'Update transaksi berhasil');
-            return redirect()->back();
-        }
-    }
-
     public function destroy($id)
     {
         $transaksi = DB::table('transaksi')
@@ -293,11 +294,13 @@ class TransaksiController extends Controller
             }
         }
 
-        DB::table('transaksi')->where('id', $transaksi->id)->delete();
-        DB::table('saldo')->where('id', $saldo->id)->delete();
-
-        Alert::success('Sukses', 'Hapus transaksi berhasil');
-        return redirect()->back();
+        $transaksi = DB::table('transaksi')->where('saldo_id', $saldo->id)->delete();
+        if ($transaksi) {
+            DB::table('saldo')->where('id', $saldo->id)->delete();
+            return redirect()->back()->with('success', "Data berhasil dihapus");
+        } else {
+            return redirect()->back()->with('error', "Data gagal dihapus");
+        }
     }
 
 
