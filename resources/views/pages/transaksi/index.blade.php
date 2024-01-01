@@ -1,39 +1,8 @@
 @extends('layoutsberanda.default')
-@section('title', 'Data Transaksi')
-@section('header-title', 'Data Transaksi')
+@section('title', 'Transaksi')
+{{-- @section('header-title', 'Data Transaksi') --}}
 
 @section('content')
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            {{-- <form action="{{ route('transaksi.cari') }}" method="GET"> --}}
-            <form action="" method="GET">
-                <input type="hidden" name="kategori" value="transaksi">
-                <div class="form-row">
-                    <div class="form-group col-md-3">
-                        <label for="">Tanggal Awal</label>
-                        <input type="date" class="form-control @error('tanggal_awal') is-invalid @enderror"
-                            name="tanggal_awal" value="{{ old('tanggal_awal') }}">
-                        @error('tanggal_awal')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="">Tanggal Akhir</label>
-                        <input type="date" class="form-control @error('tanggal_akhir') is-invalid @enderror"
-                            name="tanggal_akhir" value="{{ old('tanggal_akhir') }}">
-                        @error('tanggal_akhir')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary"><b>Cari</b></button>
-            </form>
-        </div>
-    </div>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-black">Data Transaksi</h6>
@@ -50,7 +19,7 @@
                         <tr>
                             <th rowspan="2" style="vertical-align: middle;">No.</th>
                             <th rowspan="2"style="vertical-align: middle;">Akun AAS</th>
-                            <th rowspan="2"style="vertical-align: middle;">Mata Anggran</th>
+                            <th rowspan="2"style="vertical-align: middle;">Mata Anggaran</th>
                             <th rowspan="2"style="vertical-align: middle;">Perincian</th>
                             <th colspan="2">Besaran (Rp)</th>
                             <th rowspan="2"style="vertical-align: middle;">Saldo Awal (Rp)</th>
@@ -79,11 +48,12 @@
                                     @else
                                     @endif
                                 </td>
-                                <td>
-                                    @if ($item->status == 'k' && $item->kategori == 'pembentukan')
-                                        {{ number_format($item->jumlah, 0, ',', '.') }}
-                                    @else
-                                    @endif
+                                <td><b>
+                                        @if ($item->status == 'k' && $item->kategori == 'pembentukan')
+                                            {{ number_format($item->jumlah, 0, ',', '.') }}
+                                        @else
+                                        @endif
+                                    </b>
                                 </td>
                             </tr>
                         @empty

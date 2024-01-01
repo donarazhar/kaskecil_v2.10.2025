@@ -350,7 +350,7 @@ class TransaksiController extends Controller
             ->where('id', $saldo_id)
             ->update(['total' => $saldo_total]);
 
-        return redirect()->back()->with('pesan', 'Update transaksi berhasil');
+        return redirect()->back()->with('success', 'Update transaksi berhasil');
     }
 
     public function cari(Request $request)

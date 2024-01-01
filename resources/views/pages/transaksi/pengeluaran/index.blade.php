@@ -1,5 +1,5 @@
 @extends('layoutsberanda.default')
-@section('title', 'Pengeluaran Kas Kecil')
+@section('title', 'Pengeluaran')
 @section('header-title', 'Pengeluaran Kas Kecil')
 
 @section('content')

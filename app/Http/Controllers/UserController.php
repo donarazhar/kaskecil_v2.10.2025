@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Http\Requests\UserRequest;
-use App\Http\Requests\ResetPasswordUsersRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -20,44 +18,23 @@ class UserController extends Controller
      */
     public function index()
     {
-        // $this->authorize('isAdmin', User::class);
-        // $users = User::where('level', '!=', 'admin')->get();
-        // return view('pages.users.index', ['users' => $users]);
-        $users = User::all();
-        return view('pages.users.index', ['users' => $users]);
+        $users = DB::table('users')->get();
+        return view('pages.users.index', compact('users'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        // $this->authorize('isAdmin', User::class);
-        $users = User::first();
-        return view('pages.users.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
         $name = $request->name;
         $email = $request->email;
         $password = $request->password;
-        $level = $request->level;
 
         try {
+            $hashedPassword = Hash::make($password);
+
             $data = [
                 'name' => $name,
                 'email' => $email,
-                'password' => $password,
-                'level' => $level
+                'password' => $hashedPassword,
             ];
 
             $simpan = DB::table('users')->insert($data);
@@ -69,72 +46,71 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+
+    public function edit(Request $request)
     {
-        // $this->authorize('isAdmin', User::class);
-
-        $user = User::findOrFail($id);
-
-        return view('pages.users.edit', ['user' => $user]);
+        $id = $request->id;
+        $users = DB::table('users')->where('id', $id)->first();
+        return view('pages.users.edit', compact('users'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UserRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        // $this->authorize('isAdmin', User::class);
+        $name = $request->name;
+        $email = $request->email;
+        $password = $request->password;
 
-        $user = User::findOrFail($id);
+        try {
+            $hashedPassword = Hash::make($password);
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'level' => $request->level
+            $data = [
+                'name' => $name,
+                'email' => $email,
+                'password' => $hashedPassword,
+            ];
 
-        ]);
-
-        Alert::success('Sukses', 'Data user berhasil diupdate');
-        return redirect()->back();
+            $update = DB::table('users')->where('id', $id)->update($data);
+            if ($update) {
+                return Redirect::back()->with(['success' => 'Data berhasil diupdate']);
+            }
+        } catch (\Exception $e) {
+            return Redirect::back()->with(['warning' => 'Data gagal diupdate']);
+        }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        try {
+            $user = DB::table('users')->where('id', $id)->first();
 
-        Alert::success('Sukses', "User dengan name {$user->name} berhasil dihapus");
-        return redirect()->back();
+            if ($user) {
+                $delete = DB::table('users')->where('id', $id)->delete();
+
+                if ($delete) {
+                    return Redirect::back()->with(['success' => 'Data berhasil dihapus']);
+                } else {
+                    return Redirect::back()->with(['warning' => 'Data gagal dihapus']);
+                }
+            } else {
+                return Redirect::back()->with(['warning' => 'User tidak ditemukan']);
+            }
+        } catch (\Exception $e) {
+            return Redirect::back()->with(['warning' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
+
 
     public function resetPassword($id)
     {
         // $this->authorize('isAdmin', User::class);
-        $user = User::findOrFail($id);
+        $user = DB::table('users')->where('id', $id)->first();
         return view('pages.users.reset_password', ['user' => $user]);
     }
 
-    public function UpdatePassword(ResetPasswordUsersRequest $request, $id)
+    public function UpdatePassword(Request $request, $id)
     {
         // $this->authorize('isAdmin', User::class);
-        $user = User::findOrFail($id);
+        $user = DB::table('users')->where('id', $id)->first();
         $user->update([
             'password' => $request->kata_sandi_baru,
         ]);

@@ -41,7 +41,9 @@ Route::middleware(['auth:user'])->group(
         Route::get('/panel/beranda', [PageController::class, 'beranda']);
 
         // User
-        Route::resource('users', UserController::class)->only('index', 'create', 'destroy', 'store', 'update', 'edit');
+        Route::resource('users', UserController::class)->only('index', 'create', 'destroy', 'store');
+        Route::post('/users/edit', [UserController::class, 'edit']);
+        Route::post('/users/{id}/update', [UserController::class, 'update']);
         Route::get('/users/{user}/reset-password', [UserController::class, 'resetPassword']);
         Route::put('/users/{user}/update-password', [UserController::class, 'updatePassword']);
 
@@ -72,8 +74,8 @@ Route::middleware(['auth:user'])->group(
 
         // Pengisian Kas Kecil
         Route::get('/transaksi/pengisian', [TransaksiController::class, 'indexPengisian']);
-        Route::post('/transaksi/pengisian/edit', [TransaksiController::class, 'editindexPengisian']);
-        Route::post('/transaksi/pengisian/{id}/update', [TransaksiController::class, 'updateindexPengisian']);
+        Route::post('/transaksi/pengisian/edit', [TransaksiController::class, 'editPengisian']);
+        Route::post('/transaksi/pengisian/{id}/update', [TransaksiController::class, 'updatePengisian']);
 
 
         Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan']);

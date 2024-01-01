@@ -1,6 +1,6 @@
 @extends('layoutsberanda.default')
-@section('title', 'Profile Instansi')
-@section('header-title', 'Profile user')
+@section('title', 'Instansi')
+@section('header-title', 'Instansi')
 
 @section('content')
     <div class="card shadow mb-4 col-lg-6">
@@ -12,7 +12,7 @@
                 <dt class="col-sm-3">Alamat</dt>
                 <dd class="col-sm-9">{{ $instansi->alamat }}</dd>
             </dl>
-            <a href="{{ route('instansi.edit', $instansi->id) }}" class="btn btn-primary">
+            <a href="" class="btn btn-primary">
                 Ubah
             </a>
         </div>

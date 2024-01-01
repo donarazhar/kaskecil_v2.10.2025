@@ -8,8 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link rel="shortcut icon" href="https://siap.al-azhar.id/upload/favicon.ico" type="image/x-icon" />
 
-    <title>@yield('title') | Pettycash {{ App\Models\Instansi::first()->nama }}</title>
+    <title>@yield('title') | Kas Kecil</title>
 
     {{-- style --}}
     @stack('before-style')

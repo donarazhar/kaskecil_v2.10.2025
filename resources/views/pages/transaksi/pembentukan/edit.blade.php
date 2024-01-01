@@ -1,6 +1,6 @@
 <form action="/transaksi/pembentukan/{{ $transaksi->id }}/update" method="post" id="frmpembentukanedit">
     @csrf
-    <div class="form-group" readonly>
+    <div class="form-group">
         <label for="nama_matanggaran">Mata Anggaran</label>
         <select name="kode_matanggaran" id="kode_matanggaran" class="form-select">
             <option value="{{ $pembentukan->kode_matanggaran }}">{{ $pembentukan->kode_matanggaran }} |

@@ -7,6 +7,7 @@
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <!-- Custom styles for this template-->
     <link href="{{ asset('assets/css/sb-admin-2.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" href="https://siap.al-azhar.id/upload/favicon.ico" type="image/x-icon" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         a.dropdown-item-auth:active {

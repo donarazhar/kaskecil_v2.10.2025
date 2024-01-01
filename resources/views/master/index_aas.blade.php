@@ -1,5 +1,5 @@
 @extends('layoutsberanda.default')
-@section('title', 'Master Akun AAS')
+@section('title', 'Master Akun')
 @section('header-title', 'Master Akun AAS')
 
 @section('content')

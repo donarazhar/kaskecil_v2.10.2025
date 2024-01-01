@@ -1,5 +1,5 @@
 @extends('layoutsberanda.default')
-@section('title', 'Pembentukan Kas Kecil')
+@section('title', 'Pembentukan')
 @section('header-title', 'Pembentukan Kas Kecil')
 
 @section('content')
@@ -172,9 +172,7 @@
 
     <script>
         $(function() {
-            $('#jumlah').mask('00.000.000', {
-                reverse: true
-            });
+
             //Script takan tombol tambah
             $("#btnTambahPembentukan").click(function() {
                 // alert('test');
