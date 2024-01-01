@@ -28,7 +28,7 @@ class TransaksiController extends Controller
     public function indexPembentukan()
     {
         $pembentukan = DB::table('transaksi')
-            ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas')
+            ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->where('transaksi.kategori', '=', 'pembentukan')

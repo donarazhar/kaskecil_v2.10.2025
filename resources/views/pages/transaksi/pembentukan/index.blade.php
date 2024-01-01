@@ -29,6 +29,7 @@
                             <th>Mata Anggaran</th>
                             <th>Nama Akun</th>
                             <th>Perincian</th>
+                            <th>Status</th>
                             <th>Jumlah (Rp)</th>
                             <th>Tindakan</th>
                         </tr>
@@ -40,11 +41,18 @@
                         @forelse ($pembentukan as $d)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
-                                <td>{{ \Carbon\Carbon::parse($d->created_at)->isoFormat('DD/MM/YYYY') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YYYY') }}</td>
                                 <td>{{ $d->kode_aas }}</td>
                                 <td>{{ $d->kode_matanggaran }}</td>
                                 <td>{{ $d->nama_aas }}</td>
                                 <td>{{ $d->perincian }}</td>
+                                <td>
+                                    @if ($d->status == 'k')
+                                        Kredit
+                                    @elseif ($d->status == 'd')
+                                        Debit
+                                    @endif
+                                </td>
                                 <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
                                 <td>
                                     <a class="btn btn-info btn-sm mb-1 mr-1 d-inline" href="">
