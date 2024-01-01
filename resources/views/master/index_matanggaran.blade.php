@@ -38,11 +38,13 @@
 
                                 }
                             </style>
+
                             <table class="table table-striped table-bordered" id="dataTable">
                                 <thead>
                                     <tr>
                                         <th>No.</th>
                                         <th>Kode Mata Anggaran</th>
+                                        <th>Kode AAS</th>
                                         <th>Nama Akun</th>
                                         <th>Tindakan</th>
                                     </tr>
@@ -52,13 +54,13 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}.</td>
                                             <td>{{ $d->kode_matanggaran }}
-                                            <td>{{ $d->nama_matanggaran }}</td>
+                                            <td>{{ $d->kode_aas }}
+                                            <td>{{ $d->nama_aas }}</td>
                                             <td>
                                                 <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
                                                     id="{{ $d->id }}">
                                                     <i class="fas fa-pencil-alt">
                                                     </i>
-                                                    Ubah
                                                 </a>
                                                 <form action="/master/matanggaran/{{ $d->id }}/deletematanggaran"
                                                     method="post" class="d-inline" id="">
@@ -66,7 +68,6 @@
                                                     <a class="btn btn-danger btn-sm btn-hapus delete-confirm">
                                                         <i class="fas fa-trash">
                                                         </i>
-                                                        Hapus
                                                     </a>
                                                 </form>
                                             </td>
@@ -91,7 +92,7 @@
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="#" id="frmMatanggaran">
+                        <form action="#" id="frmmatanggaran">
                             @csrf
                             <div class="form-group">
                                 <label for="kode_matanggaran">Kode Mata Anggaran</label>
@@ -107,7 +108,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
+                            <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
                         </form>
                     </div>
                 </div>
@@ -140,45 +141,39 @@
         $(function() {
 
             // Script mask inputan kode tidak boleh lebih dari 10 angka
-            $("#kode_matanggaran").mask('0000000000');
+            $("#kode_matanggaran").mask('0.0.0000');
 
             //Script takan tombol tambah
             $("#btnTambahMatanggaran").click(function() {
                 $("#modal-frmmatanggaran").modal("show");
             });
 
-            // Script validasi inputan form
-            $("#frmMatanggaran").submit(function() {
-                // console.log("Skrip validasi dijalankan");
+            // Proses simpan dengan AJAX
+            $("#btnSimpanData").click(function(e) {
                 var kode_matanggaran = $("#kode_matanggaran").val();
-                var kode_aas = $("#namkodes").val();
-                if (kode_matanggaran == "") {
+                var kode_aas = $("#kode_aas").val();
+
+                if (kode_aas == "") {
                     Swal.fire({
                         title: 'Warning!',
-                        text: 'Kode Mata Anggaran Harus Diisi',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        $("#kode_matanggaran").focus();
-                    });
-                    return false;
-                } else if (kode_aas == "") {
-                    Swal.fire({
-                        title: 'Warning!',
-                        text: 'Nama Akun Harus Diisi',
+                        text: 'Kode AAS Harus Diisi',
                         icon: 'warning',
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         $("#kode_aas").focus();
                     });
                     return false;
+                } else if (kode_matanggaran == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Nama Akun AAS Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#kode_matanggaran").focus();
+                    });
+                    return false;
                 }
-            });
-
-            // Proses simpan dengan AJAX
-            $("#btnSimpanData").click(function() {
-                var kode_matanggaran = $("#kode_matanggaran").val();
-                var kode_aas = $("#kode_aas").val();
 
                 $.ajax({
                     type: 'POST',
@@ -189,62 +184,67 @@
                         kode_aas: kode_aas
                     },
                     cache: false,
-                    success: function(response) {
-                        // Tambahkan alert ketika simpan berhasil
-                        if (response.status === 'success') {
-                            alert('Data berhasil disimpan!');
+                    success: function(respond) {
+                        var status = respond.split("|");
+
+                        if (status[0] == "success") {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: status[1],
+                                icon: 'success'
+                            });
                         } else {
-                            alert('Gagal menyimpan data. Silakan coba lagi.');
+                            Swal.fire({
+                                title: 'Error!',
+                                text: status[1],
+                                icon: 'error'
+                            });
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        // Tambahkan alert untuk menangani kesalahan
-                        alert('Terjadi kesalahan: ' + error);
                     }
                 });
             });
 
             // Proses edit dengan AJAX
-            // $(".edit").click(function() {
-            //     var id = $(this).attr('id');
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: '/master/editaas',
-            //         cache: false,
-            //         data: {
-            //             _token: "{{ csrf_token() }}",
-            //             id: id
-            //         },
-            //         success: function(respond) {
-            //             $('#loadeditform').html(respond);
-            //         }
-            //     });
-            //     $("#modal-editAas").modal("show");
-            // });
+            $(".edit").click(function() {
+                var id = $(this).attr('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '/master/editmatanggaran',
+                    cache: false,
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: id
+                    },
+                    success: function(respond) {
+                        $('#loadeditform').html(respond);
+                    }
+                });
+                $("#modal-editmatanggaran").modal("show");
+            });
 
-            // Proses delet dengan AJAX
-            // $(".delete-confirm").click(function(e) {
-            //     var form = $(this).closest('form');
-            //     e.preventDefault();
-            //     Swal.fire({
-            //         title: "Yakin Hapus Data?",
-            //         text: "Data anda akan terhapus permanen!",
-            //         icon: "warning",
-            //         showCancelButton: true,
-            //         confirmButtonColor: "#3085d6",
-            //         cancelButtonColor: "#d33",
-            //         confirmButtonText: "Hapus"
-            //     }).then((result) => {
-            //         if (result.isConfirmed) {
-            //             form.submit();
-            //             Swal.fire({
-            //                 title: "Terhapus!",
-            //                 text: "Data anda berhasil terhapus",
-            //                 icon: "success"
-            //             });
-            //         }
-            //     });
-            // });
+            // Proses delete dengan AJAX
+            $(".delete-confirm").click(function(e) {
+                var form = $(this).closest('form');
+                e.preventDefault();
+                Swal.fire({
+                    title: "Yakin Hapus Data?",
+                    text: "Data anda akan terhapus permanen!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Hapus"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                        Swal.fire({
+                            title: "Terhapus!",
+                            text: "Data anda berhasil terhapus",
+                            icon: "success"
+                        });
+                    }
+                });
+            });
 
         });
     </script>

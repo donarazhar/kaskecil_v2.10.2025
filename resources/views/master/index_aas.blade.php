@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="card shadow mb-4">
+
         {{-- Pesan error --}}
         @if (Session::get('success'))
             <div class="alert alert-success">
@@ -15,6 +16,7 @@
                 {{ Session::get('warning') }}
             </div>
         @endif
+
         {{-- Tombol tambah --}}
         <div class="card-body">
             <a href="#" class="btn btn-primary mb-4" id="btnTambahAas">
@@ -22,7 +24,7 @@
                 <i class="fa fa-plus" aria-hidden="true"></i>
             </a>
 
-            {{-- Data table Aas --}}
+            {{-- Data table AAS --}}
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-black">Data Akun AAS</h6>
@@ -35,7 +37,6 @@
                                     max-height: 400px;
                                     overflow-y: auto;
                                     text-align: center;
-
                                 }
                             </style>
                             <table class="table table-striped table-bordered" id="dataTable">
@@ -54,11 +55,10 @@
                                             <td>{{ $d->kode_aas }}
                                             <td>{{ $d->nama_aas }}</td>
                                             <td>
-                                                <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
+                                                <a class="btn btn-primary btn-sm mb-2 mr-1 d-inline edit" href="#"
                                                     id="{{ $d->id }}">
                                                     <i class="fas fa-pencil-alt">
                                                     </i>
-                                                    Ubah
                                                 </a>
                                                 <form action="/master/aas/{{ $d->id }}/deleteaas" method="post"
                                                     class="d-inline" id="">
@@ -66,7 +66,6 @@
                                                     <a class="btn btn-danger btn-sm btn-hapus delete-confirm">
                                                         <i class="fas fa-trash">
                                                         </i>
-                                                        Hapus
                                                     </a>
                                                 </form>
                                             </td>
@@ -82,7 +81,7 @@
     </div>
 
     {{-- Modal input AAS --}}
-    <div class="modal modal-primary fade" id="modal-frmAas" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal modal-primary fade" id="modal-frmaas" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -91,7 +90,7 @@
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="#" id="frmAas">
+                        <form action="#" id="frmaas">
                             @csrf
                             <div class="form-group">
                                 <label for="kode_aas">Kode AAS</label>
@@ -101,7 +100,7 @@
                                 <label for="nama_aas">Nama Akun AAS</label>
                                 <input name="nama_aas" rows="3" id="nama_aas" class="form-control"></input>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
+                            <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
                         </form>
                     </div>
                 </div>
@@ -123,6 +122,7 @@
         </div>
     </div>
 @endsection
+
 @push('after-style')
     <!-- Custom styles for this page -->
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
@@ -137,24 +137,37 @@
 
             //Script takan tombol tambah
             $("#btnTambahAas").click(function() {
-                $("#modal-frmAas").modal("show");
+                $("#modal-frmaas").modal("show");
             });
 
             // Proses simpan dengan AJAX
             $("#btnSimpanData").click(function(e) {
+
                 var kode_aas = $("#kode_aas").val();
                 var nama_aas = $("#nama_aas").val();
 
-                // Validasi input
-                if (kode_aas === "" || nama_aas === "") {
+                if (kode_aas == "") {
                     Swal.fire({
-                        title: "Warning!",
-                        text: "Kode Akun AAS dan Nama Akun harus diisi",
-                        icon: "warning",
-                        confirmButtonText: "OK"
+                        title: 'Warning!',
+                        text: 'Kode AAS Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#kode_aas").focus();
                     });
-                    return; // Hentikan proses simpan jika validasi gagal
+                    return false;
+                } else if (nama_aas == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Nama Akun AAS Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#nama_aas").focus();
+                    });
+                    return false;
                 }
+
                 $.ajax({
                     type: 'POST',
                     url: '/master/storeaas',
@@ -164,31 +177,25 @@
                         nama_aas: nama_aas
                     },
                     cache: false,
-                    success: function(response) {
-                        // Menampilkan SweetAlert setelah berhasil simpan
-                        Swal.fire({
-                            title: "Data Tersimpan!",
-                            text: "Data anda berhasil disimpan",
-                            icon: "success"
-                        }).then(function() {
-                            window.location.href = '/master/aas';
-                        });
-                    },
-                    error: function(error) {
-                        // Handle error if needed
-                        console.error('Error:', error);
-                        Swal.fire({
-                            title: "Error!",
-                            text: "Terjadi kesalahan saat menyimpan data",
-                            icon: "error"
-                        });
+                    success: function(respond) {
+                        var status = respond.split("|");
+
+                        if (status[0] == "success") {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: status[1],
+                                icon: 'success'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: status[1],
+                                icon: 'error'
+                            });
+                        }
                     }
                 });
-
-                // Prevent default form submission
-                e.preventDefault();
             });
-
 
             // Proses edit dengan AJAX
             $(".edit").click(function() {
@@ -208,7 +215,7 @@
                 $("#modal-editAas").modal("show");
             });
 
-            // Proses delet dengan AJAX
+            // Proses delete dengan AJAX
             $(".delete-confirm").click(function(e) {
                 var form = $(this).closest('form');
                 e.preventDefault();

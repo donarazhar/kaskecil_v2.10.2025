@@ -34,9 +34,11 @@ class MasterController extends Controller
 
             $simpan = DB::table('akun_aas')->insert($data);
             if ($simpan) {
+                echo 'success|Data disimpan';
                 return Redirect::back()->with(['success' => 'Data berhasil disimpan']);
             }
         } catch (\Exception $e) {
+            echo 'error|Maaf data tidak tersimpan';
             return Redirect::back()->with(['warning' => 'Data gagal disimpan']);
         }
     }
@@ -86,18 +88,19 @@ class MasterController extends Controller
     public function indexmatanggaran()
     {
         $matanggaran = DB::table('akun_matanggaran')
-            ->orderBy('kode_matanggaran', 'ASC')
-            ->get();
-        $aas = DB::table('akun_aas')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas')
             ->orderBy('kode_aas', 'ASC')
             ->get();
 
+        $aas = DB::table('akun_aas')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
         return view('master.index_matanggaran', compact('matanggaran', 'aas'));
     }
 
     public function storematanggaran(Request $request)
     {
-        dd($request);
         $kode_matanggaran = $request->kode_matanggaran;
         $kode_aas = $request->kode_aas;
 
@@ -110,9 +113,11 @@ class MasterController extends Controller
 
             $simpan = DB::table('akun_matanggaran')->insert($data);
             if ($simpan) {
+                echo 'success|Data disimpan';
                 return Redirect::back()->with(['success' => 'Data berhasil disimpan']);
             }
         } catch (\Exception $e) {
+            echo 'success|Data disimpan';
             return Redirect::back()->with(['warning' => 'Data gagal disimpan']);
         }
     }
@@ -120,20 +125,29 @@ class MasterController extends Controller
     public function editmatanggaran(Request $request)
     {
         $id = $request->id;
-        $matanggaran = DB::table('akun_matanggaran')->where('id', $id)->first();
-        return view('master.editmatanggaran', compact('matanggaran'));
+        $matanggaran = DB::table('akun_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->select('akun_matanggaran.*', 'akun_aas.nama_aas')
+            ->orderBy('kode_aas', 'ASC')
+            ->where('akun_matanggaran.id', $id)
+            ->first();
+        $aas = DB::table('akun_aas')
+            ->orderBy('kode_aas', 'ASC')
+            ->get();
+
+        return view('master.editmatanggaran', compact('matanggaran', 'aas'));
     }
 
     public function updatematanggaran($id, Request $request)
     {
 
         $kode_matanggaran = $request->kode_matanggaran;
-        $nama_matanggaran = $request->nama_matanggaran;
+        $kode_aas = $request->kode_aas;
 
         try {
             $data = [
                 'kode_matanggaran' => $kode_matanggaran,
-                'nama_matanggaran' => $nama_matanggaran,
+                'kode_aas' => $kode_aas,
 
             ];
 
