@@ -19,6 +19,22 @@ class PageController extends Controller
             ->get();
 
         $totalSaldo = DB::table('akun_matanggaran')->sum('saldo');
+        $pengeluaran = DB::table('transaksi')
+            ->select(
+                'transaksi.kode_matanggaran',
+                'akun_aas.nama_aas',
+                DB::raw('EXTRACT(MONTH FROM transaksi.tanggal) AS bulan'),
+                DB::raw('EXTRACT(YEAR FROM transaksi.tanggal) AS tahun'),
+                DB::raw('SUM(transaksi.jumlah) AS total_pengeluaran')
+            )
+            ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->where('transaksi.kategori', 'pengeluaran')
+            ->groupBy('transaksi.kode_matanggaran', 'bulan', 'tahun', 'akun_aas.nama_aas')
+            ->orderBy('tahun')
+            ->orderBy('bulan')
+            ->orderBy('transaksi.kode_matanggaran')
+            ->get();
 
 
         $transaksi = DB::table('transaksi')
@@ -46,6 +62,6 @@ class PageController extends Controller
         $total_pengeluaran = $result->total_pengeluaran;
         $total_result = $result->total_result;
 
-        return view('pages.beranda', compact('transaksi', 'total_pembentukan', 'total_pengisian', 'total_pengeluaran', 'total_pengeluaran', 'total_result', 'matanggaran', 'totalSaldo'));
+        return view('pages.beranda', compact('transaksi', 'total_pembentukan', 'total_pengisian', 'total_pengeluaran', 'total_pengeluaran', 'total_result', 'matanggaran', 'totalSaldo', 'pengeluaran'));
     }
 }
