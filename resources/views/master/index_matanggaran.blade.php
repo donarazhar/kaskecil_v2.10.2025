@@ -1,4 +1,4 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Master Akun')
 @section('header-title', 'Master Akun Mata Anggaran')
 
@@ -46,6 +46,7 @@
                                         <th>Kode Mata Anggaran</th>
                                         <th>Kode AAS</th>
                                         <th>Nama Akun</th>
+                                        <th>Saldo</th>
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>
@@ -56,6 +57,7 @@
                                             <td>{{ $d->kode_matanggaran }}
                                             <td>{{ $d->kode_aas }}
                                             <td>{{ $d->nama_aas }}</td>
+                                            <td>{{ number_format($d->saldo, 0, ',', '.') }}</td>
                                             <td>
                                                 <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
                                                     id="{{ $d->id }}">
@@ -100,13 +102,17 @@
                             </div>
                             <div class="form-group">
                                 <label for="nama_matanggaran">Nama Akun Mata Anggaran</label>
-                                <select name="kode_aas" id="kode_aas" class="form-select">
+                                <select name="kode_aas" id="kode_aas" class="form-select form-control">
                                     <option value="">- Nama Anggaran -</option>
                                     @foreach ($aas as $d)
                                         <option value="{{ $d->kode_aas }}">
                                             {{ $d->kode_aas }} | {{ $d->nama_aas }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="saldo_matanggaran">Saldo Anggaran</label>
+                                <input type="text" name="saldo_matanggaran" id="saldo_matanggaran" class="form-control">
                             </div>
                             <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
                         </form>
@@ -142,6 +148,9 @@
 
             // Script mask inputan kode tidak boleh lebih dari 10 angka
             $("#kode_matanggaran").mask('0.0.0000');
+            $('#saldo_matanggaran').mask("#.##0", {
+                reverse: true
+            });
 
             //Script takan tombol tambah
             $("#btnTambahMatanggaran").click(function() {
@@ -152,6 +161,7 @@
             $("#btnSimpanData").click(function(e) {
                 var kode_matanggaran = $("#kode_matanggaran").val();
                 var kode_aas = $("#kode_aas").val();
+                var saldo_matanggaran = $("#saldo_matanggaran").val();
 
                 if (kode_aas == "") {
                     Swal.fire({
@@ -173,6 +183,16 @@
                         $("#kode_matanggaran").focus();
                     });
                     return false;
+                } else if (saldo_matanggaran == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Saldo Anggaran Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#saldo_matanggaran").focus();
+                    });
+                    return false;
                 }
 
                 $.ajax({
@@ -181,10 +201,13 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         kode_matanggaran: kode_matanggaran,
-                        kode_aas: kode_aas
+                        kode_aas: kode_aas,
+                        saldo_matanggaran: saldo_matanggaran
+
                     },
                     cache: false,
                     success: function(respond) {
+                        console.log('Nilai saldo_matanggaran:', saldo_matanggaran);
                         var status = respond.split("|");
 
                         if (status[0] == "success") {
@@ -194,6 +217,7 @@
                                 icon: 'success'
                             });
                         } else {
+                            console.error('Error:', error);
                             Swal.fire({
                                 title: 'Error!',
                                 text: status[1],

@@ -1,4 +1,4 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Data user')
 @section('header-title', 'Data user')
 

@@ -1,4 +1,4 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Pengeluaran')
 @section('header-title', 'Pengeluaran Kas Kecil')
 
@@ -92,7 +92,7 @@
                         <tr>
                             <th colspan="7" class="text-center"><b>Pengeluaran Perbulan</b></th>
                             <th colspan="2" class="text-center">
-                                <b>{{ number_format($totalpengeluaran->total_pengeluaran, 2, ',', '.') }}
+                                <b>{{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
                                 </b>
                             </th>
                         </tr>
@@ -116,7 +116,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="nama_matanggaran">Mata Anggaran</label>
-                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select">
+                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select form-control">
                                     <option value="">- Akun Mata Anggaran -</option>
                                     @foreach ($matanggaran as $d)
                                         @if ($d->status == 'd' && $d->kategori == 'pengeluaran')

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 29, 2023 at 09:06 AM
+-- Generation Time: Jan 03, 2024 at 09:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -20,6 +20,120 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_kaskecil`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `akun_aas`
+--
+
+CREATE TABLE `akun_aas` (
+  `id` int(2) NOT NULL,
+  `kode_aas` char(11) DEFAULT NULL,
+  `nama_aas` varchar(50) DEFAULT NULL,
+  `status` enum('d','k') DEFAULT NULL,
+  `kategori` enum('pembentukan','pengisian','pengeluaran') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `akun_aas`
+--
+
+INSERT INTO `akun_aas` (`id`, `kode_aas`, `nama_aas`, `status`, `kategori`) VALUES
+(2, '5010001506', 'Perlengkapan Masjid', 'd', 'pengeluaran'),
+(3, '5010001507', 'Perlengkapan Kantor', 'd', 'pengeluaran'),
+(4, '5010002502', 'Jamuan Tamu', 'd', 'pengeluaran'),
+(5, '5010002504', 'Iuran-iuran', 'k', 'pengeluaran'),
+(6, '5010002506', 'Rapat-rapat / Raker', 'd', 'pengeluaran'),
+(7, '5010002507', 'Transpor Dinas', 'd', 'pengeluaran'),
+(8, '5010002508', 'Konsumsi', 'd', 'pengeluaran'),
+(9, '5010002512', 'Sumbangan - sumbangan', 'd', 'pengeluaran'),
+(10, '5010002513', 'Dokumentasi & Informasi', 'd', 'pengeluaran'),
+(11, '5010002514', 'Bensin/Tol/Parkir/Kendaraan Dinas', 'd', 'pengeluaran'),
+(12, '5010002517', 'Lain-lain Keperluan Kantor', 'd', 'pengeluaran'),
+(13, '5010003505', 'Insentif / Bonus', 'd', 'pengeluaran'),
+(14, '5010003514', 'Bantuan Karyawan', 'd', 'pengeluaran'),
+(15, '5010005501', 'Pemeliharaan Gedung / Bangunan', 'd', 'pengeluaran'),
+(16, '5010005502', 'Pemeliharaan Emplasement', 'd', 'pengeluaran'),
+(19, '5010001504', 'Perlengkapan Kebersihan', 'd', 'pengeluaran'),
+(88, '1111111111', 'Pembentukan Kas Kecil', 'k', 'pembentukan'),
+(89, '1111111112', 'Pengisian Kas Kecil', 'k', 'pengisian');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `akun_kelompok`
+--
+
+CREATE TABLE `akun_kelompok` (
+  `kode_kelompok` int(2) NOT NULL,
+  `nama_kelompok` varchar(50) DEFAULT NULL,
+  `status_kelompok` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `akun_kelompok`
+--
+
+INSERT INTO `akun_kelompok` (`kode_kelompok`, `nama_kelompok`, `status_kelompok`) VALUES
+(1, 'Aktiva Lancar', 1),
+(2, 'Aktiva Tetap', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `akun_matanggaran`
+--
+
+CREATE TABLE `akun_matanggaran` (
+  `id` int(2) NOT NULL,
+  `kode_matanggaran` varchar(11) DEFAULT NULL,
+  `kode_aas` char(11) DEFAULT NULL,
+  `saldo` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `akun_matanggaran`
+--
+
+INSERT INTO `akun_matanggaran` (`id`, `kode_matanggaran`, `kode_aas`, `saldo`) VALUES
+(2, '2.1.4', '5010001504', 0),
+(3, '2.1.6', '5010001506', 0),
+(4, '2.1.7', '5010001507', 0),
+(5, '2.2.2', '5010002502', 0),
+(6, '2.2.4', '5010002504', 0),
+(7, '2.2.6', '5010002506', 0),
+(8, '2.2.7', '5010002507', 0),
+(9, '2.2.8', '5010002508', 0),
+(10, '2.2.12', '5010002512', 0),
+(11, '2.2.15', '5010003514', 0),
+(12, '2.2.17', '5010003505', 0),
+(13, '2.2.21', '5010002517', 0),
+(14, '2.2.22', '5010002513', 0),
+(15, '2.2.23', '5010002514', 0),
+(16, '2.5.1', '5010005501', 0),
+(17, '2.5.2', '5010005502', 0),
+(18, '1.1.1', '1111111111', 0),
+(19, '1.1.2', '1111111112', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `akun_perkiraan`
+--
+
+CREATE TABLE `akun_perkiraan` (
+  `kode_perkiraan` char(11) NOT NULL,
+  `nama_perkiraan` varchar(50) NOT NULL,
+  `kode_kelompok` char(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `akun_perkiraan`
+--
+
+INSERT INTO `akun_perkiraan` (`kode_perkiraan`, `nama_perkiraan`, `kode_kelompok`) VALUES
+('1110000', ' ** K A S **', '');
 
 -- --------------------------------------------------------
 
@@ -48,15 +162,16 @@ CREATE TABLE `instansi` (
   `nama` varchar(100) DEFAULT NULL,
   `alamat` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `pimpinan` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `instansi`
 --
 
-INSERT INTO `instansi` (`id`, `nama`, `alamat`, `created_at`, `updated_at`) VALUES
-(1, 'Masjid Agung Al Azhar', 'Jl. Sisingamangaraja, Kebayoran Baru, Jakarta Selatan.', '2023-12-28 12:17:58', '2023-12-29 00:05:36');
+INSERT INTO `instansi` (`id`, `nama`, `alamat`, `created_at`, `updated_at`, `pimpinan`) VALUES
+(1, 'Masjid Agung Al Azhar', 'Jl. Sisingamangaraja, Kebayoran Baru, Jakarta Selatan.', '2023-12-28 12:17:58', '2024-01-03 03:53:19', 'H. Tatang Komara');
 
 -- --------------------------------------------------------
 
@@ -142,11 +257,7 @@ CREATE TABLE `saldo` (
 --
 
 INSERT INTO `saldo` (`id`, `total`, `created_at`, `updated_at`) VALUES
-(1, 25000000, '2023-12-28 06:13:23', '2023-12-28 06:13:23'),
-(2, 24500000, '2023-12-28 06:13:51', '2023-12-28 06:13:51'),
-(3, 24250000, '2023-12-28 06:14:51', '2023-12-28 06:14:51'),
-(4, 23650000, '2023-12-28 18:13:06', '2023-12-28 18:13:06'),
-(5, 25000000, '2023-12-28 18:14:26', '2023-12-28 18:14:26');
+(1, 25000000, '2023-12-31 21:57:23', '2023-12-31 21:57:23');
 
 -- --------------------------------------------------------
 
@@ -158,23 +269,20 @@ CREATE TABLE `transaksi` (
   `id` mediumint(8) UNSIGNED NOT NULL,
   `perincian` varchar(255) DEFAULT NULL,
   `jumlah` int(11) DEFAULT NULL,
-  `kategori` enum('pemasukan','pengeluaran') DEFAULT NULL,
+  `kategori` enum('pembentukan','pengeluaran','pengisian') DEFAULT NULL,
   `tanggal` date DEFAULT NULL,
   `saldo_id` mediumint(8) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `kode_matanggaran` varchar(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `transaksi`
 --
 
-INSERT INTO `transaksi` (`id`, `perincian`, `jumlah`, `kategori`, `tanggal`, `saldo_id`, `created_at`, `updated_at`) VALUES
-(1, 'Saldo Awal Kas Kecil', 25000000, 'pemasukan', '2024-01-02', 1, '2023-12-28 06:13:23', '2023-12-28 06:13:23'),
-(2, 'Biaya Pembelian Materai', 500000, 'pengeluaran', '2024-01-02', 2, '2023-12-28 06:13:51', '2023-12-28 06:13:51'),
-(3, 'Cash On Delivery Perawatan AC kelas 5 unit', 250000, 'pengeluaran', '2023-12-30', 3, '2023-12-28 06:14:51', '2023-12-28 06:14:51'),
-(4, 'Beban Top up Emoney', 600000, 'pengeluaran', '2023-12-30', 4, '2023-12-28 18:13:06', '2023-12-28 18:13:06'),
-(5, 'Pengisian kembali Kas kecil', 1350000, 'pemasukan', '2023-12-01', 5, '2023-12-28 18:14:26', '2023-12-28 18:14:26');
+INSERT INTO `transaksi` (`id`, `perincian`, `jumlah`, `kategori`, `tanggal`, `saldo_id`, `created_at`, `updated_at`, `kode_matanggaran`) VALUES
+(1, 'Pembentukan Kas Kecil 2024', 25000000, 'pembentukan', '2024-01-01', 1, '2023-12-31 21:57:23', '2023-12-31 21:57:23', '1.1.1');
 
 -- --------------------------------------------------------
 
@@ -199,12 +307,36 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `level`) VALUES
-(1, 'donar', 'donarazhar@gmail.com', NULL, '$2y$12$63rj43v0xwQfwOXvzf.wMOWfDndR/Z11UYdGowonRRXHzqVxvesP.', 'SPp1Xb1dgryjp4XZLZPa4FvWGjSMBX9TR5r1yMKo3OAKqCoxq1rL4BAqf27V', '2023-12-28 04:57:36', '2023-12-28 04:57:36', 'admin'),
-(11, 'Admin', 'admin@email.com', NULL, 'sdsadadasd', NULL, NULL, NULL, 'bendahara');
+(1, 'Donar', 'donarazhar@gmail.com', NULL, '$2y$12$tzom8K9o0QTdaQ72LrYLs.i14Wyq/b9Q7RslUxGN3WSfStq6ZyZu.', 'uBksFwkfPoyR7LRju6rFzAe7NOOMgvP6ZJILT7Uhbo6DUWHPbJJ6EBbXIHc3', '2023-12-28 04:57:36', '2023-12-28 04:57:36', 'admin'),
+(12, 'Tya Septiana', 'bostya@email.com', NULL, '$2y$12$fnVcObfrhoMX3gtWv6uIEOdtFx86D.qXhAa3YrS5ENapPAR/A1k.e', NULL, NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `akun_aas`
+--
+ALTER TABLE `akun_aas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `akun_kelompok`
+--
+ALTER TABLE `akun_kelompok`
+  ADD PRIMARY KEY (`kode_kelompok`);
+
+--
+-- Indexes for table `akun_matanggaran`
+--
+ALTER TABLE `akun_matanggaran`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `akun_perkiraan`
+--
+ALTER TABLE `akun_perkiraan`
+  ADD PRIMARY KEY (`kode_perkiraan`);
 
 --
 -- Indexes for table `failed_jobs`
@@ -270,6 +402,18 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `akun_aas`
+--
+ALTER TABLE `akun_aas`
+  MODIFY `id` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+
+--
+-- AUTO_INCREMENT for table `akun_matanggaran`
+--
+ALTER TABLE `akun_matanggaran`
+  MODIFY `id` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
@@ -297,19 +441,19 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `saldo`
 --
 ALTER TABLE `saldo`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables

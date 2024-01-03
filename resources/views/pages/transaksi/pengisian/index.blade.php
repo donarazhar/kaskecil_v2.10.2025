@@ -1,4 +1,4 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Pengisian')
 @section('header-title', 'Pengisian Kas Kecil')
 
@@ -82,6 +82,15 @@
                                             </i>
                                         </a>
                                     </form>
+                                    <form action="/transaksi/pengisian/{{ $d->id }}/cetak" target="_blank"
+                                        method="POST">
+                                        @csrf
+                                        <a type="submit" class="btn btn-success btn-sm mb-1 mr-1 d-inline cetak"
+                                            name="cetak">
+                                            <i class="fas fa-print">
+                                            </i>
+                                        </a>
+                                    </form>
                                 </td>
                                 @php
                                     $total += $d->jumlah;
@@ -109,7 +118,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="nama_matanggaran">Mata Anggaran</label>
-                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select">
+                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select form-control">
                                     <option value="">- Akun Mata Anggaran -</option>
                                     @foreach ($matanggaran as $d)
                                         @if ($d->status == 'k' && $d->kategori == 'pengisian')

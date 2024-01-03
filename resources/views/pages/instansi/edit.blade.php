@@ -1,4 +1,4 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Ubah profile instansi')
 @section('header-title', ' Ubah profil masjid')
 

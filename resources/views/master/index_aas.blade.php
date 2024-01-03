@@ -1,4 +1,4 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Master Akun')
 @section('header-title', 'Master Akun AAS')
 
@@ -122,15 +122,15 @@
                             </div>
                             <div class="form-group">
                                 <label for="status">Status Akun</label>
-                                <select name="status" id="status" class="form-select">
+                                <select name="status" id="status" class="form-select form-control">
                                     <option value="">- Pilih -</option>
-                                    <option value="d">Debit</option>
+                                    <option value="d">Debet</option>
                                     <option value="k">Kredit</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="kategori">Kategori Akun</label>
-                                <select name="kategori" id="kategori" class="form-select">
+                                <select name="kategori" id="kategori" class="form-select form-control">
                                     <option value="">- Pilih -</option>
                                     <option value="pembentukan">Pembentukan Kas</option>
                                     <option value="pengisian">Pengisian Kas</option>

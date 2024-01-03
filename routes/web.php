@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\InstansiController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\PageController;
@@ -21,9 +22,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['guest:karyawan'])->group(function () {
-    Route::get('/', function () {
-        return view('welcome');
-    })->name('home');
+    Route::get('/', [HomepageController::class, 'index']);
 });
 
 Route::middleware(['guest:user'])->group(function () {
@@ -76,7 +75,7 @@ Route::middleware(['auth:user'])->group(
         Route::get('/transaksi/pengisian', [TransaksiController::class, 'indexPengisian']);
         Route::post('/transaksi/pengisian/edit', [TransaksiController::class, 'editPengisian']);
         Route::post('/transaksi/pengisian/{id}/update', [TransaksiController::class, 'updatePengisian']);
-
+        Route::post('/transaksi/pengisian/{id}/cetak', [TransaksiController::class, 'cetakPengisian']);
 
         Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan']);
         Route::post('/transaksi/laporan/download', [TransaksiController::class, 'laporanPDF']);

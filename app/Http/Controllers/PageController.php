@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -11,6 +11,15 @@ class PageController extends Controller
 
     public function beranda()
     {
+
+        $matanggaran = DB::table('akun_matanggaran')
+            ->select('akun_matanggaran.*', 'akun_aas.*')
+            ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+            ->orderBy('kode_matanggaran', 'ASC')
+            ->get();
+
+        $totalSaldo = DB::table('akun_matanggaran')->sum('saldo');
+
 
         $transaksi = DB::table('transaksi')
             ->select('transaksi.*', 'saldo.total as saldo', 'akun_aas.*', 'akun_matanggaran.*')
@@ -37,6 +46,6 @@ class PageController extends Controller
         $total_pengeluaran = $result->total_pengeluaran;
         $total_result = $result->total_result;
 
-        return view('pages.beranda', compact('transaksi', 'total_pembentukan', 'total_pengisian', 'total_pengeluaran', 'total_pengeluaran', 'total_result'));
+        return view('pages.beranda', compact('transaksi', 'total_pembentukan', 'total_pengisian', 'total_pengeluaran', 'total_pengeluaran', 'total_result', 'matanggaran', 'totalSaldo'));
     }
 }

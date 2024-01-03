@@ -264,7 +264,6 @@ class TransaksiController extends Controller
         return redirect()->back()->with('pesan', 'Update transaksi berhasil');
     }
 
-
     // MENU PENGISIAN KAS KECIL
     // Index Menu Pengisian Kas Kecil
     public function indexPengisian()
@@ -351,6 +350,15 @@ class TransaksiController extends Controller
             ->update(['total' => $saldo_total]);
 
         return redirect()->back()->with('success', 'Update transaksi berhasil');
+    }
+
+    // Cetak Surat Pengisian Kas Kecil
+    public function cetakPengisian(Request $request)
+    {
+        $id = $request->id;
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $instansi = DB::table('instansi')->get();
+        return view('pages.transaksi.pengisian.cetakum', compact('transaksi', 'instansi'));
     }
 
     public function cari(Request $request)

@@ -111,21 +111,27 @@ class MasterController extends Controller
     {
         $kode_matanggaran = $request->kode_matanggaran;
         $kode_aas = $request->kode_aas;
+        $saldo_matanggaran = $request->saldo_matanggaran;
+        // Membersihkan tanda koma dari $request->jumlah
+        $saldo_cleaned = str_replace(['.', ','], '', $saldo_matanggaran);
+        // Konversi ke integer
+        $saldo_numeric = intval($saldo_cleaned);
+
 
         try {
             $data = [
                 'kode_matanggaran' => $kode_matanggaran,
-                'kode_aas' => $kode_aas,
+                'saldo' => $saldo_numeric,
+                'kode_aas' => $kode_aas
 
             ];
-
             $simpan = DB::table('akun_matanggaran')->insert($data);
             if ($simpan) {
                 echo 'success|Data disimpan';
                 return Redirect::back()->with(['success' => 'Data berhasil disimpan']);
             }
         } catch (\Exception $e) {
-            echo 'success|Data disimpan';
+            echo 'error|Data gagal disimpan';
             return Redirect::back()->with(['warning' => 'Data gagal disimpan']);
         }
     }
@@ -149,13 +155,21 @@ class MasterController extends Controller
     public function updatematanggaran($id, Request $request)
     {
 
+
+
         $kode_matanggaran = $request->kode_matanggaran;
         $kode_aas = $request->kode_aas;
+        $saldo_matanggaran = $request->saldo_matanggaran;
+        // Membersihkan tanda koma dari $request->jumlah
+        $saldo_cleaned = str_replace(['.', ','], '', $saldo_matanggaran);
+        // Konversi ke integer
+        $saldo_numeric = intval($saldo_cleaned);
 
         try {
             $data = [
                 'kode_matanggaran' => $kode_matanggaran,
                 'kode_aas' => $kode_aas,
+                'saldo' => $saldo_numeric
 
             ];
 
@@ -164,6 +178,7 @@ class MasterController extends Controller
                 return Redirect::back()->with(['success' => 'Data berhasil diupdate']);
             }
         } catch (\Exception $e) {
+            dd($e);
             return Redirect::back()->with(['warning' => 'Data gagal diupdate']);
         }
     }

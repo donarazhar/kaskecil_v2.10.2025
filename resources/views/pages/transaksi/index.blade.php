@@ -1,6 +1,6 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Transaksi')
-{{-- @section('header-title', 'Data Transaksi') --}}
+@section('header-title', 'Data Transaksi')
 
 @section('content')
     <div class="card shadow mb-4">

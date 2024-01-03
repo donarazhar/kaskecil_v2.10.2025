@@ -10,16 +10,36 @@
     </div>
     <div class="form-group">
         <label for="status">Status Akun</label>
-        <select name="status" id="status" class="form-select">
-            <option value="{{ $aas->status }}">{{ $aas->status }}</option>
-            <option value="d">Debit</option>
+        <select name="status" id="status" class="form-select form-control">
+            <option value="{{ $aas->status }}">
+                @if ($aas->status == 'd')
+                    Debet
+                @elseif ($aas->status == 'k')
+                    Kredit
+                @else
+                    {{ $aas->status }}
+                @endif
+            </option>
+            <option value="d">Debet</option>
             <option value="k">Kredit</option>
         </select>
     </div>
     <div class="form-group">
         <label for="kategori">Kategori Akun</label>
-        <select name="kategori" id="kategori" class="form-select">
-            <option value="{{ $aas->kategori }}">{{ $aas->kategori }}</option>
+        <select name="kategori" id="kategori" class="form-select form-control">
+            <option value="{{ $aas->kategori }}">
+                @if ($aas->kategori == 'pembentukan')
+                    Pembentukan Kas
+                @elseif ($aas->kategori == 'pengeluaran')
+                    Pengeluaran Kas
+                @elseif ($aas->kategori == 'pengisian')
+                    Pengisian Kas
+                @else
+                    {{ $aas->kategori }}
+                @endif
+
+
+            </option>
             <option value="pembentukan">Pembentukan Kas</option>
             <option value="pengisian">Pengisian Kas</option>
             <option value="pengeluaran">Pengeluaran Kas</option>

@@ -1,4 +1,4 @@
-@extends('layoutsberanda.default')
+@extends('layouts.sidebar')
 @section('title', 'Pembentukan')
 @section('header-title', 'Pembentukan Kas Kecil')
 
@@ -109,7 +109,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="nama_matanggaran">Mata Anggaran</label>
-                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select">
+                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select form-control">
                                     <option value="">- Akun Mata Anggaran -</option>
                                     @foreach ($matanggaran as $d)
                                         @if ($d->status == 'k' && $d->kategori == 'pembentukan')

@@ -2,7 +2,7 @@
     @csrf
     <div class="form-group">
         <label for="nama_matanggaran">Mata Anggaran</label>
-        <select name="kode_matanggaran" id="kode_matanggaran" class="form-select">
+        <select name="kode_matanggaran" id="kode_matanggaran" class="form-select form-control">
             <option value="{{ $pengeluaran->kode_matanggaran }}">{{ $pengeluaran->kode_matanggaran }} |
                 {{ $pengeluaran->nama_aas }}
             </option>
