@@ -37,102 +37,108 @@
                 <b>Aplikasi Kas Kecil v.2.0</b>
             </a>
             <form class="d-flex" role="search">
-                <a class="btn btn-md btn-warning text-dark mr-3" href="/panel"><i class="fas fa-lock-open"></i>
-                    Login</a>
+                <a class="btn btn-md btn-primary text-light mr-3" href="/panel"><i class="fas fa-lock-open"></i>
+                    <b>Login</b></a>
             </form>
         </div>
     </nav>
-    <div class="row justify-content-center">
-        <div class="col-xl-12">
-            <div class="card o-hidden border-bottom-primary shadow-lg my-5">
-                <div class="card-header text-center" style="color:rgb(255, 255, 255); background: #0D6EFD;">
-                    <h4>Kontrol Kas Kecil</h4>
-                </div>
-                <div class="car">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
-                                                    Pembentukan Kas</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    {{ 'Rp ' . number_format($total_pembentukan, 0, ',', '.') }}
-                                                </div>
-                                                <p class="text-gray mt-2">
-                                                    Awal Proses
-                                                </p>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-xl-12">
+                <div class="card o-hidden border-bottom-primary shadow-lg my-5">
+                    <div class="card-header text-center" style="color:rgb(255, 255, 255); background: #0D6EFD;">
+                        <h4>Kontrol Kas Kecil</h4>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="card border-left-success shadow h-100 py-1">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div
+                                                        class="text-xs font-weight-bold text-black text-uppercase mb-1">
+                                                        Pembentukan Kas</div>
+                                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                        {{ 'Rp ' . number_format($total_pembentukan, 0, ',', '.') }}
+                                                    </div>
+                                                    <p class="text-gray mt-2">
+                                                        Awal Proses
+                                                    </p>
 
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card border-left-warning shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
-                                                    Pengeluaran Kas</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    {{ 'Rp ' . number_format($total_pengeluaran, 0, ',', '.') }}
                                                 </div>
-                                                <p class="text-gray mt-2">
-                                                    Bulan ini
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card border-left-info shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
-                                                    Pengisian Kas</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    {{ 'Rp ' . number_format($total_pengisian ?? 0, 0, ',', '.') }}
+                                <div class="col-md-3">
+                                    <div class="card border-left-warning shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div
+                                                        class="text-xs font-weight-bold text-black text-uppercase mb-1">
+                                                        Pengeluaran Kas</div>
+                                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                        {{ 'Rp ' . number_format($total_pengeluaran, 0, ',', '.') }}
+                                                    </div>
+                                                    <p class="text-gray mt-2">
+                                                        Bulan ini
                                                 </div>
-                                                <p class="text-gray mt-2">
-                                                    Bulan ini
-                                                </p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card border-left-info shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-black text-uppercase mb-1">
-                                                    Saldo berjalan</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    {{ 'Rp ' . number_format($total_result ?? 0, 0, ',', '.') }}
+                                <div class="col-md-3">
+                                    <div class="card border-left-info shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div
+                                                        class="text-xs font-weight-bold text-black text-uppercase mb-1">
+                                                        Pengisian Kas</div>
+                                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                        {{ 'Rp ' . number_format($total_pengisian ?? 0, 0, ',', '.') }}
+                                                    </div>
+                                                    <p class="text-gray mt-2">
+                                                        Bulan ini
+                                                    </p>
                                                 </div>
-                                                <p class="text-gray mt-2">
-                                                    Bulan ini
-                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card border-left-info shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div
+                                                        class="text-xs font-weight-bold text-black text-uppercase mb-1">
+                                                        Saldo berjalan</div>
+                                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                        {{ 'Rp ' . number_format($total_result ?? 0, 0, ',', '.') }}
+                                                    </div>
+                                                    <p class="text-gray mt-2">
+                                                        Bulan ini
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <canvas id="myChart" style="height: 20vh;"></canvas>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <canvas id="myChart" style="height: 20vh;"></canvas>
+                                </div>
+                                <div class="col-lg-6">
+                                    <canvas id="myChartpengeluaran" style="height: 20vh;"></canvas>
+                                </div>
                             </div>
-                            <div class="col-lg-6">
-                                <canvas id="myChartpengeluaran" style="height: 20vh;"></canvas>
-                            </div>
-                        </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
