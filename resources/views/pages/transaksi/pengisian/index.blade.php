@@ -85,11 +85,11 @@
                                     <form action="/transaksi/pengisian/{{ $d->id }}/cetak" target="_blank"
                                         method="POST">
                                         @csrf
-                                        <a type="submit" class="btn btn-success btn-sm mb-1 mr-1 d-inline cetak"
+                                        <button type="submit" class="btn btn-success btn-sm mb-1 mr-1 d-inline cetak"
                                             name="cetak">
                                             <i class="fas fa-print">
                                             </i>
-                                        </a>
+                                        </button>
                                     </form>
                                 </td>
                                 @php
