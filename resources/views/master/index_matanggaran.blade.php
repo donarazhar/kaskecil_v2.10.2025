@@ -94,7 +94,7 @@
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="#" id="frmmatanggaran">
+                        <form action="/master/storematanggaran" id="frmmatanggaran" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="kode_matanggaran">Kode Mata Anggaran</label>
@@ -195,37 +195,6 @@
                     return false;
                 }
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/master/storematanggaran',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        kode_matanggaran: kode_matanggaran,
-                        kode_aas: kode_aas,
-                        saldo_matanggaran: saldo_matanggaran
-
-                    },
-                    cache: false,
-                    success: function(respond) {
-                        console.log('Nilai saldo_matanggaran:', saldo_matanggaran);
-                        var status = respond.split("|");
-
-                        if (status[0] == "success") {
-                            Swal.fire({
-                                title: 'Berhasil!',
-                                text: status[1],
-                                icon: 'success'
-                            });
-                        } else {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: status[1],
-                                icon: 'error'
-                            });
-                        }
-                    }
-                });
             });
 
             // Proses edit dengan AJAX

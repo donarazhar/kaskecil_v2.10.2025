@@ -110,7 +110,7 @@
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="#" id="frmaas">
+                        <form action="/master/storeaas" id="frmaas" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="kode_aas">Kode AAS</label>
@@ -227,35 +227,6 @@
                     return false;
                 }
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/master/storeaas',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        kode_aas: kode_aas,
-                        nama_aas: nama_aas,
-                        status: status,
-                        kategori: kategori
-                    },
-                    cache: false,
-                    success: function(respond) {
-                        var status = respond.split("|");
-
-                        if (status[0] == "success") {
-                            Swal.fire({
-                                title: 'Berhasil!',
-                                text: status[1],
-                                icon: 'success'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: status[1],
-                                icon: 'error'
-                            });
-                        }
-                    }
-                });
             });
 
             // Proses edit dengan AJAX

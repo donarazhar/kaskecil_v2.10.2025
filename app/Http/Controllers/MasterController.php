@@ -42,7 +42,7 @@ class MasterController extends Controller
                 return Redirect::back()->with(['success' => 'Data berhasil disimpan']);
             }
         } catch (\Exception $e) {
-            echo 'error|Maaf data tidak tersimpan';
+            echo 'error|Data gagal disimpan';
             return Redirect::back()->with(['warning' => 'Data gagal disimpan']);
         }
     }
