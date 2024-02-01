@@ -128,15 +128,13 @@
             </div>
         </div>
 
-<<<<<<< HEAD
         {{-- Modal input AAS --}}
         <div class="modal modal-primary fade" id="modal-frmaas" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <div class="card-header bg-primary">
-                            <h6 class="m-0 font-weight-bold text-light">Master Akun AAS</h6>
-                        </div>
+                        <h5 class="modal-title">Input Akun AAS</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="card shadow col-lg-12">
                         <div class="card-body">
@@ -170,76 +168,34 @@
                                 <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
                             </form>
                         </div>
-=======
-    {{-- Modal input AAS --}}
-    <div class="modal modal-primary fade" id="modal-frmaas" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Input Akun AAS</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="card shadow col-lg-12">
-                    <div class="card-body">
-                        <form action="/master/storeaas" id="frmaas" method="POST">
-                            @csrf
-                            <div class="form-group">
-                                <label for="kode_aas">Kode AAS</label>
-                                <input type="text" name="kode_aas" id="kode_aas" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="nama_aas">Nama Akun AAS</label>
-                                <input name="nama_aas" rows="3" id="nama_aas" class="form-control"></input>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status Akun</label>
-                                <select name="status" id="status" class="form-select form-control">
-                                    <option value="">- Pilih -</option>
-                                    <option value="d">Debet</option>
-                                    <option value="k">Kredit</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="kategori">Kategori Akun</label>
-                                <select name="kategori" id="kategori" class="form-select form-control">
-                                    <option value="">- Pilih -</option>
-                                    <option value="pembentukan">Pembentukan Kas</option>
-                                    <option value="pengisian">Pengisian Kas</option>
-                                    <option value="pengeluaran">Pengeluaran Kas</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
-                        </form>
->>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
                     </div>
                 </div>
             </div>
-        </div>
 
-        {{-- Modal Edit AAS --}}
-        <div class="modal modal-blur fade" id="modal-editAas" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div class="card-header bg-primary">
-                            <h6 class="m-0 font-weight-bold text-light">Edit Master Akun AAS</h6>
+            {{-- Modal Edit AAS --}}
+            <div class="modal modal-blur fade" id="modal-editAas" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="card-header bg-primary">
+                                <h6 class="m-0 font-weight-bold text-light">Edit Master Akun AAS</h6>
+                            </div>
+                        </div>
+                        <div class="modal-body" id="loadeditform">
                         </div>
                     </div>
-                    <div class="modal-body" id="loadeditform">
-                    </div>
                 </div>
             </div>
-        </div>
-    @endsection
+        @endsection
 
-    @push('after-style')
-        <!-- Custom styles for this page -->
-        <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    @endpush
+        @push('after-style')
+            <!-- Custom styles for this page -->
+            <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+        @endpush
 
-    @push('after-script')
-        <script>
-            $(function() {
+        @push('after-script')
+            <script>
+                $(function() {
 
                 // Script mask inputan kode tidak boleh lebih dari 10 angka
                 $("#kode_aas").mask('0000000000');
@@ -319,7 +275,8 @@
                     $("#modal-editAas").modal("show");
                 });
 
-<<<<<<< HEAD
+                <<
+                << << < HEAD
                 // Proses delete dengan AJAX
                 $(".delete-confirm").click(function(e) {
                     var form = $(this).closest('form');
@@ -342,11 +299,11 @@
                             });
                         }
                     });
-                });
-=======
-            });
->>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
+                }); ===
+                === =
+                }); >>>
+                >>> > ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
 
-            });
-        </script>
-    @endpush
+                });
+            </script>
+        @endpush
