@@ -10,13 +10,19 @@ use function Laravel\Prompts\select;
 
 class MasterController extends Controller
 {
-
     // BAGIAN AKUN AAS
-    public function indexaas()
+    public function indexaas(Request $request)
     {
+
         $aas = DB::table('akun_aas')
-            ->orderBy('kode_aas', 'ASC')
-            ->get();
+            ->select('akun_aas.*')
+            ->where(function ($query) use ($request) {
+                if (!empty($request->nama_akunaas)) {
+                    $query->where('nama_aas', 'like', '%' . $request->nama_akunaas . '%');
+                }
+            })
+            ->paginate(10);
+
         return view('master.index_aas', compact('aas'));
     }
 
@@ -42,7 +48,7 @@ class MasterController extends Controller
                 return Redirect::back()->with(['success' => 'Data berhasil disimpan']);
             }
         } catch (\Exception $e) {
-            echo 'error|Maaf data tidak tersimpan';
+            echo 'error|Data gagal disimpan';
             return Redirect::back()->with(['warning' => 'Data gagal disimpan']);
         }
     }
@@ -93,13 +99,16 @@ class MasterController extends Controller
 
     // BAGIAN MATA ANGGARAN
 
-    public function indexmatanggaran()
+    public function indexmatanggaran(Request $request)
     {
         $matanggaran = DB::table('akun_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->select('akun_matanggaran.*', 'akun_aas.nama_aas')
-            ->orderBy('kode_aas', 'ASC')
-            ->get();
+            ->when(!empty($request->nama_akunaas), function ($query) use ($request) {
+                return $query->where('nama_aas', 'like', '%' . $request->nama_akunaas . '%');
+            })
+            ->orderBy('akun_matanggaran.kode_aas', 'ASC')
+            ->paginate(10);
 
         $aas = DB::table('akun_aas')
             ->orderBy('kode_aas', 'ASC')

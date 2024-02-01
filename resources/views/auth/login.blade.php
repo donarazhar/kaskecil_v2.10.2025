@@ -50,14 +50,13 @@
                                             Login !!!</span>
                                         <hr>
                                     </div>
-                                    <form action="/proseslogin" method="post" autocomplete="off" novalidate>
+                                    <form action="/proseslogin" method="post" novalidate>
                                         @csrf
                                         <div class="form-group">
                                             <label for="email">Masukkan Email</label>
                                             <input type="text" name="email" id="email"
                                                 class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                                value="{{ old('email') }}" style="border-radius: 2rem"
-                                                autocomplete="off">
+                                                value="{{ old('email') }}" style="border-radius: 2rem">
                                             @error('email')
                                                 <div class="text-danger">
                                                     {{ $message }}

@@ -1,6 +1,6 @@
-@extends('layouts.sidebar')
-@section('title', 'Beranda')
-@section('header-title', 'Beranda')
+@extends('layouts.sidebarhome')
+@section('title', 'Transaksi')
+@section('header-title', 'Data Transaksi')
 @section('content')
 
     <style>

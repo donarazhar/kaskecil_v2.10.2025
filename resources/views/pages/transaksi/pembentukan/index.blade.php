@@ -4,6 +4,9 @@
 
 @section('content')
     <div class="card shadow">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-black">Pembentukan Kas Kecil</h6>
+        </div>
         {{-- Pesan error --}}
         @if (Session::get('success'))
             <div class="alert alert-success">
@@ -18,18 +21,15 @@
 
         {{-- Tombol tambah --}}
         <div class="card-body">
-            <a href="#" class="btn btn-primary" id="btnTambahPembentukan">
-                <b>Tambah</b>
-                <i class="fa fa-plus" aria-hidden="true"></i>
-            </a>
+            @if (Auth::user()->level == 'admin')
+                <a href="#" class="btn btn-primary form-group" id="btnTambahPembentukan">
+                    Tambah Data
+                </a>
+            @endif
         </div>
-    </div>
 
-    {{-- Data Table Pembentukan Kas Kecil --}}
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-black">Pembentukan Kas Kecil</h6>
-        </div>
+
+        {{-- Data Table Pembentukan Kas Kecil --}}
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-center" id="dataTable">
@@ -43,7 +43,10 @@
                             <th>Perincian</th>
                             <th>Status</th>
                             <th>Jumlah (Rp)</th>
-                            <th>Tindakan</th>
+                            @if (Auth::user()->level == 'admin')
+                                <th>Tindakan</th>
+                            @endif
+
                         </tr>
                     </thead>
                     <tbody>
@@ -66,23 +69,24 @@
                                     @endif
                                 </td>
                                 <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
-                                <td>
-                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
-                                        id="{{ $d->id }}">
-                                        <i class="fas fa-pencil-alt">
-                                        </i>
-                                    </a>
-                                    <form action="{{ route('transaksi.destroy', $d->id) }}" method="post" class="d-inline"
-                                        id="">
-                                        @method('DELETE')
-                                        @csrf
-                                        <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
-                                            type="submit">
-                                            <i class="fas fa-trash">
+                                @if (Auth::user()->level == 'admin')
+                                    <td>
+                                        <a class="btn btn-primary btn-sm mb-1 mr-1 d-inline edit" href="#"
+                                            id="{{ $d->id }}">
+                                            <i class="fas fa-pencil-alt">
                                             </i>
                                         </a>
-                                    </form>
-                                </td>
+                                        <form action="/transaksi/hapuspembentukan/{{ $d->id }}" method="post"
+                                            class="d-inline">
+                                            @csrf
+                                            <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
+                                                type="submit">
+                                                <i class="fas fa-trash">
+                                                </i>
+                                            </a>
+                                        </form>
+                                    </td>
+                                @endif
                                 @php
                                     $total += $d->jumlah;
                                 @endphp
@@ -100,8 +104,9 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Pembentukan Kas Kecil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="card-header bg-primary">
+                        <h6 class="m-0 font-weight-bold text-light">Pembentukan Kas Kecil</h6>
+                    </div>
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
@@ -147,8 +152,9 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Pembentukan Kas Kecil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="card-header bg-primary">
+                        <h6 class="m-0 font-weight-bold text-light">Edit Pembentukan Kas Kecil</h6>
+                    </div>
                 </div>
                 <div class="modal-body" id="loadeditform">
                 </div>
@@ -173,6 +179,10 @@
     <script>
         $(function() {
 
+            // Validasi Juery Mask
+            $("#frmpembentukan").find('#jumlah').mask('000.000.000', {
+                reverse: true
+            });
             //Script takan tombol tambah
             $("#btnTambahPembentukan").click(function() {
                 // alert('test');

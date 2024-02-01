@@ -4,6 +4,9 @@
 
 @section('content')
     <div class="card shadow">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-black">Pengisian Kas Kecil</h6>
+        </div>
         {{-- Pesan error --}}
         @if (Session::get('success'))
             <div class="alert alert-success">
@@ -15,21 +18,15 @@
                 {{ Session::get('warning') }}
             </div>
         @endif
-
         {{-- Tombol tambah --}}
         <div class="card-body">
-            <a href="#" class="btn btn-primary" id="btnTambahPengisian">
-                <b>Tambah</b>
-                <i class="fa fa-plus" aria-hidden="true"></i>
-            </a>
+            @if (Auth::user()->level == 'admin')
+                <a href="#" class="btn btn-primary form-group" id="btnTambahPengisian">
+                    Tambah Data
+                </a>
+            @endif
         </div>
-    </div>
-
-    {{-- Data Table Pengisian Kas Kecil --}}
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-black">Pengisian Kas Kecil</h6>
-        </div>
+        {{-- Data Table Pengisian Kas Kecil --}}
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-center" id="dataTable">
@@ -43,14 +40,17 @@
                             <th>Perincian</th>
                             <th>Status</th>
                             <th>Jumlah (Rp)</th>
-                            <th>Tindakan</th>
+                            <th>Pencairan</th>
+                            @if (Auth::user()->level == 'admin')
+                                <th>Tindakan</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
                         @php
                             $total = 0;
                         @endphp
-                        @forelse ($pengisian as $d)
+                        @forelse ($combinedData  as $d)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
                                 <td>{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YYYY') }}</td>
@@ -67,36 +67,59 @@
                                 </td>
                                 <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
                                 <td>
-                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
-                                        id="{{ $d->id }}">
-                                        <i class="fas fa-pencil-alt">
-                                        </i>
-                                    </a>
-                                    <form action="{{ route('transaksi.destroy', $d->id) }}" method="post" class="d-inline"
-                                        id="">
-                                        @method('DELETE')
-                                        @csrf
-                                        <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
-                                            type="submit">
-                                            <i class="fas fa-trash">
-                                            </i>
-                                        </a>
-                                    </form>
-                                    <form action="/transaksi/pengisian/{{ $d->id }}/cetak" target="_blank"
-                                        method="POST">
-                                        @csrf
-                                        <a type="submit" class="btn btn-success btn-sm mb-1 mr-1 d-inline cetak"
-                                            name="cetak">
-                                            <i class="fas fa-print">
-                                            </i>
-                                        </a>
-                                    </form>
+                                    @if (isset($d->id_pengisian))
+                                        @if (DB::table('transaksi')->where('id_pengisian', $d->id_pengisian)->exists())
+                                            <a href="" class="btn btn-success btn-sm disabled">Sudah Cair</a>
+                                        @elseif (DB::table('transaksi_shadow')->where('id_pengisian', $d->id_pengisian)->exists())
+                                            @if (Auth::user()->level == 'admin')
+                                                <a href="{{ route('cair', ['id' => $d->id_pengisian]) }}"
+                                                    class="btn btn-danger btn-sm">Belum Cair</a>
+                                            @endif
+                                        @endif
+                                    @endif
+
                                 </td>
+                                @if (isset($d->id_pengisian))
+                                    @if (DB::table('transaksi')->where('id_pengisian', $d->id_pengisian)->exists())
+                                        <td hidden>
+                                        </td>
+                                    @elseif (DB::table('transaksi_shadow')->where('id_pengisian', $d->id_pengisian)->exists())
+                                        @if (Auth::user()->level == 'admin')
+                                            <td>
+                                                <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
+                                                    id="{{ $d->id_pengisian }}">
+                                                    <i class="fas fa-pencil-alt">
+                                                    </i>
+                                                </a>
+                                                <form action="{{ route('transaksi.destroy', $d->id_pengisian) }}"
+                                                    method="post" class="d-inline" id="">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <a class="btn btn-danger btn-sm delete-confirm"
+                                                        data-id="{{ $d->id_pengisian }}" type="submit">
+                                                        <i class="fas fa-trash">
+                                                        </i>
+                                                    </a>
+                                                </form>
+                                                <form action="/transaksi/pengisian/{{ $d->id_pengisian }}/cetak"
+                                                    target="_blank" method="POST">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="btn btn-success btn-sm mb-1 mr-1 d-inline cetak"
+                                                        name="cetak">
+                                                        <i class="fas fa-print">
+                                                        </i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        @endif
+                                    @endif
+                                @endif
                                 @php
                                     $total += $d->jumlah;
                                 @endphp
+                            @empty
                             </tr>
-                        @empty
                         @endforelse
                     </tbody>
                 </table>
@@ -109,12 +132,13 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Pengisian Kas Kecil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="card-header bg-primary">
+                        <h6 class="m-0 font-weight-bold text-light">Pengisian Kas Kecil</h6>
+                    </div>
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="{{ route('transaksi.store') }}" method="post" id="frmpengisian">
+                        <form action="/transaksi/storepengisian" method="post" id="frmpengisian">
                             @csrf
                             <div class="form-group">
                                 <label for="nama_matanggaran">Mata Anggaran</label>
@@ -156,8 +180,9 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Pengisian Kas Kecil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="card-header bg-primary">
+                        <h6 class="m-0 font-weight-bold text-light">Edit Pengisian Kas Kecil</h6>
+                    </div>
                 </div>
                 <div class="modal-body" id="loadeditform">
                 </div>

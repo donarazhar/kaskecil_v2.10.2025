@@ -42,36 +42,53 @@
                 Interface
             </div>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
+                <a class="nav-link {{ request()->is(['master/aas', 'master/matanggaran']) ? 'collapsed' : '' }}"
+                    href="#" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="{{ request()->is(['master/aas', 'master/matanggaran']) ? 'true' : 'false' }}"
+                    aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Master Data</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="collapseTwo"
+                    class="collapse {{ request()->is(['master/aas', 'master/matanggaran']) ? 'show' : '' }}"
+                    aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Data Inputan</h6>
-                        <a class="collapse-item" href="/master/aas">Akun Data AAS</a>
-                        <a class="collapse-item" href="/master/matanggaran">Akun Mata Anggaran</a>
+                        <a class="collapse-item {{ request()->is(['master/aas']) ? 'active' : '' }}"
+                            href="/master/aas">Akun Data AAS</a>
+                        <a class="collapse-item {{ request()->is(['master/matanggaran']) ? 'active' : '' }}"
+                            href="/master/matanggaran">Akun Mata Anggaran</a>
                     </div>
                 </div>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
+                <a class="nav-link {{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? 'collapsed' : '' }}"
+                    href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                    aria-expanded="{{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? 'true' : 'false' }}"
+                    aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-wrench"></i>
                     <span>Transaksi</span>
                 </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
+                <div id="collapseUtilities"
+                    class="collapse {{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? 'show' : '' }}"
+                    aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Data Transaksi</h6>
-                        <a class="collapse-item" href="/transaksi/pembentukan">Pembentukan Kas</a>
-                        <a class="collapse-item" href="/transaksi/pengeluaran">Pengeluaran Kas</a>
-                        <a class="collapse-item" href="/transaksi/pengisian">Pengisian Kas</a>
-                        <a class="collapse-item" href="/transaksi">Laporan Kas</a>
+                        <a class="collapse-item {{ request()->is(['transaksi/pembentukan']) ? 'active' : '' }}"
+                            href="/transaksi/pembentukan">Pembentukan Kas</a>
+                        <a class="collapse-item {{ request()->is(['transaksi/pengeluaran']) ? 'active' : '' }}"
+                            href="/transaksi/pengeluaran">Pengeluaran Kas</a>
+                        <a class="collapse-item {{ request()->is(['transaksi/pengisian']) ? 'active' : '' }}"
+                            href="/transaksi/pengisian">Pengisian Kas</a>
                     </div>
                 </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is(['/laporan']) ? 'active' : '' }}" href="/laporan">
+                    <i class="fas fa-fw fa-book"></i>
+                    <span>Laporan</span>
+                </a>
             </li>
             <hr class="sidebar-divider">
 
@@ -79,12 +96,12 @@
                 Addons
             </div>
             <li class="nav-item">
-                <a class="nav-link" href="/users">
+                <a class="nav-link {{ request()->is(['/users']) ? 'active' : '' }}" href="/users">
                     <i class="fas fa-fw fa-users"></i>
                     <span>Pengguna</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/instansi">
+                <a class="nav-link {{ request()->is(['/instansi']) ? 'active' : '' }}" href="/instansi">
                     <i class="fas fa-fw fa-building"></i>
                     <span>Instansi</span></a>
             </li>
@@ -131,7 +148,8 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Donarsi Yosianto</span>
+                                <span
+                                    class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
                                 <img class="img-profile rounded-circle"
                                     src="{{ asset('assets/sbadmin/img/undraw_profile.svg') }}">
                             </a>

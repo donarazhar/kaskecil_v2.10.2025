@@ -4,6 +4,9 @@
 
 @section('content')
     <div class="card shadow">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-black">Pengeluaran Kas Kecil</h6>
+        </div>
         {{-- Pesan error --}}
         @if (Session::get('success'))
             <div class="alert alert-success">
@@ -16,18 +19,65 @@
             </div>
         @endif
         <div class="card-body">
-            <a href="#" class="btn btn-primary" id="btnTambahPengeluaran">
-                <b>Tambah</b>
-                <i class="fa fa-plus" aria-hidden="true"></i>
-            </a>
+            <div class="row">
+                <div class="col-lg-3 form-group">
+                    @if (Auth::user()->level == 'admin')
+                        <a href="#" class="btn btn-primary w-100 form-group" id="btnTambahPengeluaran">
+                            Tambah Data
+                        </a>
+                    @endif
+                </div>
+                <div class="col-lg-9">
+                    <form action="{{ url('/transaksi/pengeluaran') }}" method="GET">
+                        @csrf
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <select name="bulan" id="bulan" class="form-select form-control"
+                                        onchange="this.form.submit()">
+                                        @for ($i = 1; $i <= 12; $i++)
+                                            <option value="{{ $i }}"
+                                                {{ ($bulan ?? date('m')) == $i ? 'selected' : '' }}>
+                                                {{ $namabulan[$i] }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <select name="tahun" id="tahun" class="form-select form-control"
+                                        onchange="this.form.submit()">
+                                        @for ($tahun = 2023; $tahun <= date('Y'); $tahun++)
+                                            <option value="{{ $tahun }}"
+                                                {{ ($tahun ?? date('Y')) == $tahun ? 'selected' : '' }}>
+                                                {{ $tahun }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <button type="submit" name="tampilkan" class="btn btn-primary w-100">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-
-    {{-- Data Table Pengeluaran Kas Kecil --}}
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-black">Pengeluaran Kas Kecil</h6>
-        </div>
+        <script>
+            // Mendapatkan nilai bulan dan tahun dari URL
+            var urlParams = new URLSearchParams(window.location.search);
+            var selectedBulan = urlParams.get('bulan');
+            var selectedTahun = urlParams.get('tahun');
+            // Mengatur nilai opsi pada dropdown bulan
+            document.getElementById('bulan').value = selectedBulan;
+            // Mengatur nilai opsi pada dropdown tahun
+            document.getElementById('tahun').value = selectedTahun;
+        </script>
+        {{-- Data Table Pengeluaran Kas Kecil --}}
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-center" id="dataTable">
@@ -41,14 +91,18 @@
                             <th>Perincian</th>
                             <th>Status</th>
                             <th>Jumlah (Rp)</th>
-                            <th>Tindakan</th>
+                            <th>Lamp</th>
+                            @if (Auth::user()->level == 'admin')
+                                <th>Tindakan</th>
+                            @endif
+
                         </tr>
                     </thead>
                     <tbody>
                         @php
                             $total = 0;
                         @endphp
-                        @forelse ($pengeluaran as $d)
+                        @forelse ($pengeluaranbulanini as $d)
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
                                 <td>{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YYYY') }}</td>
@@ -64,23 +118,30 @@
                                     @endif
                                 </td>
                                 <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
-                                <td>
-                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
+                                <td><a class="btn btn-primary btn-sm mb-1 mr-1 d-inline lihat" href="#"
                                         id="{{ $d->id }}">
-                                        <i class="fas fa-pencil-alt">
+                                        <i class="fas fa-search">
                                         </i>
-                                    </a>
-                                    <form action="{{ route('transaksi.destroy', $d->id) }}" method="post" class="d-inline"
-                                        id="">
-                                        @method('DELETE')
-                                        @csrf
-                                        <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
-                                            type="submit">
-                                            <i class="fas fa-trash">
+                                    </a></td>
+
+                                @if (Auth::user()->level == 'admin')
+                                    <td>
+                                        <a class="btn btn-primary btn-sm mb-1 mr-1 d-inline edit" href="#"
+                                            id="{{ $d->id }}">
+                                            <i class="fas fa-pencil-alt">
                                             </i>
                                         </a>
-                                    </form>
-                                </td>
+                                        <form action="/transaksi/hapuspengeluaran/{{ $d->id }}" method="post"
+                                            class="d-inline" id="">
+                                            @csrf
+                                            <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
+                                                type="submit">
+                                                <i class="fas fa-trash">
+                                                </i>
+                                            </a>
+                                        </form>
+                                    </td>
+                                @endif
                                 @php
                                     $total += $d->jumlah;
                                 @endphp
@@ -107,12 +168,14 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Pengeluaran Kas Kecil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="card-header bg-primary">
+                        <h6 class="m-0 font-weight-bold text-light">Pengeluaran Kas Kecil</h6>
+                    </div>
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="{{ route('transaksi.store') }}" method="post" id="frmpengeluaran">
+                        <form action="{{ route('transaksi.store') }}" method="post" id="frmpengeluaran"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">
                                 <label for="nama_matanggaran">Mata Anggaran</label>
@@ -141,7 +204,68 @@
                                 <label for="perincian">Perincian</label>
                                 <textarea name="perincian" rows="3" id="perincian" class="form-control"></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Kirim</button>
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="lampiran">Lampiran</label>
+                                <input class="form-control" id="lampiran" name="lampiran" type="file"
+                                    onchange="previewImage('lampiran', 'preview-image1', 'preview-container1')">
+                            </div>
+                            <div class="form-group mb-3">
+                                <input class="form-control" id="lampiran2" name="lampiran2" type="file"
+                                    onchange="previewImage('lampiran2', 'preview-image2', 'preview-container2')">
+                            </div>
+                            <div class="form-group mb-3">
+                                <input class="form-control" id="lampiran3" name="lampiran3" type="file"
+                                    onchange="previewImage('lampiran3', 'preview-image3', 'preview-container3')">
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div id="preview-container1"
+                                        style="display: none; justify-content: center; align-items: center; margin-top: 10px;">
+                                        <img id="preview-image1" style="width: 100%;"
+                                            src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div id="preview-container2"
+                                        style="display: none; justify-content: center; align-items: center; margin-top: 10px;">
+                                        <img id="preview-image2" style="width: 100%;"
+                                            src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div id="preview-container3"
+                                        style="display: none; justify-content: center; align-items: center; margin-top: 10px;">
+                                        <img id="preview-image3" style="width: 100%;"
+                                            src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                function previewImage(inputId, previewImageId, previewContainerId) {
+                                    const input = document.getElementById(inputId);
+                                    const previewContainer = document.getElementById(previewContainerId);
+                                    const previewImage = document.getElementById(previewImageId);
+
+                                    const file = input.files[0];
+
+                                    if (file) {
+                                        const reader = new FileReader();
+
+                                        reader.onload = function(e) {
+                                            previewImage.src = e.target.result;
+                                            previewContainer.style.display = 'flex';
+                                        };
+
+                                        reader.readAsDataURL(file);
+                                    } else {
+                                        previewImage.src = '{{ asset('assets/img/preview.png') }}';
+                                        previewContainer.style.display = 'none';
+                                    }
+                                }
+                            </script>
+
+                            <button type="submit" class="btn btn-primary btn-block mt-2">Kirim</button>
                         </form>
                     </div>
                 </div>
@@ -154,10 +278,26 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Pengeluaran Kas Kecil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="card-header bg-primary">
+                        <h6 class="m-0 font-weight-bold text-light">Edit Pengeluaran Kas Kecil</h6>
+                    </div>
                 </div>
                 <div class="modal-body" id="loadeditform">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Lihat Lampiran --}}
+    <div class="modal modal-blur fade" id="modal-lihatlampiran" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="card-header bg-primary">
+                        <h6 class="m-0 font-weight-bold text-light">Lampiran</h6>
+                    </div>
+                </div>
+                <div class="modal-body" id="loadeditformlihat">
                 </div>
             </div>
         </div>
@@ -256,6 +396,24 @@
                     }
                 });
                 $("#modal-editpengeluaran").modal("show");
+            });
+
+            // Proses lihat dengan AJAX
+            $(".lihat").click(function() {
+                var id = $(this).attr('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '/transaksi/pengeluaran/lihat',
+                    cache: false,
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: id
+                    },
+                    success: function(respond) {
+                        $('#loadeditformlihat').html(respond);
+                    }
+                });
+                $("#modal-lihatlampiran").modal("show");
             });
 
             // Proses delete dengan AJAX

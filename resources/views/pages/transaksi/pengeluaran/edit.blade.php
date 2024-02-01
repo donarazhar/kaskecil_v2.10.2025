@@ -1,4 +1,5 @@
-<form action="/transaksi/pengeluaran/{{ $transaksi->id }}/update" method="post" id="frmpengeluaranedit">
+<form action="/transaksi/pengeluaran/{{ $transaksi->id }}/update" method="post" id="frmpengeluaranedit"
+    enctype="multipart/form-data">
     @csrf
     <div class="form-group">
         <label for="nama_matanggaran">Mata Anggaran</label>
@@ -30,9 +31,60 @@
         <input name="perincian" rows="3" id="perincian" class="form-control"
             value="{{ $pengeluaran->perincian }}"></input>
     </div>
+    <div class="form-group mb-3">
+        <label class="form-label" for="lampiran">Lampiran</label>
+        <input class="form-control" id="lampiran" name="lampiran" type="file"
+            onchange="previewImage('lampiran', 'preview-image1', 'preview-container1')"
+            value="{{ $pengeluaran->lampiran }}">
+        <!-- Menampilkan pratinjau gambar jika sudah ada -->
+        @if ($pengeluaran->lampiran)
+            <img id="preview-image1" style="width: 100%; margin-top: 10px;"
+                src="{{ asset('storage/uploads/lampiran/img/' . $pengeluaran->lampiran) }}" alt="Preview" />
+        @endif
+    </div>
+    <div class="form-group mb-3">
+        <input class="form-control" id="lampiran2" name="lampiran2" type="file"
+            onchange="previewImage('lampiran2', 'preview-image2', 'preview-container2')"
+            value="{{ $pengeluaran->lampiran2 }}">
+        @if ($pengeluaran->lampiran2)
+            <img id="preview-image2" style="width: 100%; margin-top: 10px;"
+                src="{{ asset('storage/uploads/lampiran/img/' . $pengeluaran->lampiran2) }}" alt="Preview" />
+        @endif
+    </div>
+    <div class="form-group mb-3">
+        <input class="form-control" id="lampiran3" name="lampiran3" type="file"
+            onchange="previewImage('lampiran3', 'preview-image3', 'preview-container3')"
+            value="{{ $pengeluaran->lampiran3 }}">
+        @if ($pengeluaran->lampiran3)
+            <img id="preview-image3" style="width: 100%; margin-top: 10px;"
+                src="{{ asset('storage/uploads/lampiran/img/' . $pengeluaran->lampiran3) }}" alt="Preview" />
+        @endif
+    </div>
+    <script>
+        function previewImage(inputId, previewImageId, previewContainerId) {
+            const input = document.getElementById(inputId);
+            const previewContainer = document.getElementById(previewContainerId);
+            const previewImage = document.getElementById(previewImageId);
+
+            const file = input.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'flex';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.src = '{{ asset('assets/img/preview.png') }}';
+                previewContainer.style.display = 'none';
+            }
+        }
+    </script>
     <button type="submit" class="btn btn-primary btn-block">Kirim</button>
 </form>
-
 
 <script>
     $(function() {

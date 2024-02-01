@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\InstansiController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\TransaksiController;
@@ -65,24 +66,31 @@ Route::middleware(['auth:user'])->group(
         Route::get('/transaksi/pembentukan', [TransaksiController::class, 'indexPembentukan']);
         Route::post('/transaksi/pembentukan/edit', [TransaksiController::class, 'editPembentukan']);
         Route::post('/transaksi/pembentukan/{id}/update', [TransaksiController::class, 'updatePembentukan']);
+        Route::post('/transaksi/hapuspembentukan/{id}', [TransaksiController::class, 'hapuspembentukan']);
 
         // Pengeluaran Kas Kecil
         Route::get('/transaksi/pengeluaran', [TransaksiController::class, 'indexPengeluaran']);
         Route::post('/transaksi/pengeluaran/edit', [TransaksiController::class, 'editPengeluaran']);
+        Route::post('/transaksi/pengeluaran/lihat', [TransaksiController::class, 'lihatLampiran']);
         Route::post('/transaksi/pengeluaran/{id}/update', [TransaksiController::class, 'updatePengeluaran']);
+        Route::post('/transaksi/hapuspengeluaran/{id}', [TransaksiController::class, 'hapusPengeluaran']);
 
         // Pengisian Kas Kecil
         Route::get('/transaksi/pengisian', [TransaksiController::class, 'indexPengisian']);
+        Route::post('/transaksi/storepengisian', [TransaksiController::class, 'storePengisian']);
+        Route::get('/transaksi/pengisian/{id}/cair', [TransaksiController::class, 'pencairanPengisian']);
         Route::post('/transaksi/pengisian/edit', [TransaksiController::class, 'editPengisian']);
         Route::post('/transaksi/pengisian/{id}/update', [TransaksiController::class, 'updatePengisian']);
         Route::post('/transaksi/pengisian/{id}/cetak', [TransaksiController::class, 'cetakPengisian']);
-
-        Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan']);
-        Route::post('/transaksi/laporan/download', [TransaksiController::class, 'laporanPDF']);
 
         //Instansi
         Route::get('/instansi', [InstansiController::class, 'index']);
         Route::get('/instansi/{id}/edit', [InstansiController::class, 'edit']);
         Route::put('/instansi/{id}', [InstansiController::class, 'update']);
+
+        Route::get('/cair/{id}', [TransaksiController::class, 'cair'])->name('cair');
+
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
+        Route::get('/laporan/cetaklaporan', [LaporanController::class, 'cetaklaporan'])->name('cetaklaporan');
     }
 );
