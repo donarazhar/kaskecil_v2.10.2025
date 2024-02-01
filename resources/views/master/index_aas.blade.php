@@ -128,6 +128,7 @@
             </div>
         </div>
 
+<<<<<<< HEAD
         {{-- Modal input AAS --}}
         <div class="modal modal-primary fade" id="modal-frmaas" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -169,6 +170,47 @@
                                 <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
                             </form>
                         </div>
+=======
+    {{-- Modal input AAS --}}
+    <div class="modal modal-primary fade" id="modal-frmaas" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Input Akun AAS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="card shadow col-lg-12">
+                    <div class="card-body">
+                        <form action="/master/storeaas" id="frmaas" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="kode_aas">Kode AAS</label>
+                                <input type="text" name="kode_aas" id="kode_aas" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="nama_aas">Nama Akun AAS</label>
+                                <input name="nama_aas" rows="3" id="nama_aas" class="form-control"></input>
+                            </div>
+                            <div class="form-group">
+                                <label for="status">Status Akun</label>
+                                <select name="status" id="status" class="form-select form-control">
+                                    <option value="">- Pilih -</option>
+                                    <option value="d">Debet</option>
+                                    <option value="k">Kredit</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="kategori">Kategori Akun</label>
+                                <select name="kategori" id="kategori" class="form-select form-control">
+                                    <option value="">- Pilih -</option>
+                                    <option value="pembentukan">Pembentukan Kas</option>
+                                    <option value="pengisian">Pengisian Kas</option>
+                                    <option value="pengeluaran">Pengeluaran Kas</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
+                        </form>
+>>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
                     </div>
                 </div>
             </div>
@@ -277,6 +319,7 @@
                     $("#modal-editAas").modal("show");
                 });
 
+<<<<<<< HEAD
                 // Proses delete dengan AJAX
                 $(".delete-confirm").click(function(e) {
                     var form = $(this).closest('form');
@@ -300,6 +343,9 @@
                         }
                     });
                 });
+=======
+            });
+>>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
 
             });
         </script>

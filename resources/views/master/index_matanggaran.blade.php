@@ -114,6 +114,7 @@
             </div>
         </div>
 
+<<<<<<< HEAD
         {{-- Modal input matanggaran --}}
         <div class="modal modal-primary fade" id="modal-frmmatanggaran" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -150,6 +151,40 @@
                                 <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
                             </form>
                         </div>
+=======
+    {{-- Modal input matanggaran --}}
+    <div class="modal modal-primary fade" id="modal-frmmatanggaran" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Input Akun Mata Anggaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="card shadow col-lg-12">
+                    <div class="card-body">
+                        <form action="/master/storematanggaran" id="frmmatanggaran" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="kode_matanggaran">Kode Mata Anggaran</label>
+                                <input type="text" name="kode_matanggaran" id="kode_matanggaran" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="nama_matanggaran">Nama Akun Mata Anggaran</label>
+                                <select name="kode_aas" id="kode_aas" class="form-select form-control">
+                                    <option value="">- Nama Anggaran -</option>
+                                    @foreach ($aas as $d)
+                                        <option value="{{ $d->kode_aas }}">
+                                            {{ $d->kode_aas }} | {{ $d->nama_aas }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="saldo_matanggaran">Saldo Anggaran</label>
+                                <input type="text" name="saldo_matanggaran" id="saldo_matanggaran" class="form-control">
+                            </div>
+                            <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
+                        </form>
+>>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
                     </div>
                 </div>
             </div>
@@ -262,6 +297,7 @@
                         cancelButtonColor: "#d33",
                         confirmButtonText: "Hapus"
                     }).then((result) => {
+<<<<<<< HEAD
                         if (result.isConfirmed) {
                             form.submit();
                             Swal.fire({
@@ -272,6 +308,24 @@
                         }
                     });
                 });
+=======
+                        $("#kode_matanggaran").focus();
+                    });
+                    return false;
+                } else if (saldo_matanggaran == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Saldo Anggaran Harus Diisi',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        $("#saldo_matanggaran").focus();
+                    });
+                    return false;
+                }
+
+            });
+>>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
 
             });
         </script>
