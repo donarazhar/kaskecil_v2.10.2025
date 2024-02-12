@@ -124,7 +124,7 @@
                     <p><b>Nomor<br>Lamp<br>Perihal</b></p>
                 </td>
                 <td style="width: 65%; text-align:left;">
-                    <p><b>: ..../YPIA-MAA/I/2024<br>: - Lembar <br>: {{ $transaksi->perincian }}</b></p>
+                    <p><b>: ..../YPIA-MAA/&nbsp;&nbsp;/2024<br>: - Lembar <br>: {{ $transaksi->perincian }}</b></p>
                 </td>
 
                 <td style="width: 25%; text-align:right">
