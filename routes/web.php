@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['guest:karyawan'])->group(function () {
-    Route::get('/', [HomepageController::class, 'index']);
+    Route::get('/', [HomepageController::class, 'index'])->name('home');
 });
 
 Route::middleware(['guest:user'])->group(function () {

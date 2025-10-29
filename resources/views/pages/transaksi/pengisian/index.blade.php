@@ -67,7 +67,6 @@
                                 </td>
                                 <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
                                 <td>
-<<<<<<< HEAD
                                     @if (isset($d->id_pengisian))
                                         @if (DB::table('transaksi')->where('id_pengisian', $d->id_pengisian)->exists())
                                             <a href="" class="btn btn-success btn-sm disabled">Sudah Cair</a>
@@ -79,32 +78,6 @@
                                         @endif
                                     @endif
 
-=======
-                                    <a class="btn btn-info btn-sm mb-1 mr-1 d-inline edit" href="#"
-                                        id="{{ $d->id }}">
-                                        <i class="fas fa-pencil-alt">
-                                        </i>
-                                    </a>
-                                    <form action="{{ route('transaksi.destroy', $d->id) }}" method="post" class="d-inline"
-                                        id="">
-                                        @method('DELETE')
-                                        @csrf
-                                        <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
-                                            type="submit">
-                                            <i class="fas fa-trash">
-                                            </i>
-                                        </a>
-                                    </form>
-                                    <form action="/transaksi/pengisian/{{ $d->id }}/cetak" target="_blank"
-                                        method="POST">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success btn-sm mb-1 mr-1 d-inline cetak"
-                                            name="cetak">
-                                            <i class="fas fa-print">
-                                            </i>
-                                        </button>
-                                    </form>
->>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
                                 </td>
                                 @if (isset($d->id_pengisian))
                                     @if (DB::table('transaksi')->where('id_pengisian', $d->id_pengisian)->exists())
