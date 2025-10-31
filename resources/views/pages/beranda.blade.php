@@ -702,7 +702,8 @@
                     <div class="content-card-body">
                         @php
                         $colors = ['primary', 'success', 'info', 'warning', 'danger'];
-                        $maxTotalPerbulan = max($rekapperbulan->pluck('total_perbulan')->toArray());
+                        $totals = $rekapperbulan->pluck('total_perbulan')->toArray();
+                        $maxTotalPerbulan = !empty($totals) ? max($totals) : 0;
                         @endphp
 
                         @foreach ($rekapperbulan as $index => $data)

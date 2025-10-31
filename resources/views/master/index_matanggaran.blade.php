@@ -3,330 +3,1136 @@
 @section('header-title', 'Master Akun Mata Anggaran')
 
 @section('content')
-    <div class="card shadow">
-        <div class="card-header">
-            <h6 class="m-0 font-weight-bold text-black">Master Akun Mata Anggaran</h6>
+
+<style>
+    :root {
+        --primary-blue: #0053C5;
+        --primary-dark: #003d91;
+        --primary-light: #E8F1FD;
+        --primary-lighter: #F5F9FF;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --white: #ffffff;
+        --gray-50: #F9FAFB;
+        --gray-100: #F3F4F6;
+        --gray-200: #E5E7EB;
+        --gray-300: #D1D5DB;
+        --gray-400: #9CA3AF;
+        --gray-500: #6B7280;
+        --gray-600: #4B5563;
+        --gray-700: #374151;
+        --gray-800: #1F2937;
+        --gray-900: #111827;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Global Styles */
+    body {
+        background-color: var(--gray-50);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Page Header - Minimalist Modern */
+    .page-header {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 32px 36px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-100);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+    }
+
+    .page-header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-header-content h1 {
+        color: var(--gray-900);
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .page-header-content h1 i {
+        color: var(--primary-blue);
+        font-size: 32px;
+    }
+
+    .page-header-content p {
+        color: var(--gray-600);
+        font-size: 15px;
+        margin: 0;
+        font-weight: 400;
+    }
+
+    /* Modern Card with Subtle Shadow */
+    .modern-card {
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-100);
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .modern-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .modern-card-header {
+        padding: 24px 32px;
+        border-bottom: 1px solid var(--gray-100);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .modern-card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modern-card-title i {
+        color: var(--primary-blue);
+        font-size: 20px;
+    }
+
+    .modern-card-body {
+        padding: 32px;
+    }
+
+    /* Alert Messages - Clean & Modern */
+    .alert {
+        border: none;
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .alert i {
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+        color: #065F46;
+        border-left: 4px solid var(--success);
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+        color: #92400E;
+        border-left: 4px solid var(--warning);
+    }
+
+    /* Modern Button - Refined */
+    .btn-modern {
+        padding: 12px 26px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-modern i {
+        font-size: 16px;
+    }
+
+    .btn-modern:active {
+        transform: scale(0.98);
+    }
+
+    .btn-primary-modern {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+        color: var(--white);
+    }
+
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: var(--white);
+    }
+
+    .btn-success-modern {
+        background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+        color: var(--white);
+    }
+
+    .btn-success-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: var(--white);
+    }
+
+    /* Search Section - Clean Design */
+    .search-section {
+        background: var(--gray-50);
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 28px;
+        border: 1px solid var(--gray-200);
+    }
+
+    .form-control-modern {
+        padding: 13px 18px;
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: var(--white);
+        color: var(--gray-900);
+    }
+
+    .form-control-modern::placeholder {
+        color: var(--gray-400);
+    }
+
+    .form-control-modern:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px var(--primary-lighter);
+        outline: none;
+        background: var(--white);
+    }
+
+    /* Modern Table - Ultra Clean */
+    .table-responsive {
+        border-radius: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+    }
+
+    /* Custom Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: var(--gray-100);
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: var(--primary-blue);
+        border-radius: 10px;
+        transition: background 0.3s ease;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Scroll Hint for Mobile */
+    .scroll-hint {
+        display: none;
+        text-align: center;
+        padding: 12px;
+        background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--primary-light) 100%);
+        color: var(--primary-blue);
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 12px 12px 0 0;
+        margin-bottom: -1px;
+    }
+
+    .scroll-hint i {
+        margin-left: 6px;
+        animation: slideHint 1.5s ease-in-out infinite;
+    }
+
+    @keyframes slideHint {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        50% {
+            transform: translateX(8px);
+        }
+    }
+
+    .table-modern {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 14px;
+        background: var(--white);
+    }
+
+    /* Stacked Info Column */
+    .stacked-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .stacked-info .info-codes {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .stacked-info .info-name {
+        font-weight: 700;
+        color: var(--gray-900);
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .info-divider {
+        height: 4px;
+        width: 40px;
+        background: linear-gradient(90deg, var(--primary-blue), transparent);
+        border-radius: 2px;
+        margin: 4px 0;
+    }
+
+    .table-modern thead th {
+        background: var(--gray-50);
+        color: var(--gray-700);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.8px;
+        padding: 18px 20px;
+        text-align: left;
+        border-bottom: 2px solid var(--gray-200);
+        white-space: nowrap;
+    }
+
+    .table-modern tbody td {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--gray-100);
+        color: var(--gray-800);
+        vertical-align: middle;
+        background: var(--white);
+    }
+
+    .table-modern tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table-modern tbody tr:hover {
+        background: var(--primary-lighter);
+    }
+
+    .table-modern tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Badge Styles - Refined */
+    .badge-modern {
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .badge-primary {
+        background: linear-gradient(135deg, var(--primary-light) 0%, #D1E5FF 100%);
+        color: var(--primary-blue);
+        border: 1px solid #A8D0FF;
+    }
+
+    .badge-info {
+        background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+        color: #1E40AF;
+        border: 1px solid #93C5FD;
+    }
+
+    /* Saldo Highlight */
+    .saldo-amount {
+        font-weight: 700;
+        color: var(--success);
+        font-size: 15px;
+    }
+
+    /* Action Buttons - Modern & Clean */
+    .btn-action {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 0;
+        margin: 0 4px;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        flex-shrink: 0;
+    }
+
+    .btn-action i {
+        font-size: 15px;
+    }
+
+    .btn-action:active {
+        transform: scale(0.95);
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+        color: #1E40AF;
+    }
+
+    .btn-edit:hover {
+        background: var(--info);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+        color: #991B1B;
+    }
+
+    .btn-delete:hover {
+        background: var(--danger);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Action Column Fix */
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+    .action-buttons form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    /* Modal Styles - Premium Look */
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--gray-100);
+    }
+
+    .modal-header {
+        background: var(--white);
+        color: var(--gray-900);
+        border-radius: 20px 20px 0 0;
+        padding: 24px 28px;
+        border-bottom: 1px solid var(--gray-100);
+        position: relative;
+    }
+
+    .modal-header::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 28px;
+        right: 28px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--gray-900);
+    }
+
+    .modal-title i {
+        color: var(--primary-blue);
+        font-size: 24px;
+    }
+
+    .modal-body {
+        padding: 28px;
+    }
+
+    .btn-close {
+        background: var(--gray-100);
+        opacity: 1;
+        border-radius: 10px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        transition: all 0.3s ease;
+    }
+
+    .btn-close:hover {
+        background: var(--gray-200);
+        transform: rotate(90deg);
+    }
+
+    /* Form Styles - Clean & Modern */
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-label {
+        display: block;
+        color: var(--gray-700);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .form-control,
+    .form-select {
+        padding: 13px 18px;
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        width: 100%;
+        background: var(--white);
+        color: var(--gray-900);
+        font-weight: 500;
+    }
+
+    .form-control::placeholder {
+        color: var(--gray-400);
+        font-weight: 400;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px var(--primary-lighter);
+        outline: none;
+    }
+
+    .form-select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234B5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 16px 12px;
+        padding-right: 40px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    /* Select option styling */
+    .form-select option {
+        color: var(--gray-900);
+        background: var(--white);
+        padding: 10px;
+        font-weight: 500;
+    }
+
+    .form-select option:disabled {
+        color: var(--gray-400);
+        font-style: italic;
+    }
+
+    /* Select when selected value */
+    .form-select:not([value=""]) {
+        color: var(--gray-900);
+        font-weight: 600;
+    }
+
+    /* Disabled state */
+    .form-control:disabled,
+    .form-select:disabled {
+        background-color: var(--gray-50);
+        color: var(--gray-500);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    /* Pagination - Modern Style */
+    .pagination {
+        gap: 8px;
+        margin: 0;
+    }
+
+    .page-link {
+        border: 1px solid var(--gray-200);
+        border-radius: 10px;
+        padding: 10px 16px;
+        color: var(--gray-700);
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: var(--white);
+        text-decoration: none;
+    }
+
+    .page-link:hover {
+        background: var(--primary-blue);
+        color: var(--white);
+        border-color: var(--primary-blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+        border-color: var(--primary-blue);
+        color: var(--white);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .page-item.disabled .page-link {
+        background: var(--gray-50);
+        color: var(--gray-400);
+        border-color: var(--gray-200);
+    }
+
+    /* Empty State - Elegant */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .empty-state i {
+        font-size: 72px;
+        color: var(--gray-300);
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .empty-state h3 {
+        color: var(--gray-700);
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+        font-size: 15px;
+        margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 24px 20px;
+        }
+
+        .page-header-content h1 {
+            font-size: 22px;
+        }
+
+        .page-header-content h1 i {
+            font-size: 26px;
+        }
+
+        .modern-card-header {
+            padding: 20px 20px;
+        }
+
+        .modern-card-body {
+            padding: 20px;
+        }
+
+        .search-section {
+            padding: 20px;
+        }
+
+        .table-modern {
+            font-size: 13px;
+        }
+
+        .table-modern thead th,
+        .table-modern tbody td {
+            padding: 14px 10px;
+        }
+
+        /* Mobile Button Fix */
+        .btn-modern {
+            padding: 11px 20px;
+            font-size: 13px;
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            margin: 0 3px;
+        }
+
+        .btn-action i {
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            gap: 6px;
+        }
+
+        /* Ensure action column doesn't wrap */
+        .table-modern tbody td:last-child {
+            white-space: nowrap;
+            min-width: 100px;
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 56px;
+        }
+
+        /* Show scroll hint on mobile */
+        .scroll-hint {
+            display: block;
+        }
+
+        /* Mobile table adjustments */
+        .table-responsive {
+            margin: 0 -20px;
+            padding: 0 20px;
+            border-radius: 0;
+        }
+
+        /* Badge adjustments for mobile */
+        .badge-modern {
+            font-size: 11px;
+            padding: 6px 12px;
+        }
+
+        .stacked-info .info-name {
+            font-size: 14px;
+        }
+
+        /* Saldo amount mobile */
+        .saldo-amount {
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header-content h1 {
+            font-size: 20px;
+        }
+
+        .modern-card-body {
+            padding: 16px;
+        }
+
+        .search-section {
+            padding: 16px;
+        }
+
+        .table-modern thead th,
+        .table-modern tbody td {
+            padding: 12px 8px;
+        }
+
+        .btn-action {
+            width: 34px;
+            height: 34px;
+            margin: 0 2px;
+        }
+
+        .action-buttons {
+            gap: 4px;
+        }
+
+        .saldo-amount {
+            font-size: 13px;
+        }
+    }
+
+    /* Animation for page load */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .page-header,
+    .modern-card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .modern-card {
+        animation-delay: 0.1s;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>
+            <i class="fas fa-file-invoice-dollar"></i>
+            Master Akun Mata Anggaran
+        </h1>
+        <p>Kelola data akun mata anggaran dan saldo</p>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+@if (Session::get('success'))
+<div class="alert alert-success">
+    <i class="fas fa-check-circle"></i>
+    <span>{{ Session::get('success') }}</span>
+</div>
+@endif
+
+@if (Session::get('warning'))
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ Session::get('warning') }}</span>
+</div>
+@endif
+
+<!-- Main Card -->
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h6 class="modern-card-title">
+            <i class="fas fa-list"></i>
+            Data Akun Mata Anggaran
+        </h6>
+        @if (Auth::user()->level == 'admin')
+        <button class="btn-modern btn-primary-modern" id="btnTambahMatanggaran">
+            <i class="fas fa-plus"></i>
+            Tambah Data
+        </button>
+        @endif
+    </div>
+
+    <div class="modern-card-body">
+        <!-- Search Section -->
+        <div class="search-section">
+            <form action="/master/matanggaran" method="GET">
+                <div class="d-flex gap-2 align-items-end flex-wrap flex-md-nowrap">
+                    <div class="flex-fill">
+                        <label class="form-label">Pencarian</label>
+                        <input type="text" class="form-control-modern" name="nama_akunaas" id="nama_akunaas"
+                            placeholder="Cari berdasarkan nama akun..." value="{{ Request('nama_akunaas') }}">
+                    </div>
+                    <div class="flex-shrink-0" style="width: auto;">
+                        <button type="submit" class="btn-modern btn-primary-modern" style="white-space: nowrap; padding: 13px 24px;">
+                            <i class="fas fa-search"></i>
+                            Cari
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="card shadow mb-4">
-            {{-- Pesan error --}}
-            @if (Session::get('success'))
-                <div class="alert alert-success">
-                    {{ Session::get('success') }}
-                </div>
-            @endif
-            @if (Session::get('warning'))
-                <div class="alert alert-warning">
-                    {{ Session::get('warning') }}
-                </div>
-            @endif
-            {{-- Tombol tambah --}}
-            <div class="card-body">
-                @if (Auth::user()->level == 'admin')
-                    <a href="#" class="btn btn-primary mb-4 form-group" id="btnTambahMatanggaran">
-                        Tambah Data
-                    </a>
-                @endif
 
-                <div class="row mt-2">
-                    <div class="col-12">
-                        <form action="/master/matanggaran" method="GET">
-                            <div class="row">
-                                <div class="col-6">
-                                    <input type="text" class="form-control" name="nama_akunaas" id="nama_akunaas"
-                                        placeholder="Pencarian..." value="{{ Request('nama_akunaas') }}">
+        <!-- Data Table -->
+        <div class="scroll-hint">
+            <i class="fas fa-info-circle"></i>
+            Geser tabel ke kanan untuk melihat lebih banyak
+            <i class="fas fa-arrow-right"></i>
+        </div>
+        <div class="table-responsive">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th style="width: 50%;">Informasi Akun</th>
+                        <th style="width: 20%;">Saldo</th>
+                        @if (Auth::user()->level == 'admin')
+                        <th style="width: 20%;" class="text-center">Aksi</th>
+                        @endif
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($matanggaran as $d)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>
+                            <div class="stacked-info">
+                                <div class="info-codes">
+                                    <span class="badge-modern badge-primary">
+                                        {{ $d->kode_matanggaran }}
+                                    </span>
+                                    <span class="badge-modern badge-info">
+                                        {{ $d->kode_aas }}
+                                    </span>
                                 </div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="icon icon-tabler icon-tabler-search" width="24" height="24"
-                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                                <path d="M21 21l-6 -6" />
-                                            </svg>
-                                            Cari
-                                        </button>
-                                    </div>
-                                </div>
+                                <div class="info-name">{{ $d->nama_aas }}</div>
                             </div>
-                        </form>
-                    </div>
-                </div>
+                        </td>
+                        <td>
+                            <span class="saldo-amount">
+                                Rp {{ number_format($d->saldo, 0, ',', '.') }}
+                            </span>
+                        </td>
+                        @if (Auth::user()->level == 'admin')
+                        <td class="text-center">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-edit edit" id="{{ $d->id }}" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="/master/matanggaran/{{ $d->id }}/deletematanggaran" method="post">
+                                    @csrf
+                                    <button type="button" class="btn-action btn-delete delete-confirm" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        @endif
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h3>Belum Ada Data</h3>
+                                <p>Silakan tambahkan data akun mata anggaran terlebih dahulu</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                {{-- Data table Anggaran --}}
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-black">Data Akun Anggaran</h6>
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $matanggaran->links('vendor.pagination.bootstrap-5') }}
+        </div>
+    </div>
+</div>
+
+<!-- Modal Input Mata Anggaran -->
+<div class="modal fade" id="modal-frmmatanggaran" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Input Akun Mata Anggaran
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/master/storematanggaran" id="frmmatanggaran" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <label for="kode_matanggaran" class="form-label">Kode Mata Anggaran</label>
+                        <input type="text" name="kode_matanggaran" id="kode_matanggaran" class="form-control"
+                            placeholder="Contoh: 1.2.3456">
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <div class="table-container">
-                                <table class="table table-striped table-bordered" id="dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Kode Mata Anggaran</th>
-                                            <th>Kode AAS</th>
-                                            <th>Nama Akun</th>
-                                            <th>Saldo</th>
-                                            @if (Auth::user()->level == 'admin')
-                                                <th>Tindakan</th>
-                                            @endif
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($matanggaran as $d)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}.</td>
-                                                <td>{{ $d->kode_matanggaran }}
-                                                <td>{{ $d->kode_aas }}
-                                                <td>{{ $d->nama_aas }}</td>
-                                                <td>{{ number_format($d->saldo, 0, ',', '.') }}</td>
-                                                @if (Auth::user()->level == 'admin')
-                                                    <td>
-                                                        <a class="btn btn-primary btn-sm mb-1 mr-1 d-inline edit"
-                                                            href="#" id="{{ $d->id }}">
-                                                            <i class="fas fa-pencil-alt">
-                                                            </i>
-                                                        </a>
-                                                        <form
-                                                            action="/master/matanggaran/{{ $d->id }}/deletematanggaran"
-                                                            method="post" class="d-inline" id="">
-                                                            @csrf
-                                                            <a class="btn btn-danger btn-sm btn-hapus delete-confirm">
-                                                                <i class="fas fa-trash">
-                                                                </i>
-                                                            </a>
-                                                        </form>
-                                                    </td>
-                                                @endif
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                                {{ $matanggaran->links('vendor.pagination.bootstrap-5') }}
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="kode_aas" class="form-label">Nama Akun Mata Anggaran</label>
+                        <select name="kode_aas" id="kode_aas" class="form-select">
+                            <option value="">- Pilih Nama Anggaran -</option>
+                            @foreach ($aas as $d)
+                            <option value="{{ $d->kode_aas }}">
+                                {{ $d->kode_aas }} | {{ $d->nama_aas }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="saldo_matanggaran" class="form-label">Saldo Anggaran</label>
+                        <input type="text" name="saldo_matanggaran" id="saldo_matanggaran" class="form-control"
+                            placeholder="Masukkan saldo anggaran">
+                    </div>
+                    <button type="button" class="btn-modern btn-success-modern w-100" id="btnSimpanData">
+                        <i class="fas fa-save"></i>
+                        Simpan Data
+                    </button>
+                </form>
             </div>
         </div>
+    </div>
+</div>
 
-<<<<<<< HEAD
-        {{-- Modal input matanggaran --}}
-        <div class="modal modal-primary fade" id="modal-frmmatanggaran" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div class="card-header bg-primary">
-                            <h6 class="m-0 font-weight-bold text-light">Master Akun Mata Anggaran</h6>
-                        </div>
-                    </div>
-                    <div class="card shadow col-lg-12">
-                        <div class="card-body">
-                            <form action="/master/storematanggaran" id="frmmatanggaran" method="POST">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="kode_matanggaran">Kode Mata Anggaran</label>
-                                    <input type="text" name="kode_matanggaran" id="kode_matanggaran"
-                                        class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="nama_matanggaran">Nama Akun Mata Anggaran</label>
-                                    <select name="kode_aas" id="kode_aas" class="form-select form-control">
-                                        <option value="">- Nama Anggaran -</option>
-                                        @foreach ($aas as $d)
-                                            <option value="{{ $d->kode_aas }}">
-                                                {{ $d->kode_aas }} | {{ $d->nama_aas }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="saldo_matanggaran">Saldo Anggaran</label>
-                                    <input type="text" name="saldo_matanggaran" id="saldo_matanggaran"
-                                        class="form-control">
-                                </div>
-                                <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
-                            </form>
-                        </div>
-=======
-    {{-- Modal input matanggaran --}}
-    <div class="modal modal-primary fade" id="modal-frmmatanggaran" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Input Akun Mata Anggaran</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="card shadow col-lg-12">
-                    <div class="card-body">
-                        <form action="/master/storematanggaran" id="frmmatanggaran" method="POST">
-                            @csrf
-                            <div class="form-group">
-                                <label for="kode_matanggaran">Kode Mata Anggaran</label>
-                                <input type="text" name="kode_matanggaran" id="kode_matanggaran" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="nama_matanggaran">Nama Akun Mata Anggaran</label>
-                                <select name="kode_aas" id="kode_aas" class="form-select form-control">
-                                    <option value="">- Nama Anggaran -</option>
-                                    @foreach ($aas as $d)
-                                        <option value="{{ $d->kode_aas }}">
-                                            {{ $d->kode_aas }} | {{ $d->nama_aas }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="saldo_matanggaran">Saldo Anggaran</label>
-                                <input type="text" name="saldo_matanggaran" id="saldo_matanggaran" class="form-control">
-                            </div>
-                            <button class="btn btn-primary btn-block" id="btnSimpanData">Kirim</button>
-                        </form>
->>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
-                    </div>
-                </div>
+<!-- Modal Edit Mata Anggaran -->
+<div class="modal fade" id="modal-editmatanggaran" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit"></i>
+                    Edit Akun Mata Anggaran
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="loadeditform">
+                <!-- Content will be loaded via AJAX -->
             </div>
         </div>
+    </div>
+</div>
 
-        {{-- Modal Edit matanggaran --}}
-        <div class="modal modal-blur fade" id="modal-editmatanggaran" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div class="card-header bg-primary">
-                            <h6 class="m-0 font-weight-bold text-light">Edit Master Akun Mata Anggaran</h6>
-                        </div>
-                    </div>
-                    <div class="modal-body" id="loadeditform">
-                    </div>
-                </div>
-            </div>
-        </div>
+@endsection
 
-    @endsection
-    @push('after-style')
-        <!-- Custom styles for this page -->
-        <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    @endpush
+@push('after-style')
+<link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+@endpush
 
-    @push('after-script')
-        <script>
-            $(function() {
+@push('after-script')
+<script>
+    $(function() {
+        // Mask for kode_matanggaran (format: 0.0.0000)
+        $("#kode_matanggaran").mask('0.0.0000');
 
-                // Script mask inputan kode tidak boleh lebih dari 10 angka
-                $("#kode_matanggaran").mask('0.0.0000');
-                $('#saldo_matanggaran').mask("#.##0", {
-                    reverse: true
+        // Mask for saldo_matanggaran (currency format)
+        $('#saldo_matanggaran').mask("#.##0", {
+            reverse: true
+        });
+
+        // Show add modal
+        $("#btnTambahMatanggaran").click(function() {
+            $("#modal-frmmatanggaran").modal("show");
+        });
+
+        // Save data with validation
+        $("#btnSimpanData").click(function(e) {
+            e.preventDefault();
+
+            var kode_matanggaran = $("#kode_matanggaran").val();
+            var kode_aas = $("#kode_aas").val();
+            var saldo_matanggaran = $("#saldo_matanggaran").val();
+
+            if (kode_aas == "") {
+                Swal.fire({
+                    title: 'Perhatian!',
+                    text: 'Nama Akun Mata Anggaran harus dipilih',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0053C5'
+                }).then((result) => {
+                    $("#kode_aas").focus();
                 });
-
-                //Script takan tombol tambah
-                $("#btnTambahMatanggaran").click(function() {
-                    $("#modal-frmmatanggaran").modal("show");
+                return false;
+            } else if (kode_matanggaran == "") {
+                Swal.fire({
+                    title: 'Perhatian!',
+                    text: 'Kode Mata Anggaran harus diisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0053C5'
+                }).then((result) => {
+                    $("#kode_matanggaran").focus();
                 });
-
-                // Proses simpan dengan AJAX
-                $("#btnSimpanData").click(function(e) {
-                    var kode_matanggaran = $("#kode_matanggaran").val();
-                    var kode_aas = $("#kode_aas").val();
-                    var saldo_matanggaran = $("#saldo_matanggaran").val();
-
-                    if (kode_aas == "") {
-                        Swal.fire({
-                            title: 'Warning!',
-                            text: 'Kode AAS Harus Diisi',
-                            icon: 'warning',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            $("#kode_aas").focus();
-                        });
-                        return false;
-                    } else if (kode_matanggaran == "") {
-                        Swal.fire({
-                            title: 'Warning!',
-                            text: 'Nama Akun AAS Harus Diisi',
-                            icon: 'warning',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            $("#kode_matanggaran").focus();
-                        });
-                        return false;
-                    } else if (saldo_matanggaran == "") {
-                        Swal.fire({
-                            title: 'Warning!',
-                            text: 'Saldo Anggaran Harus Diisi',
-                            icon: 'warning',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            $("#saldo_matanggaran").focus();
-                        });
-                        return false;
-                    }
-
+                return false;
+            } else if (saldo_matanggaran == "") {
+                Swal.fire({
+                    title: 'Perhatian!',
+                    text: 'Saldo Anggaran harus diisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0053C5'
+                }).then((result) => {
+                    $("#saldo_matanggaran").focus();
                 });
+                return false;
+            }
 
-                // Proses edit dengan AJAX
-                $(".edit").click(function() {
-                    var id = $(this).attr('id');
-                    $.ajax({
-                        type: 'POST',
-                        url: '/master/editmatanggaran',
-                        cache: false,
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            id: id
-                        },
-                        success: function(respond) {
-                            $('#loadeditform').html(respond);
-                        }
-                    });
-                    $("#modal-editmatanggaran").modal("show");
-                });
+            // Submit form if all validations pass
+            $("#frmmatanggaran").submit();
+        });
 
-                // Proses delete dengan AJAX
-                $(".delete-confirm").click(function(e) {
-                    var form = $(this).closest('form');
-                    e.preventDefault();
-                    Swal.fire({
-                        title: "Yakin Hapus Data?",
-                        text: "Data anda akan terhapus permanen!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Hapus"
-                    }).then((result) => {
-<<<<<<< HEAD
-                        if (result.isConfirmed) {
-                            form.submit();
-                            Swal.fire({
-                                title: "Terhapus!",
-                                text: "Data anda berhasil terhapus",
-                                icon: "success"
-                            });
-                        }
-                    });
-                });
-=======
-                        $("#kode_matanggaran").focus();
-                    });
-                    return false;
-                } else if (saldo_matanggaran == "") {
-                    Swal.fire({
-                        title: 'Warning!',
-                        text: 'Saldo Anggaran Harus Diisi',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        $("#saldo_matanggaran").focus();
-                    });
-                    return false;
+        // Edit data
+        $(".edit").click(function() {
+            var id = $(this).attr('id');
+            $.ajax({
+                type: 'POST',
+                url: '/master/editmatanggaran',
+                cache: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id
+                },
+                success: function(respond) {
+                    $('#loadeditform').html(respond);
                 }
-
             });
->>>>>>> ac4b8352d836eacbd0a29d8d323f181c2ab4cedd
+            $("#modal-editmatanggaran").modal("show");
+        });
 
+        // Delete confirmation
+        $(".delete-confirm").click(function(e) {
+            var form = $(this).closest('form');
+            e.preventDefault();
+            Swal.fire({
+                title: "Yakin Hapus Data?",
+                text: "Data akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#0053C5",
+                cancelButtonColor: "#ef4444",
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
             });
-        </script>
-    @endpush
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    });
+</script>
+@endpush
