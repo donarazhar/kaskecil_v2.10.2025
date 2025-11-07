@@ -10,7 +10,7 @@ Pencatatan resmi ke jurnal baru dilakukan saat kas kecil akan diisi kembali. Jum
 Dibangun dengan framework **Laravel 10.10**.  
 
 ## Fitur Utama  
-- Halaman frontend
+- Halaman frontpage
 - Halaman login admin
 - Master Data ( Akun AAS, Akun Mata Anggaran)
 - Transaksi (Pembentukan Kas, Pengeluaran Kas, Pengisian Kas)
