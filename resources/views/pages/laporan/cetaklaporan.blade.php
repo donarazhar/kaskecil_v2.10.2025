@@ -1,187 +1,290 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="utf-8">
-    <title>Cetak Per {{ date('d-m-Y', strtotime($periodeawal)) }}
-        s.d {{ date('d-m-Y', strtotime($periodeakhir)) }}
-
-    </title>
-
-    <!-- Normalize or reset CSS with your favorite library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
-
-    <!-- Load paper.css for happy printing -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.4.1/paper.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Kas Kecil - {{ date('d-m-Y', strtotime($periodeawal)) }} s.d {{ date('d-m-Y', strtotime($periodeakhir)) }}</title>
 
     <style>
-        @page {
-            size: legal;
-            margin: 8mm;
-            /* Atur margin sesuai kebutuhan */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            margin: 20px;
+            background: #f9fafb;
         }
 
-        section.sheet {
-            padding-top: 10mm;
-            /* Sesuaikan dengan margin atas */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 20px 30px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
         }
 
+        /* HEADER */
+        .report-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .report-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .report-subtitle {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .report-period {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        /* TABEL */
         table {
-    border-collapse: collapse;
-    width: 100%;
-    page-break-inside: auto;
-    page-break-after: auto; /* atau ganti menjadi 'avoid' jika ingin mencegah pemberhentian halaman setelah tabel */
-}
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 10px;
+            page-break-inside: auto;
+        }
 
+        thead th {
+            background: #f1f5f9;
+            border: 1px solid #000;
+            padding: 8px 6px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        tbody td {
+            border: 1px solid #000;
+            padding: 6px 5px;
+            vertical-align: top;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        tbody tr.subtotal-row {
+            background: #f9f9f9;
+            font-weight: bold;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        /* TOTAL KESELURUHAN */
+        .total-section {
+            margin-top: 20px;
+            border-top: 2px solid #000;
+            padding-top: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: right;
+            page-break-inside: avoid;
+            page-break-after: avoid;
+        }
+
+        /* TANDA TANGAN */
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            page-break-inside: avoid;
+        }
+
+        .signature-box {
+            width: 45%;
+        }
+
+         .signature-box p {
+            margin: 3px 0;
+        }
+
+        .signature-name {
+            margin-top: 20px;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* TOMBOL CETAK */
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #0053C5, #003d91);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: linear-gradient(135deg, #003d91, #002b6b);
+            transform: translateY(-2px);
+        }
+
+        /* CETAK */
+        @media print {
+            body {
+                background: #fff;
+                margin: 0;
+                padding: 0;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+
+            tbody tr {
+                page-break-inside: avoid;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 0;
+            }
+
+            .total-section {
+                page-break-before: avoid !important;
+                page-break-after: avoid !important;
+            }
+
+            .signature-section {
+                page-break-before: avoid !important;
+            }
+        }
     </style>
-
-
 </head>
 
-<body class="legal potrait">
-    <section class="sheet padding-10mm">
-        <table style="border-collapse: collapse; width: 100%;">
-            <tr>
-                <td style="width: 20%; ">
-                    <!-- Isi kolom pertama -->
-                </td>
-                <td style="font-size: 14px; width: 60%;text-align: center; solid black;">
-                    Yayasan Pesantren Islam Al Azhar<br>
-                    Masjid Masjid Agung Al Azhar<br>
-                    <small style="font-size: 16px;">Kas Kecil Per {{ date('d-m-Y', strtotime($periodeawal)) }} s.d
-                        {{ date('d-m-Y', strtotime($periodeakhir)) }}
-                    </small>
-                </td>
-                <td style="width: 20%; ">
-                    <!-- Isi kolom ketiga -->
-                </td>
-            </tr>
-        </table>
-        <br>
-        {{-- Data Table Pengeluaran Kas Kecil --}}
+<body>
 
-        <table style="border-collapse: collapse; width: 100%; font-size: 9px; page-break-inside: auto; page-break-after: auto;">
-            <thead style="width: auto; text-align: center; border: 1px solid black;">
+    <button class="print-button" onclick="window.print()">🖨️ Cetak Laporan</button>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="report-header">
+            <div class="report-title">Yayasan Pesantren Islam Al Azhar</div>
+            <div class="report-subtitle">Masjid Agung Al Azhar</div>
+            <div class="report-period">
+                Kas Kecil Periode {{ date('d-m-Y', strtotime($periodeawal)) }} s.d {{ date('d-m-Y', strtotime($periodeakhir)) }}
+            </div>
+        </div>
+
+        <!-- TABEL DATA -->
+        <table>
+            <thead>
                 <tr>
-                    <th style="width: auto; text-align: center; border: 1px solid black;">No.</th>
-                    <th style="width: auto; text-align: center; border: 1px solid black;">No. Akun AAS</th>
-                    <th style="width: auto; text-align: center; border: 1px solid black;">Mata Anggaran</th>
-                    <th colspan="2" style="width: auto; text-align: center; border: 1px solid black;">URAIAN</th>
-                    <th colspan="2" style="width: auto; text-align: center; border: 1px solid black;">Besaran (Rp)
-                    </th>
+                    <th style="width:3%;">No.</th>
+                    <th style="width:8%;">No. Akun AAS</th>
+                    <th style="width:8%;">Mata Anggaran</th>
+                    <th colspan="2" style="width:51%;">URAIAN</th>
+                    <th colspan="2" style="width:15%;">Besaran (Rp)</th>
                 </tr>
             </thead>
-            <tbody style="width: auto; text-align: center; border: 1px solid black; page-break-inside: auto; page-break-after: auto;">
+            <tbody>
                 @php
-                    $totals = []; // Menyimpan total setiap kode_matanggaran dan kode_aas
+                    $totals = [];
                     $currentKodeMatanggaran = null;
                     $currentKodeAAS = null;
                     $currentTotal = 0;
                 @endphp
+
                 @forelse ($pengeluaranbulanini as $d)
-                    {{-- Periksa perubahan pada kode_matanggaran atau kode_aas --}}
                     @if ($currentKodeMatanggaran !== $d->kode_matanggaran || $currentKodeAAS !== $d->kode_aas)
-                        {{-- Tampilkan total untuk kode_matanggaran dan kode_aas sebelumnya --}}
-                        @if ($currentKodeMatanggaran !== null && $currentKodeAAS !== null)
-                            <tr>
-                                <td colspan="5" style="text-align: right;">Jumlah</td>
+                        @if ($currentKodeMatanggaran !== null)
+                            <tr class="subtotal-row">
+                                <td colspan="5" class="text-right"><strong>Jumlah</strong></td>
                                 <td></td>
-                                <td>{{ number_format($currentTotal, 0, ',', '.') }}</td>
+                                <td class="text-right"><strong>{{ number_format($currentTotal, 0, ',', '.') }}</strong></td>
                             </tr>
                             @php
-                                $totals["$currentKodeMatanggaran-$currentKodeAAS"] = $currentTotal; // Simpan total untuk kode_matanggaran dan kode_aas sebelumnya
-                                $currentTotal = 0; // Reset total setelah menampilkan total
+                                $totals["$currentKodeMatanggaran-$currentKodeAAS"] = $currentTotal;
+                                $currentTotal = 0;
                             @endphp
                         @endif
-
-                        {{-- Update currentKodeMatanggaran dan currentKodeAAS --}}
                         @php
                             $currentKodeMatanggaran = $d->kode_matanggaran;
                             $currentKodeAAS = $d->kode_aas;
                         @endphp
                     @endif
 
-                    {{-- Tambahkan jumlah untuk total --}}
-                    @php
-                        $currentTotal += $d->jumlah; // Menggunakan total_jumlah dari query
-                    @endphp
+                    @php $currentTotal += $d->jumlah; @endphp
 
-                    {{-- Tampilkan baris untuk setiap kode_matanggaran dan kode_aas --}}
                     <tr>
-                        <td style="width: auto; text-align: center; border: 1px solid black;">{{ $loop->iteration }}.
-                        </td>
-                        <td style="width: 80px; text-align: center; border: 1px solid black;">{{ $d->kode_aas }}</td>
-                        <td style="width: 30px; text-align: center; border: 1px solid black;">{{ $d->kode_matanggaran }}
-                        </td>
-                        <td style="width: 80px; text-align: center; border: 1px solid black;">{{ $d->nama_aas }}</td>
-                        <td style="width: auto; text-align: center; border: 1px solid black;">{{ $d->perincian }}</td>
-                        <td style="width: 80px; text-align: center; border: 1px solid black;">
-                            {{ number_format($d->jumlah, 0, ',', '.') }}</td>
-                        <td style="width: 80px; text-align: center; border: 1px solid black;"></td>
+                        <td class="text-center">{{ $loop->iteration }}</td>
+                        <td class="text-center">{{ $d->kode_aas }}</td>
+                        <td class="text-center">{{ $d->kode_matanggaran }}</td>
+                        <td class="text-left">{{ $d->nama_aas }}</td>
+                        <td class="text-left">{{ $d->perincian }}</td>
+                        <td class="text-right">{{ number_format($d->jumlah, 0, ',', '.') }}</td>
+                        <td></td>
                     </tr>
                 @empty
-                @endforelse
-                {{-- Tampilkan total untuk kode_matanggaran dan kode_aas terakhir --}}
-                @if ($currentKodeMatanggaran !== null && $currentKodeAAS !== null)
                     <tr>
-                        <td colspan="5" style="text-align: right;">Jumlah</td>
-                        <td></td>
-                        <td>{{ number_format($currentTotal, 0, ',', '.') }}</td>
+                        <td colspan="7" class="text-center" style="padding:40px;">Tidak ada data untuk periode ini</td>
                     </tr>
-                    @php
-                        $totals["$currentKodeMatanggaran-$currentKodeAAS"] = $currentTotal; // Simpan total untuk kode_matanggaran dan kode_aas terakhir
-                    @endphp
+                @endforelse
+
+                @if ($currentKodeMatanggaran !== null)
+                    <tr class="subtotal-row">
+                        <td colspan="5" class="text-right"><strong>Jumlah</strong></td>
+                        <td></td>
+                        <td class="text-right"><strong>{{ number_format($currentTotal, 0, ',', '.') }}</strong></td>
+                    </tr>
                 @endif
             </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="5" class="text-center"><b>Total</b></th>
-                    <th colspan="1" class="text-center">
-                        <b>
-                            @if ($request->input('tanggalawal') == 'periodeawal')
-                                {{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
-                            @elseif($request->input('tanggalakhir') == 'periodeakhir')
-                                {{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
-                            @else
-                                {{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
-                            @endif
-                        </b>
-                    </th>
-                    <th colspan="1" class="text-center">
-                        <!-- Menampilkan total_pengeluaran_per_periode pada kolom kedua -->
-                        <b>
-                            @if ($request->input('tanggalawal') == 'periode1')
-                                {{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
-                            @elseif($request->input('tanggalakhir') == 'periodeakhir')
-                                {{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
-                            @else
-                                {{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
-                            @endif
-                        </b>
-                    </th>
-                </tr>
-            </tfoot>
-        </table>
-        <table style="border-collapse: collapse; width: 100%; margin-left:80px; margin-right:140px; font-size:9px; page-break-inside: auto; page-break-after: auto;">
-            <th>
-            <td>
-                <p>Mengetahui,<br>
-                    Kepala Kantor Masjid Agung Al Azhar<br><br><br>
-                    <strong>H. Tatang Komara</strong>
-                </p>
-            </td>
-            <td>
-                <p>
-                    Jakarta, {{ date('d-m-Y') }}<br>
-                    Dibuat oleh,<br>
-                    Tata Usaha<br><br><br>
-                    <strong>Donarsi Y</strong>
-                </p>
-            </td>
-            </th>
         </table>
 
-    </section>
+        <!-- TOTAL KESELURUHAN -->
+        <div class="total-section">
+            TOTAL KESELURUHAN: Rp {{ number_format($totalpengeluaran->total_pengeluaran ?? 0, 0, ',', '.') }}
+        </div>
+
+        <!-- TANDA TANGAN -->
+        <div class="signature-section">
+            <div class="signature-box">
+                <p>Mengetahui,</p>
+                <p>Kepala Kantor Masjid Agung Al Azhar</p>
+                <br><br><br>
+                <p class="signature-name">H. Tatang Komara</p>
+            </div>
+            <div class="signature-box" style="text-align:right;">
+                <p>Jakarta, {{ date('d-m-Y') }}</p>
+                <p>Dibuat oleh,</p>
+                <p>Tata Usaha</p>
+                <br><br>
+                <p class="signature-name">Donarsi Y</p>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('akun_matanggaran', function (Blueprint $table) {            
-            $table->unsignedTinyInteger('id')->primary();
+            $table->smallIncrements('id');
             $table->string('kode_matanggaran', 25)->nullable();
             $table->char('kode_aas', 11)->nullable();
             $table->integer('saldo')->nullable();

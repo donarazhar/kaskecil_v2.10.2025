@@ -3,445 +3,1043 @@
 @section('header-title', 'Pengeluaran Kas Kecil')
 
 @section('content')
-    <div class="card shadow">
-        <div class="card-header">
-            <h6 class="m-0 font-weight-bold text-black">Pengeluaran Kas Kecil</h6>
-        </div>
-        {{-- Pesan error --}}
-        @if (Session::get('success'))
-            <div class="alert alert-success">
-                {{ Session::get('success') }}
-            </div>
-        @endif
-        @if (Session::get('warning'))
-            <div class="alert alert-warning">
-                {{ Session::get('warning') }}
-            </div>
-        @endif
-        <div class="card-body">
-            <div class="row">
-                <div class="col-lg-3 form-group">
-                    @if (Auth::user()->level == 'admin')
-                        <a href="#" class="btn btn-primary w-100 form-group" id="btnTambahPengeluaran">
-                            Tambah Data
-                        </a>
-                    @endif
-                </div>
-                <div class="col-lg-9">
-                    <form action="{{ url('/transaksi/pengeluaran') }}" method="GET">
-                        @csrf
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <select name="bulan" id="bulan" class="form-select form-control"
-                                        onchange="this.form.submit()">
-                                        @for ($i = 1; $i <= 12; $i++)
-                                            <option value="{{ $i }}"
-                                                {{ ($bulan ?? date('m')) == $i ? 'selected' : '' }}>
-                                                {{ $namabulan[$i] }}
-                                            </option>
-                                        @endfor
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <select name="tahun" id="tahun" class="form-select form-control"
-                                        onchange="this.form.submit()">
-                                        @for ($tahun = 2023; $tahun <= date('Y'); $tahun++)
-                                            <option value="{{ $tahun }}"
-                                                {{ ($tahun ?? date('Y')) == $tahun ? 'selected' : '' }}>
-                                                {{ $tahun }}
-                                            </option>
-                                        @endfor
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <button type="submit" name="tampilkan" class="btn btn-primary w-100">Search</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <script>
-            // Mendapatkan nilai bulan dan tahun dari URL
-            var urlParams = new URLSearchParams(window.location.search);
-            var selectedBulan = urlParams.get('bulan');
-            var selectedTahun = urlParams.get('tahun');
-            // Mengatur nilai opsi pada dropdown bulan
-            document.getElementById('bulan').value = selectedBulan;
-            // Mengatur nilai opsi pada dropdown tahun
-            document.getElementById('tahun').value = selectedTahun;
-        </script>
-        {{-- Data Table Pengeluaran Kas Kecil --}}
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered text-center" id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>No.</th>
-                            <th>Tgl</th>
-                            <th>Akun AAS</th>
-                            <th>Mata Anggaran</th>
-                            <th>Nama Akun</th>
-                            <th>Perincian</th>
-                            <th>Status</th>
-                            <th>Jumlah (Rp)</th>
-                            <th>Lamp</th>
-                            @if (Auth::user()->level == 'admin')
-                                <th>Tindakan</th>
-                            @endif
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $total = 0;
-                        @endphp
-                        @forelse ($pengeluaranbulanini as $d)
-                            <tr>
-                                <td>{{ $loop->iteration }}.</td>
-                                <td>{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YYYY') }}</td>
-                                <td>{{ $d->kode_aas }}</td>
-                                <td>{{ $d->kode_matanggaran }}</td>
-                                <td>{{ $d->nama_aas }}</td>
-                                <td>{{ $d->perincian }}</td>
-                                <td>
-                                    @if ($d->status == 'k')
-                                        Kredit
-                                    @elseif ($d->status == 'd')
-                                        Debet
-                                    @endif
-                                </td>
-                                <td>{{ number_format($d->jumlah, 0, ',', '.') }}</td>
-                                <td><a class="btn btn-primary btn-sm mb-1 mr-1 d-inline lihat" href="#"
-                                        id="{{ $d->id }}">
-                                        <i class="fas fa-search">
-                                        </i>
-                                    </a></td>
+<style>
+    :root {
+        --primary-blue: #0053C5;
+        --primary-dark: #003d91;
+        --primary-light: #E8F1FD;
+        --primary-lighter: #F5F9FF;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --white: #ffffff;
+        --gray-50: #F9FAFB;
+        --gray-100: #F3F4F6;
+        --gray-200: #E5E7EB;
+        --gray-300: #D1D5DB;
+        --gray-400: #9CA3AF;
+        --gray-500: #6B7280;
+        --gray-600: #4B5563;
+        --gray-700: #374151;
+        --gray-800: #1F2937;
+        --gray-900: #111827;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
 
-                                @if (Auth::user()->level == 'admin')
-                                    <td>
-                                        <a class="btn btn-primary btn-sm mb-1 mr-1 d-inline edit" href="#"
-                                            id="{{ $d->id }}">
-                                            <i class="fas fa-pencil-alt">
-                                            </i>
-                                        </a>
-                                        <form action="/transaksi/hapuspengeluaran/{{ $d->id }}" method="post"
-                                            class="d-inline" id="">
-                                            @csrf
-                                            <a class="btn btn-danger btn-sm delete-confirm" data-id="{{ $d->id }}"
-                                                type="submit">
-                                                <i class="fas fa-trash">
-                                                </i>
-                                            </a>
-                                        </form>
-                                    </td>
-                                @endif
-                                @php
-                                    $total += $d->jumlah;
-                                @endphp
-                            </tr>
-                        @empty
-                        @endforelse
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="7" class="text-center"><b>Pengeluaran Perbulan</b></th>
-                            <th colspan="2" class="text-center">
-                                <b>{{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
-                                </b>
-                            </th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
+    body {
+        background-color: var(--gray-50);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .page-header {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 32px 36px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-100);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+    }
+
+    .page-header-content h1 {
+        color: var(--gray-900);
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .page-header-content h1 i {
+        color: var(--primary-blue);
+        font-size: 32px;
+    }
+
+    .page-header-content p {
+        color: var(--gray-600);
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .modern-card {
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-100);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .modern-card-header {
+        padding: 24px 32px;
+        border-bottom: 1px solid var(--gray-100);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .modern-card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modern-card-title i {
+        color: var(--primary-blue);
+        font-size: 20px;
+    }
+
+    .modern-card-body {
+        padding: 32px;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .alert i {
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+        color: #065F46;
+        border-left: 4px solid var(--success);
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+        color: #92400E;
+        border-left: 4px solid var(--warning);
+    }
+
+    .btn-modern {
+        padding: 12px 26px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-modern i {
+        font-size: 16px;
+    }
+
+    .btn-modern:active {
+        transform: scale(0.98);
+    }
+
+    .btn-primary-modern {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+        color: var(--white);
+    }
+
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: var(--white);
+    }
+
+    .btn-success-modern {
+        background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+        color: var(--white);
+    }
+
+    .btn-success-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: var(--white);
+    }
+
+    .filter-card {
+        background: var(--primary-lighter);
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid var(--primary-light);
+    }
+
+    .table-responsive {
+        border-radius: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: var(--gray-100);
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: var(--primary-blue);
+        border-radius: 10px;
+    }
+
+    .table-modern {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 14px;
+        background: var(--white);
+    }
+
+    .table-modern thead th {
+        background: var(--gray-50);
+        color: var(--gray-700);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.8px;
+        padding: 18px 20px;
+        text-align: left;
+        border-bottom: 2px solid var(--gray-200);
+        white-space: nowrap;
+    }
+
+    .table-modern tbody td {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--gray-100);
+        color: var(--gray-800);
+        vertical-align: middle;
+        background: var(--white);
+    }
+
+    .table-modern tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table-modern tbody tr:hover {
+        background: var(--primary-lighter);
+    }
+
+    .table-modern tfoot th {
+        padding: 20px;
+        background: var(--primary-light);
+        color: var(--primary-blue);
+        font-weight: 700;
+        border-top: 2px solid var(--primary-blue);
+        font-size: 15px;
+    }
+
+    .badge-modern {
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .badge-success {
+        background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+        color: #065F46;
+        border: 1px solid #6EE7B7;
+    }
+
+    .badge-info {
+        background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+        color: #1E40AF;
+        border: 1px solid #93C5FD;
+    }
+
+    .badge-primary {
+        background: linear-gradient(135deg, var(--primary-light) 0%, #D1E5FF 100%);
+        color: var(--primary-blue);
+        border: 1px solid #A8D0FF;
+    }
+
+    .badge-danger {
+        background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
+    }
+
+    .btn-action {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 0;
+        margin: 0 4px;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        flex-shrink: 0;
+    }
+
+    .btn-action i {
+        font-size: 15px;
+    }
+
+    .btn-action:active {
+        transform: scale(0.95);
+    }
+
+    .btn-view {
+        background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+        color: #92400E;
+    }
+
+    .btn-view:hover {
+        background: var(--warning);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+        color: #1E40AF;
+    }
+
+    .btn-edit:hover {
+        background: var(--info);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+        color: #991B1B;
+    }
+
+    .btn-delete:hover {
+        background: var(--danger);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+    .action-buttons form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    .stacked-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .stacked-info .info-codes {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .stacked-info .info-name {
+        font-weight: 700;
+        color: var(--gray-900);
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .stacked-info .info-detail {
+        font-size: 12px;
+        color: var(--gray-600);
+        line-height: 1.3;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--gray-100);
+    }
+
+    .modal-header {
+        background: var(--white);
+        color: var(--gray-900);
+        border-radius: 20px 20px 0 0;
+        padding: 24px 28px;
+        border-bottom: 1px solid var(--gray-100);
+        position: relative;
+    }
+
+    .modal-header::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 28px;
+        right: 28px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--gray-900);
+    }
+
+    .modal-title i {
+        color: var(--primary-blue);
+        font-size: 24px;
+    }
+
+    .modal-body {
+        padding: 28px;
+    }
+
+    .btn-close {
+        background: var(--gray-100);
+        opacity: 1;
+        border-radius: 10px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        transition: all 0.3s ease;
+    }
+
+    .btn-close:hover {
+        background: var(--gray-200);
+        transform: rotate(90deg);
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-label {
+        display: block;
+        color: var(--gray-700);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .form-control,
+    .form-select {
+        padding: 13px 18px;
+        border: 2px solid var(--gray-200);
+        border-radius: 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        width: 100%;
+        background: var(--white);
+        color: var(--gray-900);
+        font-weight: 500;
+    }
+
+    .form-control::placeholder {
+        color: var(--gray-400);
+        font-weight: 400;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px var(--primary-lighter);
+        outline: none;
+    }
+
+    .form-select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234B5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 16px 12px;
+        padding-right: 40px;
+        appearance: none;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .preview-container {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--gray-200);
+    }
+
+    .preview-container img {
+        width: 100%;
+        display: block;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .empty-state i {
+        font-size: 72px;
+        color: var(--gray-300);
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .empty-state h3 {
+        color: var(--gray-700);
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+        font-size: 15px;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 24px 20px;
+        }
+
+        .page-header-content h1 {
+            font-size: 22px;
+        }
+
+        .modern-card-header {
+            padding: 20px;
+        }
+
+        .modern-card-body {
+            padding: 20px;
+        }
+
+        .table-modern {
+            font-size: 13px;
+        }
+
+        .table-modern thead th,
+        .table-modern tbody td {
+            padding: 14px 10px;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .page-header,
+    .modern-card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>
+            <i class="fas fa-money-bill-wave"></i> 
+            Pengeluaran Kas Kecil
+        </h1>
+        <p>Kelola transaksi pengeluaran kas kecil</p>
     </div>
+</div>
 
-    {{-- Modal Input Pengeluaran Kas Kecil --}}
-    <div class="modal modal-blur fade" id="modal-frmpengeluaran" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="card-header bg-primary">
-                        <h6 class="m-0 font-weight-bold text-light">Pengeluaran Kas Kecil</h6>
-                    </div>
-                </div>
-                <div class="card shadow col-lg-12">
-                    <div class="card-body">
-                        <form action="{{ route('transaksi.store') }}" method="post" id="frmpengeluaran"
-                            enctype="multipart/form-data">
-                            @csrf
-                            <div class="form-group">
-                                <label for="nama_matanggaran">Mata Anggaran</label>
-                                <select name="kode_matanggaran" id="kode_matanggaran" class="form-select form-control">
-                                    <option value="">- Akun Mata Anggaran -</option>
-                                    @foreach ($matanggaran as $d)
-                                        @if ($d->status == 'd' && $d->kategori == 'pengeluaran')
-                                            <option value="{{ $d->kode_matanggaran }}">
-                                                {{ $d->kode_matanggaran }} | {{ $d->nama_aas }}
-                                            </option>
-                                        @endif
-                                    @endforeach
+<!-- Alert Messages -->
+@if (Session::get('success'))
+<div class="alert alert-success">
+    <i class="fas fa-check-circle"></i>
+    <span>{{ Session::get('success') }}</span>
+</div>
+@endif
+
+@if (Session::get('warning'))
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ Session::get('warning') }}</span>
+</div>
+@endif
+
+<!-- Filter & Action Card -->
+<div class="modern-card">
+    <div class="modern-card-body">
+        <div class="row align-items-end">
+            <div class="col-lg-3 mb-3">
+                @if (Auth::user()->level == 'admin')
+                <button class="btn-modern btn-primary-modern w-100" id="btnTambahPengeluaran">
+                    <i class="fas fa-plus"></i>
+                    Tambah Data
+                </button>
+                @endif
+            </div>
+            <div class="col-lg-9">
+                <form action="{{ url('/transaksi/pengeluaran') }}" method="GET">
+                    @csrf
+                    <div class="filter-card">
+                        <div class="row">
+                            <div class="col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Bulan</label>
+                                <select name="bulan" id="bulan" class="form-select" onchange="this.form.submit()">
+                                    @for ($i = 1; $i <= 12; $i++)
+                                        <option value="{{ $i }}" {{ ($bulan ?? date('m')) == $i ? 'selected' : '' }}>
+                                            {{ $namabulan[$i] }}
+                                        </option>
+                                    @endfor
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label for="jumlah">Jumlah</label>
-                                <input type="text" name="jumlah" id="jumlah" class="form-control">
+                            <div class="col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Tahun</label>
+                                <select name="tahun" id="tahun" class="form-select" onchange="this.form.submit()">
+                                    @for ($tahun = 2023; $tahun <= date('Y'); $tahun++)
+                                        <option value="{{ $tahun }}" {{ ($tahun ?? date('Y')) == $tahun ? 'selected' : '' }}>
+                                            {{ $tahun }}
+                                        </option>
+                                    @endfor
+                                </select>
                             </div>
-                            <input type="hidden" name="kategori" id="kategori" value="pengeluaran">
-                            <div class="form-group">
-                                <label for="">Tanggal</label>
-                                <input type="date" name="tanggal" id="tanggal" class="form-control">
+                            <div class="col-lg-4">
+                                <label class="form-label d-none d-lg-block">&nbsp;</label>
+                                <button type="submit" class="btn-modern btn-primary-modern w-100">
+                                    <i class="fas fa-search"></i>
+                                    Cari Data
+                                </button>
                             </div>
-
-                            <div class="form-group">
-                                <label for="perincian">Perincian</label>
-                                <textarea name="perincian" rows="3" id="perincian" class="form-control"></textarea>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="lampiran">Lampiran</label>
-                                <input class="form-control" id="lampiran" name="lampiran" type="file"
-                                    onchange="previewImage('lampiran', 'preview-image1', 'preview-container1')">
-                            </div>
-                            <div class="form-group mb-3">
-                                <input class="form-control" id="lampiran2" name="lampiran2" type="file"
-                                    onchange="previewImage('lampiran2', 'preview-image2', 'preview-container2')">
-                            </div>
-                            <div class="form-group mb-3">
-                                <input class="form-control" id="lampiran3" name="lampiran3" type="file"
-                                    onchange="previewImage('lampiran3', 'preview-image3', 'preview-container3')">
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div id="preview-container1"
-                                        style="display: none; justify-content: center; align-items: center; margin-top: 10px;">
-                                        <img id="preview-image1" style="width: 100%;"
-                                            src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div id="preview-container2"
-                                        style="display: none; justify-content: center; align-items: center; margin-top: 10px;">
-                                        <img id="preview-image2" style="width: 100%;"
-                                            src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div id="preview-container3"
-                                        style="display: none; justify-content: center; align-items: center; margin-top: 10px;">
-                                        <img id="preview-image3" style="width: 100%;"
-                                            src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <script>
-                                function previewImage(inputId, previewImageId, previewContainerId) {
-                                    const input = document.getElementById(inputId);
-                                    const previewContainer = document.getElementById(previewContainerId);
-                                    const previewImage = document.getElementById(previewImageId);
-
-                                    const file = input.files[0];
-
-                                    if (file) {
-                                        const reader = new FileReader();
-
-                                        reader.onload = function(e) {
-                                            previewImage.src = e.target.result;
-                                            previewContainer.style.display = 'flex';
-                                        };
-
-                                        reader.readAsDataURL(file);
-                                    } else {
-                                        previewImage.src = '{{ asset('assets/img/preview.png') }}';
-                                        previewContainer.style.display = 'none';
-                                    }
-                                }
-                            </script>
-
-                            <button type="submit" class="btn btn-primary btn-block mt-2">Kirim</button>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    {{-- Modal Edit Pengeluaran Kas Kecil --}}
-    <div class="modal modal-blur fade" id="modal-editpengeluaran" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="card-header bg-primary">
-                        <h6 class="m-0 font-weight-bold text-light">Edit Pengeluaran Kas Kecil</h6>
+<!-- Main Card -->
+<div class="modern-card">
+    <div class="modern-card-header">
+        <h6 class="modern-card-title">
+            <i class="fas fa-list"></i>
+            Data Pengeluaran Kas Kecil
+        </h6>
+    </div>
+
+    <div class="modern-card-body">
+        <div class="table-responsive">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th style="width: 4%;">No</th>
+                        <th style="width: 10%;">Tanggal</th>
+                        <th style="width: 35%;">Informasi Akun</th>
+                        <th style="width: 20%;">Perincian</th>
+                        <th style="width: 8%;">Status</th>
+                        <th style="width: 13%;" class="text-right">Jumlah</th>
+                        <th style="width: 10%;" class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $total = 0;
+                    @endphp
+                    @forelse ($pengeluaranbulanini as $d)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YY') }}</td>
+                        <td>
+                            <div class="stacked-info">
+                                <div class="info-codes">
+                                    <span class="badge-modern badge-primary">{{ $d->kode_matanggaran }}</span>
+                                    <span class="badge-modern badge-info">{{ $d->kode_aas }}</span>
+                                </div>
+                                <div class="info-name">{{ $d->nama_aas }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="info-detail">{{ $d->perincian }}</div>
+                        </td>
+                        <td>
+                            @if ($d->status == 'k')
+                            <span class="badge-modern badge-success">Kredit</span>
+                            @elseif ($d->status == 'd')
+                            <span class="badge-modern badge-danger">Debit</span>
+                            @endif
+                        </td>
+                        <td class="text-right">
+                            <strong>Rp {{ number_format($d->jumlah, 0, ',', '.') }}</strong>
+                        </td>
+                        <td class="text-center">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view lihat" id="{{ $d->id }}" title="Lihat Lampiran">
+                                    <i class="fas fa-image"></i>
+                                </button>
+                                @if (Auth::user()->level == 'admin')
+                                <button class="btn-action btn-edit edit" id="{{ $d->id }}" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="/transaksi/hapuspengeluaran/{{ $d->id }}" method="post">
+                                    @csrf
+                                    <button type="button" class="btn-action btn-delete delete-confirm" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
+                        </td>
+                        @php
+                            $total += $d->jumlah;
+                        @endphp
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h3>Belum Ada Data</h3>
+                                <p>Silakan tambahkan data pengeluaran kas kecil</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+                @if($pengeluaranbulanini->count() > 0)
+                <tfoot>
+                    <tr>
+                        <th colspan="5" class="text-center">Total Pengeluaran Perbulan</th>
+                        <th colspan="2" class="text-center">
+                            Rp {{ number_format($totalpengeluaran->total_pengeluaran, 0, ',', '.') }}
+                        </th>
+                    </tr>
+                </tfoot>
+                @endif
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Input Pengeluaran -->
+<div class="modal fade" id="modal-frmpengeluaran" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Tambah Pengeluaran Kas Kecil
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('transaksi.store') }}" method="post" id="frmpengeluaran" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label for="kode_matanggaran" class="form-label">Mata Anggaran</label>
+                        <select name="kode_matanggaran" id="kode_matanggaran" class="form-select">
+                            <option value="">- Pilih Akun Mata Anggaran -</option>
+                            @foreach ($matanggaran as $d)
+                                @if ($d->status == 'd' && $d->kategori == 'pengeluaran')
+                                    <option value="{{ $d->kode_matanggaran }}">
+                                        {{ $d->kode_matanggaran }} | {{ $d->nama_aas }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
                     </div>
-                </div>
-                <div class="modal-body" id="loadeditform">
-                </div>
+                    
+                    <div class="form-group">
+                        <label for="jumlah" class="form-label">Jumlah (Rp)</label>
+                        <input type="text" name="jumlah" id="jumlah" class="form-control" placeholder="Masukkan jumlah">
+                    </div>
+                    
+                    <input type="hidden" name="kategori" id="kategori" value="pengeluaran">
+                    
+                    <div class="form-group">
+                        <label for="tanggal" class="form-label">Tanggal</label>
+                        <input type="date" name="tanggal" id="tanggal" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perincian" class="form-label">Perincian</label>
+                        <textarea name="perincian" id="perincian" class="form-control" placeholder="Masukkan perincian transaksi"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Lampiran (Maks 3 file)</label>
+                        <input class="form-control mb-2" id="lampiran" name="lampiran" type="file" accept="image/*" onchange="previewImage('lampiran', 'preview-image1', 'preview-container1')">
+                        <input class="form-control mb-2" id="lampiran2" name="lampiran2" type="file" accept="image/*" onchange="previewImage('lampiran2', 'preview-image2', 'preview-container2')">
+                        <input class="form-control" id="lampiran3" name="lampiran3" type="file" accept="image/*" onchange="previewImage('lampiran3', 'preview-image3', 'preview-container3')">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div id="preview-container1" class="preview-container" style="display: none; margin-top: 10px;">
+                                <img id="preview-image1" src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div id="preview-container2" class="preview-container" style="display: none; margin-top: 10px;">
+                                <img id="preview-image2" src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div id="preview-container3" class="preview-container" style="display: none; margin-top: 10px;">
+                                <img id="preview-image3" src="{{ asset('assets/img/preview.png') }}" alt="Preview" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-modern btn-success-modern w-100 mt-3">
+                        <i class="fas fa-save"></i>
+                        Simpan Data
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    {{-- Modal Lihat Lampiran --}}
-    <div class="modal modal-blur fade" id="modal-lihatlampiran" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="card-header bg-primary">
-                        <h6 class="m-0 font-weight-bold text-light">Lampiran</h6>
-                    </div>
-                </div>
-                <div class="modal-body" id="loadeditformlihat">
-                </div>
+<!-- Modal Edit Pengeluaran -->
+<div class="modal fade" id="modal-editpengeluaran" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit"></i>
+                    Edit Pengeluaran Kas Kecil
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body" id="loadeditform"></div>
         </div>
     </div>
+</div>
 
+<!-- Modal Lihat Lampiran -->
+<div class="modal fade" id="modal-lihatlampiran" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-image"></i>
+                    Lampiran Pengeluaran
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="loadeditformlihat"></div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
 @push('after-style')
-    <!-- Custom styles for this page -->
-    <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 @endpush
 
 @push('after-script')
-    <!-- Page level plugins -->
-    <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
-    <!-- Page level custom scripts -->
-    <script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
-    {{-- @include('sweetalert::alert') --}}
-    <script>
-        $(function() {
-            // Validasi Juery Mask
-            $('#jumlah').mask('00.000.000', {
-                reverse: true
-            });
+<script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
 
-            //Script takan tombol tambah
-            $("#btnTambahPengeluaran").click(function() {
-                // alert('test');
-                $("#modal-frmpengeluaran").modal("show");
-            });
+<script>
+    function previewImage(inputId, previewImageId, previewContainerId) {
+        const input = document.getElementById(inputId);
+        const previewContainer = document.getElementById(previewContainerId);
+        const previewImage = document.getElementById(previewImageId);
+        const file = input.files[0];
 
-            // Script validasi inptuan form
-            $("#frmpengeluaran").submit(function() {
-                var kode_matanggaran = $("#kode_matanggaran").val();
-                var jumlah = $("#jumlah").val();
-                var tanggal = $("#tanggal").val();
-                var perincian = $("#perincian").val();
-                if (kode_matanggaran == "") {
-                    Swal.fire({
-                        title: 'Warning!',
-                        text: 'Kode Mata Anggaran Harus Diisi',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        $("#kode_matanggaran").focus();
-                    });
-                    return false;
-                } else if (jumlah == "") {
-                    Swal.fire({
-                        title: 'Warning!',
-                        text: 'Jumlah Harus Diisi',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        $("#jumlah").focus();
-                    });
-                    return false;
-                } else if (tanggal == "") {
-                    Swal.fire({
-                        title: 'Warning!',
-                        text: 'Tanggal Harus Diisi',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        $("#tanggal").focus();
-                    });
-                    return false;
-                } else if (perincian == "") {
-                    Swal.fire({
-                        title: 'Warning!',
-                        text: 'Perincian Harus Diisi',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        $("#perincian").focus();
-                    });
-                    return false;
-                }
-            });
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = '{{ asset('assets/img/preview.png') }}';
+            previewContainer.style.display = 'none';
+        }
+    }
 
-            // Proses edit dengan AJAX
-            $(".edit").click(function() {
-                var id = $(this).attr('id');
-                $.ajax({
-                    type: 'POST',
-                    url: '/transaksi/pengeluaran/edit',
-                    cache: false,
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: id
-                    },
-                    success: function(respond) {
-                        $('#loadeditform').html(respond);
-                    }
-                });
-                $("#modal-editpengeluaran").modal("show");
-            });
+    $(function() {
+        $('#jumlah').mask('00.000.000', {
+            reverse: true
+        });
 
-            // Proses lihat dengan AJAX
-            $(".lihat").click(function() {
-                var id = $(this).attr('id');
-                $.ajax({
-                    type: 'POST',
-                    url: '/transaksi/pengeluaran/lihat',
-                    cache: false,
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: id
-                    },
-                    success: function(respond) {
-                        $('#loadeditformlihat').html(respond);
-                    }
-                });
-                $("#modal-lihatlampiran").modal("show");
-            });
+        $("#btnTambahPengeluaran").click(function() {
+            $("#modal-frmpengeluaran").modal("show");
+        });
 
-            // Proses delete dengan AJAX
-            $(".delete-confirm").click(function(e) {
-                var form = $(this).closest('form');
+        $("#frmpengeluaran").submit(function(e) {
+            var kode_matanggaran = $("#kode_matanggaran").val();
+            var jumlah = $("#jumlah").val();
+            var tanggal = $("#tanggal").val();
+            var perincian = $("#perincian").val();
+            
+            if (kode_matanggaran == "") {
                 e.preventDefault();
                 Swal.fire({
-                    title: "Yakin Hapus Data?",
-                    text: "Data anda akan terhapus permanen!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Hapus"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                        Swal.fire({
-                            title: "Terhapus!",
-                            text: "Data anda berhasil terhapus",
-                            icon: "success"
-                        });
-                    }
+                    title: 'Perhatian!',
+                    text: 'Kode Mata Anggaran harus dipilih',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0053C5'
                 });
-            });
-
-
-
+                return false;
+            } else if (jumlah == "") {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Perhatian!',
+                    text: 'Jumlah harus diisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0053C5'
+                });
+                return false;
+            } else if (tanggal == "") {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Perhatian!',
+                    text: 'Tanggal harus diisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0053C5'
+                });
+                return false;
+            } else if (perincian == "") {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Perhatian!',
+                    text: 'Perincian harus diisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0053C5'
+                });
+                return false;
+            }
         });
-    </script>
+
+        $(".edit").click(function() {
+            var id = $(this).attr('id');
+            $.ajax({
+                type: 'POST',
+                url: '/transaksi/pengeluaran/edit',
+                cache: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id
+                },
+                success: function(respond) {
+                    $('#loadeditform').html(respond);
+                }
+            });
+            $("#modal-editpengeluaran").modal("show");
+        });
+
+        $(".lihat").click(function() {
+            var id = $(this).attr('id');
+            $.ajax({
+                type: 'POST',
+                url: '/transaksi/pengeluaran/lihat',
+                cache: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id
+                },
+                success: function(respond) {
+                    $('#loadeditformlihat').html(respond);
+                }
+            });
+            $("#modal-lihatlampiran").modal("show");
+        });
+
+        $(".delete-confirm").click(function(e) {
+            var form = $(this).closest('form');
+            e.preventDefault();
+            Swal.fire({
+                title: "Yakin Hapus Data?",
+                text: "Data akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#0053C5",
+                cancelButtonColor: "#ef4444",
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var selectedBulan = urlParams.get('bulan');
+        var selectedTahun = urlParams.get('tahun');
+        if(selectedBulan) document.getElementById('bulan').value = selectedBulan;
+        if(selectedTahun) document.getElementById('tahun').value = selectedTahun;
+    });
+</script>
 @endpush

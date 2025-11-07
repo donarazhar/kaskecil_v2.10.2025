@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,16 +9,14 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    // Traits untuk API, factory, dan notifikasi.
     use HasApiTokens, HasFactory, Notifiable;
 
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Menentukan nama tabel.
     protected $table = 'users';
 
+    // Atribut yang bisa diisi.
     protected $fillable = [
         'name',
         'email',
@@ -27,21 +24,13 @@ class User extends Authenticatable
         'level',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    // Atribut yang disembunyikan.
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
+    // Casting tipe data atribut.
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',

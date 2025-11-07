@@ -15,6 +15,7 @@
         --gray-50: #f9fafb;
         --gray-100: #f3f4f6;
         --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
         --gray-600: #4b5563;
         --gray-700: #374151;
         --gray-800: #1f2937;
@@ -83,7 +84,7 @@
     /* Stats Cards */
     .stats-card {
         background: var(--white);
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 12px;
         box-shadow: var(--shadow-md);
         border: 1px solid var(--gray-100);
@@ -146,6 +147,11 @@
     .stats-card-icon.info {
         background: #dbeafe;
         color: var(--info);
+    }
+
+    .stats-card-icon.danger {
+        background: #fee2e2;
+        color: var(--danger);
     }
 
     .stats-card-label {
@@ -461,6 +467,32 @@
         padding: 16px;
     }
 
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state i {
+        font-size: 64px;
+        color: var(--gray-300);
+        margin-bottom: 16px;
+        opacity: 0.7;
+    }
+
+    .empty-state h3 {
+        color: var(--gray-700);
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+        font-size: 14px;
+        margin: 0;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .container-fluid {
@@ -654,7 +686,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($matanggaran as $mata)
+                                @forelse ($matanggaran as $mata)
                                 <tr>
                                     <td>
                                         <span class="badge-modern badge-info">
@@ -663,7 +695,17 @@
                                     </td>
                                     <td>{{ $mata->nama_aas }}</td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="empty-state">
+                                            <i class="fas fa-folder-open"></i>
+                                            <h3>Belum Ada Data</h3>
+                                            <p>Mata anggaran belum tersedia</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -702,11 +744,12 @@
                     <div class="content-card-body">
                         @php
                         $colors = ['primary', 'success', 'info', 'warning', 'danger'];
-                        $totals = $rekapperbulan->pluck('total_perbulan')->toArray();
-                        $maxTotalPerbulan = !empty($totals) ? max($totals) : 0;
+                        // FIX: Check if collection is not empty before getting max
+                        $totalPerbulanArray = $rekapperbulan->pluck('total_perbulan')->toArray();
+                        $maxTotalPerbulan = !empty($totalPerbulanArray) ? max($totalPerbulanArray) : 1;
                         @endphp
 
-                        @foreach ($rekapperbulan as $index => $data)
+                        @forelse ($rekapperbulan as $index => $data)
                         @php
                         $percentage = $maxTotalPerbulan !== 0 ? ($data->total_perbulan / $maxTotalPerbulan) * 100 : 0;
                         $colorClass = $percentage == 100 ? 'primary' : $colors[$index % count($colors)];
@@ -724,7 +767,13 @@
                                     style="width: {{ $percentage }}%"></div>
                             </div>
                         </div>
-                        @endforeach
+                        @empty
+                        <div class="empty-state">
+                            <i class="fas fa-chart-pie"></i>
+                            <h3>Belum Ada Data Rekap</h3>
+                            <p>Data rekap pengeluaran bulan ini masih kosong</p>
+                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -774,13 +823,17 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center" style="padding: 40px;">
-                                        <i class="fas fa-inbox" style="font-size: 48px; color: var(--gray-300); margin-bottom: 16px;"></i>
-                                        <p style="color: var(--gray-600); margin: 0;">Belum ada transaksi</p>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <i class="fas fa-inbox"></i>
+                                            <h3>Belum Ada Transaksi</h3>
+                                            <p>Belum ada transaksi bulan ini</p>
+                                        </div>
                                     </td>
                                 </tr>
                                 @endforelse
                             </tbody>
+                            @if($pengeluaranbulanini->count() > 0)
                             <tfoot>
                                 <tr>
                                     <th colspan="5" class="text-center">Total Pengeluaran</th>
@@ -789,6 +842,7 @@
                                     </th>
                                 </tr>
                             </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>
@@ -806,6 +860,7 @@
                         </h6>
                     </div>
                     <div class="content-card-body">
+                        @if(isset($combinedData) && $combinedData->count() > 0)
                         <div class="row">
                             @foreach ($combinedData as $data)
                             @if (is_object($data))
@@ -853,6 +908,13 @@
                         <div class="d-flex justify-content-center mt-4">
                             {{ $combinedData->links('vendor.pagination.bootstrap-5') }}
                         </div>
+                        @else
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <h3>Belum Ada History</h3>
+                            <p>History pengisian kas masih kosong</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -865,6 +927,7 @@
 
 @push('after-style')
 <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 @endpush
 
 @push('after-script')
