@@ -36,7 +36,7 @@
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
             border-right: none;
             color: var(--text-white);
-            transition: width 0.3s ease;
+            transition: width 0.3s ease, margin-left 0.3s ease;
         }
 
         /* Sidebar Collapsed State */
@@ -161,6 +161,10 @@
         }
 
         /* Tooltip untuk sidebar collapsed */
+        #accordionSidebar.toggled .nav-link {
+            position: relative;
+        }
+
         #accordionSidebar.toggled .nav-link::after {
             content: attr(data-tooltip);
             position: absolute;
@@ -222,58 +226,152 @@
             display: none !important;
         }
 
-        /* Sidebar Toggle Button */
+        /* Sidebar Toggle Button Styling */
         #sidebarToggle {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
+            background: rgba(255, 255, 255, 0.2) !important;
+            width: 40px !important;
+            height: 40px !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            outline: none !important;
+            z-index: 10 !important;
+            pointer-events: auto !important;
+            margin: 0 auto !important;
         }
 
         #sidebarToggle:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.3) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            transform: scale(1.1) !important;
+        }
+
+        #sidebarToggle:active {
+            background: rgba(255, 255, 255, 0.4) !important;
+            transform: scale(0.95) !important;
+        }
+
+        #sidebarToggle:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
         }
 
         #sidebarToggle::before {
             content: '\f104';
             font-family: 'Font Awesome 5 Free';
             font-weight: 900;
-            color: white;
-            font-size: 16px;
+            color: white !important;
+            font-size: 18px;
             transition: transform 0.3s ease;
-            display: inline-block;
+            pointer-events: none;
         }
 
         #accordionSidebar.toggled #sidebarToggle::before {
-            content: '\f105';
+            transform: rotate(180deg);
         }
 
-        /* Topbar Toggle Button */
-        #sidebarToggleTop {
-            background: var(--primary-blue);
-            color: white;
+        /* Pastikan container toggle terlihat dan di tengah */
+        .text-center.d-none.d-md-inline {
+            padding: 15px 0;
+            z-index: 10;
+            position: relative;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        /* Untuk mobile - sidebar muncul dari kiri */
+        @media (max-width: 768px) {
+            #accordionSidebar {
+                position: fixed !important;
+                left: -260px !important;
+                top: 0 !important;
+                height: 100vh !important;
+                z-index: 9999 !important;
+                transition: left 0.3s ease !important;
+            }
+
+            body.sidebar-toggled #accordionSidebar {
+                left: 0 !important;
+            }
+
+            /* Overlay untuk mobile */
+            body.sidebar-toggled::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 9998;
+            }
+        }
+
+        /* Desktop Toggle Button in Topbar */
+        .sidebar-toggle-desktop {
+            background: transparent;
             border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            font-size: 20px;
+            color: #858796;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
             transition: all 0.3s ease;
+            margin-right: 15px;
         }
 
-        #sidebarToggleTop:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
+        .sidebar-toggle-desktop:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #4e73df;
         }
 
-        /* Scrollbar */
-        #accordionSidebar::-webkit-scrollbar {
-            width: 6px;
+        .sidebar-toggle-desktop:focus {
+            outline: none;
         }
 
-        #accordionSidebar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #accordionSidebar {
+                margin-left: 0;
+                position: fixed;
+                left: -260px;
+                width: 260px !important;
+                top: 0;
+                height: 100vh;
+                z-index: 9999;
+                transition: left 0.3s ease;
+            }
+
+            /* Ketika toggle di mobile, sidebar muncul dari kiri */
+            body.sidebar-toggled #accordionSidebar {
+                left: 0;
+            }
+
+            /* Jangan collapse sidebar di mobile, hanya hide */
+            #accordionSidebar.toggled {
+                width: 260px !important;
+            }
+
+            #accordionSidebar.toggled .sidebar-brand-text,
+            #accordionSidebar.toggled .nav-link span,
+            #accordionSidebar.toggled .sidebar-heading {
+                display: block !important;
+            }
+
+            #accordionSidebar.toggled .nav-link {
+                justify-content: flex-start !important;
+                padding: 10px 16px !important;
+            }
+
+            #accordionSidebar.toggled .nav-link i {
+                margin-right: 12px !important;
+                font-size: 16px !important;
+            }
         }
 
         /* Content wrapper adjustment */
@@ -281,41 +379,62 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            #accordionSidebar {
-                width: 260px;
-            }
+        /* Topbar styling */
+        .topbar {
+            transition: all 0.3s ease;
+        }
 
-            #accordionSidebar.toggled {
-                width: 0;
-                overflow: hidden;
-            }
+        /* Alert & Button Styling */
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            border: none;
+        }
+
+        .btn-gradient-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
+            color: white;
+        }
+
+        .btn-gradient-warning {
+            background: linear-gradient(135deg, #f6c23e, #f4b619);
+            color: white;
+            border: none;
+        }
+
+        .btn-gradient-warning:hover {
+            background: linear-gradient(135deg, #f4b619, #f6c23e);
+            color: white;
+        }
+
+        /* Page Wrapper */
+        #wrapper {
+            display: flex;
         }
     </style>
-
 </head>
 
 <body id="page-top">
 
+    <!-- Page Wrapper -->
     <div id="wrapper">
-        <!-- Sidebar -->
-        <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
 
-            <!-- Sidebar Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/panel/beranda">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-left justify-content-left" href="/">
                 <div class="sidebar-brand-icon">
-                    <i class="fas fa-wallet"></i>
+                    <i class="fas fa-file-invoice"></i>
                 </div>
-                <div class="sidebar-brand-text mx-2">Kas Kecil <sup>v2.0</sup></div>
+                <div class="sidebar-brand-text mx-2">Kas Kecil APP</div>
             </a>
 
             <hr class="sidebar-divider my-0">
 
             <!-- Dashboard -->
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('panel/beranda') ? 'active' : '' }}" href="/panel/beranda"
-                    data-tooltip="Dashboard">
+                <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/" data-tooltip="Dashboard">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
@@ -325,7 +444,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Menu Utama
+                Master Data
             </div>
 
             <!-- Master Data -->
@@ -427,9 +546,14 @@
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                    <!-- Sidebar Toggle (Topbar) -->
+                    <!-- Sidebar Toggle (Topbar) - Mobile & Desktop -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Desktop Sidebar Toggle (Visible on all screens) -->
+                    <button class="sidebar-toggle-desktop d-none d-md-inline" id="sidebarToggleDesktop">
+                        <i class="fas fa-bars"></i>
                     </button>
 
                     <!-- Topbar Navbar -->
@@ -516,47 +640,202 @@
     <!-- Core plugin JavaScript-->
     <script src="{{ asset('assets/sbadmin/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('assets/sbadmin/js/sb-admin-2.min.js') }}"></script>
+    <!-- Custom scripts for all pages - DISABLED to prevent conflict -->
+    <!-- <script src="{{ asset('assets/sbadmin/js/sb-admin-2.min.js') }}"></script> -->
 
     <!-- Additional Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('assets/js/lib/jquery.mask.min.js') }}"></script>
 
     <script>
-        // Enhanced Sidebar Toggle
-        $(document).ready(function() {
-            // Toggle sidebar
-            $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
-                e.preventDefault();
-                $("body").toggleClass("sidebar-toggled");
-                $("#accordionSidebar").toggleClass("toggled");
+        // Enhanced Sidebar Toggle - Fixed Version for Mobile & Desktop
+        (function($) {
+            "use strict";
 
-                // Close all collapse menus when toggling
-                if ($("#accordionSidebar").hasClass("toggled")) {
-                    $(".collapse").collapse('hide');
-                }
-            });
-
-            // Save sidebar state to localStorage
-            if (localStorage.getItem('sidebarToggled') === 'true') {
-                $("body").addClass("sidebar-toggled");
-                $("#accordionSidebar").addClass("toggled");
+            // Check if mobile
+            function isMobile() {
+                return $(window).width() < 768;
             }
 
-            $("#sidebarToggle, #sidebarToggleTop").on('click', function() {
-                const isToggled = $("#accordionSidebar").hasClass("toggled");
-                localStorage.setItem('sidebarToggled', isToggled);
+            // Function to toggle sidebar
+            function toggleSidebar() {
+                console.log('=== Toggle Sidebar Function Called ===');
+                console.log('Is Mobile:', isMobile());
+
+                if (isMobile()) {
+                    // Mobile: hanya toggle visibility, tidak collapse
+                    $("body").toggleClass("sidebar-toggled");
+                    // Jangan tambahkan class 'toggled' ke sidebar di mobile
+                    const isShown = $("body").hasClass("sidebar-toggled");
+                    console.log('Mobile sidebar is now:', isShown ? 'SHOWN' : 'HIDDEN');
+
+                    // Di mobile, pastikan collapse menu tetap bisa dibuka
+                    if (isShown) {
+                        // Sidebar ditampilkan, jangan hide collapse
+                    } else {
+                        // Sidebar disembunyikan, tutup semua collapse
+                        $(".collapse").collapse('hide');
+                    }
+                } else {
+                    // Desktop: toggle collapse sidebar
+                    $("body").toggleClass("sidebar-toggled");
+                    $("#accordionSidebar").toggleClass("toggled");
+
+                    // Close all collapse menus when toggling to collapsed state
+                    if ($("#accordionSidebar").hasClass("toggled")) {
+                        $(".collapse").collapse('hide');
+                    }
+
+                    const isToggled = $("#accordionSidebar").hasClass("toggled");
+                    console.log('Desktop sidebar is now:', isToggled ? 'COLLAPSED' : 'EXPANDED');
+                }
+
+                // Save state to localStorage (only for desktop)
+                if (!isMobile()) {
+                    const isToggled = $("#accordionSidebar").hasClass("toggled");
+                    localStorage.setItem('sidebarToggled', isToggled);
+                }
+            }
+
+            $(document).ready(function() {
+                console.log('=== Sidebar Script Initialized ===');
+                console.log('Window width:', $(window).width());
+                console.log('Is Mobile:', isMobile());
+
+                // Load saved sidebar state from localStorage (only for desktop)
+                if (!isMobile() && localStorage.getItem('sidebarToggled') === 'true') {
+                    $("body").addClass("sidebar-toggled");
+                    $("#accordionSidebar").addClass("toggled");
+                    $(".collapse").collapse('hide');
+                    console.log('Loaded saved state: COLLAPSED');
+                }
+
+                // Di mobile, pastikan sidebar tersembunyi by default
+                if (isMobile()) {
+                    // Sidebar sudah tersembunyi dengan CSS (left: -260px)
+                    // Tidak perlu addClass toggled
+                    console.log('Mobile: Sidebar hidden by default');
+                }
+
+                // Debug: Check if buttons exist
+                setTimeout(function() {
+                    console.log('=== Button Check ===');
+                    console.log('Bottom toggle button (#sidebarToggle):', $('#sidebarToggle').length);
+                    console.log('Top mobile toggle (#sidebarToggleTop):', $('#sidebarToggleTop')
+                    .length);
+                    console.log('Desktop toggle (#sidebarToggleDesktop):', $('#sidebarToggleDesktop')
+                        .length);
+                }, 100);
+
+                // Remove any existing click handlers first to prevent conflicts
+                $('#sidebarToggle, #sidebarToggleTop, #sidebarToggleDesktop').off('click');
+
+                // Method 1: Direct binding on specific button
+                $('#sidebarToggle').on('click', function(e) {
+                    console.log('>>> BOTTOM BUTTON CLICKED <<<');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    toggleSidebar();
+                    return false;
+                });
+
+                // Method 2: Event delegation for bottom button
+                $(document).on('click', '#sidebarToggle', function(e) {
+                    console.log('>>> BOTTOM BUTTON CLICKED (delegation) <<<');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    toggleSidebar();
+                    return false;
+                });
+
+                // Top mobile toggle
+                $('#sidebarToggleTop').on('click', function(e) {
+                    console.log('>>> TOP MOBILE BUTTON CLICKED <<<');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    toggleSidebar();
+                    return false;
+                });
+
+                // Desktop toggle (hamburger in topbar)
+                $('#sidebarToggleDesktop').on('click', function(e) {
+                    console.log('>>> DESKTOP BUTTON CLICKED <<<');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    toggleSidebar();
+                    return false;
+                });
+
+                // Prevent collapse menu opening when sidebar is toggled (ONLY on desktop)
+                $(document).on('click', '#accordionSidebar.toggled .nav-link[data-toggle="collapse"]', function(
+                    e) {
+                    if (!isMobile() && $("#accordionSidebar").hasClass("toggled")) {
+                        console.log('Desktop: Prevented collapse menu in toggled state');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                });
+
+                // Auto-close sidebar on mobile after clicking a NON-COLLAPSE link
+                $(document).on('click', '.nav-link:not([data-toggle="collapse"])', function() {
+                    if (isMobile() && $("body").hasClass("sidebar-toggled")) {
+                        // Tutup sidebar setelah delay singkat
+                        setTimeout(function() {
+                            $("body").removeClass("sidebar-toggled");
+                            console.log('Mobile: Auto-closed sidebar after link click');
+                        }, 300);
+                    }
+                });
+
+                // Click outside sidebar to close (mobile only)
+                $(document).on('click', function(e) {
+                    if (isMobile() && $("body").hasClass("sidebar-toggled")) {
+                        // Jika klik di luar sidebar
+                        if (!$(e.target).closest('#accordionSidebar, #sidebarToggleTop').length) {
+                            $("body").removeClass("sidebar-toggled");
+                            console.log('Mobile: Closed sidebar (clicked outside)');
+                        }
+                    }
+                });
+
+                // Handle window resize
+                $(window).resize(function() {
+                    console.log('Window resized to:', $(window).width());
+                    if (isMobile()) {
+                        // Reset ke mobile mode
+                        $("body").removeClass("sidebar-toggled");
+                        $("#accordionSidebar").removeClass("toggled");
+                    } else {
+                        // Load desktop saved state
+                        if (localStorage.getItem('sidebarToggled') === 'true') {
+                            $("body").addClass("sidebar-toggled");
+                            $("#accordionSidebar").addClass("toggled");
+                        } else {
+                            $("body").removeClass("sidebar-toggled");
+                            $("#accordionSidebar").removeClass("toggled");
+                        }
+                    }
+                });
+
+                // REMOVED: Auto-test toggle (uncomment if needed for debugging)
+                /*
+                setTimeout(function() {
+                    $('#sidebarToggle').trigger('click');
+                    console.log('=== Test Toggle Triggered ===');
+                    setTimeout(function() {
+                        $('#sidebarToggle').trigger('click');
+                        console.log('=== Restored Original State ===');
+                    }, 500);
+                }, 1000);
+                */
             });
 
-            // Prevent collapse menu opening when sidebar is toggled
-            $("#accordionSidebar.toggled .nav-link[data-toggle='collapse']").on('click', function(e) {
-                if ($("#accordionSidebar").hasClass("toggled")) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-        });
+        })(jQuery);
     </script>
 
     @stack('after-script')
