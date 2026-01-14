@@ -978,7 +978,7 @@
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
-            {{ $aas->links('vendor.pagination.bootstrap-5') }}
+            {{ $aas->links('pagination::bootstrap-4') }}
         </div>
     </div>
 </div>

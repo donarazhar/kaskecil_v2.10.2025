@@ -13,7 +13,8 @@
 
     <!-- Custom fonts for this template-->
     <link href="{{ asset('assets/sbadmin/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('assets/sbadmin/css/sb-admin-2.min.css') }}" rel="stylesheet">
@@ -35,16 +36,55 @@
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
             border-right: none;
             color: var(--text-white);
+            transition: width 0.3s ease;
+        }
+
+        /* Sidebar Collapsed State */
+        #accordionSidebar.toggled {
+            width: 80px;
+            overflow-x: hidden;
+        }
+
+        #accordionSidebar.toggled .sidebar-brand-text {
+            display: none;
+        }
+
+        #accordionSidebar.toggled .nav-link span {
+            display: none;
+        }
+
+        #accordionSidebar.toggled .sidebar-heading {
+            display: none;
+        }
+
+        #accordionSidebar.toggled .nav-link {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        #accordionSidebar.toggled .nav-link i {
+            margin-right: 0;
+            font-size: 20px;
+        }
+
+        #accordionSidebar.toggled .sidebar-brand {
+            padding: 20px 10px;
+        }
+
+        #accordionSidebar.toggled .sidebar-brand-icon {
+            margin: 0;
         }
 
         /* Brand Section */
         .sidebar-brand {
             background: rgba(255, 255, 255, 0.1);
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
         .sidebar-brand-text {
             color: var(--text-white);
+            transition: opacity 0.3s ease;
         }
 
         .sidebar-brand-icon i {
@@ -57,6 +97,10 @@
             margin: 12px 20px;
         }
 
+        #accordionSidebar.toggled .sidebar-divider {
+            margin: 12px 10px;
+        }
+
         /* Sidebar Heading */
         .sidebar-heading {
             color: rgba(255, 255, 255, 0.6);
@@ -65,11 +109,13 @@
             font-size: 11px;
             letter-spacing: 0.8px;
             padding: 8px 20px;
+            transition: opacity 0.3s ease;
         }
 
         /* Nav Item */
         .nav-item {
             margin: 4px 10px;
+            position: relative;
         }
 
         .nav-link {
@@ -79,6 +125,7 @@
             display: flex;
             align-items: center;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .nav-link i {
@@ -87,6 +134,10 @@
             margin-right: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
+        }
+
+        .nav-link span {
+            transition: opacity 0.3s ease;
         }
 
         .nav-link:hover {
@@ -107,6 +158,30 @@
 
         .nav-item .nav-link.active i {
             color: white;
+        }
+
+        /* Tooltip untuk sidebar collapsed */
+        #accordionSidebar.toggled .nav-link::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            margin-left: 10px;
+            font-size: 13px;
+            z-index: 1000;
+        }
+
+        #accordionSidebar.toggled .nav-link:hover::after {
+            opacity: 1;
         }
 
         /* Collapse Menu */
@@ -142,6 +217,11 @@
             font-weight: 600;
         }
 
+        /* Hide collapse content when sidebar is toggled */
+        #accordionSidebar.toggled .collapse {
+            display: none !important;
+        }
+
         /* Sidebar Toggle Button */
         #sidebarToggle {
             width: 36px;
@@ -149,6 +229,7 @@
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         #sidebarToggle:hover {
@@ -161,6 +242,28 @@
             font-weight: 900;
             color: white;
             font-size: 16px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        #accordionSidebar.toggled #sidebarToggle::before {
+            content: '\f105';
+        }
+
+        /* Topbar Toggle Button */
+        #sidebarToggleTop {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        #sidebarToggleTop:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
         }
 
         /* Scrollbar */
@@ -171,6 +274,23 @@
         #accordionSidebar::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.3);
             border-radius: 10px;
+        }
+
+        /* Content wrapper adjustment */
+        #content-wrapper {
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #accordionSidebar {
+                width: 260px;
+            }
+
+            #accordionSidebar.toggled {
+                width: 0;
+                overflow: hidden;
+            }
         }
     </style>
 
@@ -187,14 +307,15 @@
                 <div class="sidebar-brand-icon">
                     <i class="fas fa-wallet"></i>
                 </div>
-                <div class="sidebar-brand-text">Kas Kecil <sup>v2.0</sup></div>
+                <div class="sidebar-brand-text mx-2">Kas Kecil <sup>v2.0</sup></div>
             </a>
 
             <hr class="sidebar-divider my-0">
 
             <!-- Dashboard -->
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('panel/beranda') ? 'active' : '' }}" href="/panel/beranda">
+                <a class="nav-link {{ request()->is('panel/beranda') ? 'active' : '' }}" href="/panel/beranda"
+                    data-tooltip="Dashboard">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
@@ -212,7 +333,7 @@
                 <a class="nav-link {{ request()->is(['master/aas', 'master/matanggaran']) ? '' : 'collapsed' }}"
                     href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="{{ request()->is(['master/aas', 'master/matanggaran']) ? 'true' : 'false' }}"
-                    aria-controls="collapseTwo">
+                    aria-controls="collapseTwo" data-tooltip="Master Data">
                     <i class="fas fa-database"></i>
                     <span>Master Data</span>
                 </a>
@@ -234,7 +355,7 @@
                 <a class="nav-link {{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? '' : 'collapsed' }}"
                     href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="{{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? 'true' : 'false' }}"
-                    aria-controls="collapseUtilities">
+                    aria-controls="collapseUtilities" data-tooltip="Transaksi">
                     <i class="fas fa-exchange-alt"></i>
                     <span>Transaksi</span>
                 </a>
@@ -255,7 +376,8 @@
 
             <!-- Laporan -->
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('laporan') ? 'active' : '' }}" href="/laporan">
+                <a class="nav-link {{ request()->is('laporan') ? 'active' : '' }}" href="/laporan"
+                    data-tooltip="Laporan">
                     <i class="fas fa-file-alt"></i>
                     <span>Laporan</span>
                 </a>
@@ -270,7 +392,8 @@
 
             <!-- Pengguna -->
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('users') ? 'active' : '' }}" href="/users">
+                <a class="nav-link {{ request()->is('users') ? 'active' : '' }}" href="/users"
+                    data-tooltip="Pengguna">
                     <i class="fas fa-users"></i>
                     <span>Pengguna</span>
                 </a>
@@ -278,7 +401,8 @@
 
             <!-- Instansi -->
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('instansi') ? 'active' : '' }}" href="/instansi">
+                <a class="nav-link {{ request()->is('instansi') ? 'active' : '' }}" href="/instansi"
+                    data-tooltip="Instansi">
                     <i class="fas fa-building"></i>
                     <span>Instansi</span>
                 </a>
@@ -317,14 +441,16 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
+                                <span
+                                    class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
                                 <img class="img-profile rounded-circle"
                                     src="{{ asset('assets/sbadmin/img/undraw_profile.svg') }}">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="#" data-toggle="modal"
+                                    data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt"></i>
                                     Logout
                                 </a>
@@ -396,6 +522,42 @@
     <!-- Additional Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('assets/js/lib/jquery.mask.min.js') }}"></script>
+
+    <script>
+        // Enhanced Sidebar Toggle
+        $(document).ready(function() {
+            // Toggle sidebar
+            $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
+                e.preventDefault();
+                $("body").toggleClass("sidebar-toggled");
+                $("#accordionSidebar").toggleClass("toggled");
+
+                // Close all collapse menus when toggling
+                if ($("#accordionSidebar").hasClass("toggled")) {
+                    $(".collapse").collapse('hide');
+                }
+            });
+
+            // Save sidebar state to localStorage
+            if (localStorage.getItem('sidebarToggled') === 'true') {
+                $("body").addClass("sidebar-toggled");
+                $("#accordionSidebar").addClass("toggled");
+            }
+
+            $("#sidebarToggle, #sidebarToggleTop").on('click', function() {
+                const isToggled = $("#accordionSidebar").hasClass("toggled");
+                localStorage.setItem('sidebarToggled', isToggled);
+            });
+
+            // Prevent collapse menu opening when sidebar is toggled
+            $("#accordionSidebar.toggled .nav-link[data-toggle='collapse']").on('click', function(e) {
+                if ($("#accordionSidebar").hasClass("toggled")) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
 
     @stack('after-script')
 

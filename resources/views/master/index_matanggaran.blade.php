@@ -953,7 +953,7 @@
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
-            {{ $matanggaran->links('vendor.pagination.bootstrap-5') }}
+            {{ $matanggaran->links('pagination::bootstrap-4') }}
         </div>
     </div>
 </div>

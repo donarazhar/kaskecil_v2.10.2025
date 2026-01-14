@@ -181,7 +181,6 @@ class TransaksiController extends Controller
         }
     }
 
-    // MENU PENGELUARAN KAS KECIL
     // Index Menu Pengeluaran Kas Kecil
     public function indexPengeluaran(Request $request)
     {
@@ -193,16 +192,34 @@ class TransaksiController extends Controller
         // Menangani pencarian
         $bulan = $request->input('bulan', $bulanini);
         $tahun = $request->input('tahun', $tahunini);
+        $search = $request->input('search', '');
 
-        $pengeluaranbulanini = DB::table('transaksi')
+        $query = DB::table('transaksi')
             ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->where('transaksi.kategori', $pengeluaran)
             ->whereRaw('MONTH(tanggal)="' . $bulan . '"')
-            ->whereRaw('YEAR(tanggal)="' . $tahun . '"')
-             ->orderBy('tanggal', 'ASC')
-            ->get();
+            ->whereRaw('YEAR(tanggal)="' . $tahun . '"');
+
+        // Tambahkan pencarian jika ada keyword
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('akun_matanggaran.kode_matanggaran', 'like', '%' . $search . '%')
+                    ->orWhere('akun_aas.kode_aas', 'like', '%' . $search . '%')
+                    ->orWhere('akun_aas.nama_aas', 'like', '%' . $search . '%')
+                    ->orWhere('transaksi.perincian', 'like', '%' . $search . '%')
+                    ->orWhere('transaksi.jumlah', 'like', '%' . $search . '%');
+            });
+        }
+
+        $pengeluaranbulanini = $query->orderBy('tanggal', 'ASC')
+            ->paginate(10)
+            ->appends([
+                'bulan' => $bulan,
+                'tahun' => $tahun,
+                'search' => $search
+            ]);
 
         $tanggal_sekarang = Date::now();
         $bulan_sekarang = $tanggal_sekarang->format('m');
@@ -214,16 +231,34 @@ class TransaksiController extends Controller
             ->get();
 
         $totalpengeluaran = DB::table('transaksi')
-            ->select(
-                DB::raw('SUM(jumlah) AS total_pengeluaran')
-            )
+            ->select(DB::raw('SUM(jumlah) AS total_pengeluaran'))
             ->where('kategori', 'pengeluaran')
             ->whereRaw('MONTH(tanggal)="' . $bulan . '"')
-            ->whereRaw('YEAR(tanggal)="' . $tahun . '"')
-            ->first();
+            ->whereRaw('YEAR(tanggal)="' . $tahun . '"');
+
+        // Tambahkan filter pencarian untuk total jika ada keyword
+        if (!empty($search)) {
+            $totalpengeluaran->where(function ($q) use ($search) {
+                $q->whereExists(function ($query) use ($search) {
+                    $query->select(DB::raw(1))
+                        ->from('akun_matanggaran')
+                        ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
+                        ->whereColumn('transaksi.kode_matanggaran', 'akun_matanggaran.kode_matanggaran')
+                        ->where(function ($q2) use ($search) {
+                            $q2->where('akun_matanggaran.kode_matanggaran', 'like', '%' . $search . '%')
+                                ->orWhere('akun_aas.kode_aas', 'like', '%' . $search . '%')
+                                ->orWhere('akun_aas.nama_aas', 'like', '%' . $search . '%');
+                        });
+                })->orWhere('transaksi.perincian', 'like', '%' . $search . '%')
+                    ->orWhere('transaksi.jumlah', 'like', '%' . $search . '%');
+            });
+        }
+
+        $totalpengeluaran = $totalpengeluaran->first();
+
         $namabulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-        return view('pages.transaksi.pengeluaran.index', compact('namabulan', 'matanggaran', 'totalpengeluaran', 'pengeluaranbulanini', 'bulan', 'tahun'));
+        return view('pages.transaksi.pengeluaran.index', compact('namabulan', 'matanggaran', 'totalpengeluaran', 'pengeluaranbulanini', 'bulan', 'tahun', 'search'));
     }
 
     // Edit Menu Pengeluaran Kas Kecil
@@ -313,7 +348,6 @@ class TransaksiController extends Controller
         return redirect()->back()->with('pesan', 'Update transaksi berhasil');
     }
 
-
     // Hapus pengeluaran
     public function hapuspengeluaran($id)
     {
@@ -331,29 +365,48 @@ class TransaksiController extends Controller
         }
     }
 
-    // MENU PENGISIAN KAS KECIL
     // Index Menu Pengisian Kas Kecil
-    public function indexPengisian()
+    public function indexPengisian(Request $request)
     {
-
         $tanggal_sekarang = Date::now();
         $bulan_sekarang = $tanggal_sekarang->format('m');
+        $search = $request->input('search', '');
 
-        $pengisian = DB::table('transaksi')
+        // Query untuk pengisian yang sudah cair
+        $pengisianQuery = DB::table('transaksi')
             ->select('transaksi.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
-            ->where('transaksi.kategori', '=', 'pengisian')
-            ->orderBy('transaksi.created_at', 'ASC')
-            ->get();
+            ->where('transaksi.kategori', '=', 'pengisian');
 
-        $pengisianShadow = DB::table('transaksi_shadow')
+        // Query untuk pengisian yang belum cair (shadow)
+        $pengisianShadowQuery = DB::table('transaksi_shadow')
             ->select('transaksi_shadow.*', 'akun_matanggaran.kode_aas', 'akun_aas.nama_aas', 'akun_aas.status')
             ->leftJoin('akun_matanggaran', 'transaksi_shadow.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
-            ->where('transaksi_shadow.kategori', '=', 'pengisian')
-            ->orderBy('transaksi_shadow.created_at', 'ASC')
-            ->get();
+            ->where('transaksi_shadow.kategori', '=', 'pengisian');
+
+        // Tambahkan pencarian jika ada keyword
+        if (!empty($search)) {
+            $pengisianQuery->where(function ($q) use ($search) {
+                $q->where('akun_matanggaran.kode_matanggaran', 'like', '%' . $search . '%')
+                    ->orWhere('akun_aas.kode_aas', 'like', '%' . $search . '%')
+                    ->orWhere('akun_aas.nama_aas', 'like', '%' . $search . '%')
+                    ->orWhere('transaksi.perincian', 'like', '%' . $search . '%')
+                    ->orWhere('transaksi.jumlah', 'like', '%' . $search . '%');
+            });
+
+            $pengisianShadowQuery->where(function ($q) use ($search) {
+                $q->where('akun_matanggaran.kode_matanggaran', 'like', '%' . $search . '%')
+                    ->orWhere('akun_aas.kode_aas', 'like', '%' . $search . '%')
+                    ->orWhere('akun_aas.nama_aas', 'like', '%' . $search . '%')
+                    ->orWhere('transaksi_shadow.perincian', 'like', '%' . $search . '%')
+                    ->orWhere('transaksi_shadow.jumlah', 'like', '%' . $search . '%');
+            });
+        }
+
+        $pengisian = $pengisianQuery->orderBy('created_at', 'ASC')->get();
+        $pengisianShadow = $pengisianShadowQuery->orderBy('created_at', 'ASC')->get();
 
         $matanggaran = DB::table('akun_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
@@ -362,18 +415,43 @@ class TransaksiController extends Controller
             ->get();
 
         $totalpengisian = DB::table('transaksi')
-            ->select(
-                DB::raw('SUM(jumlah) AS total_pengisian')
-            )
+            ->select(DB::raw('SUM(jumlah) AS total_pengisian'))
             ->where('kategori', 'pengisian')
             ->whereMonth('tanggal', $bulan_sekarang)
             ->first();
 
-        $combinedData = $pengisian->merge($pengisianShadow);
+        // Gabungkan data dan buat collection untuk pagination manual
+        $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('created_at');
+
+        // Implementasi pagination manual
+        $perPage = 5;
+        $currentPage = request()->get('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+
+        $paginatedData = $combinedData->slice($offset, $perPage)->values();
+
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedData,
+            $combinedData->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'query' => request()->query(),
+            ]
+        );
+
         $idPengisianArray = $combinedData->pluck('id_pengisian')->all();
 
-
-        return view('pages.transaksi.pengisian.index', compact('pengisian', 'matanggaran', 'totalpengisian', 'pengisianShadow', 'idPengisianArray', 'combinedData'));
+        return view('pages.transaksi.pengisian.index', compact(
+            'pengisian',
+            'matanggaran',
+            'totalpengisian',
+            'pengisianShadow',
+            'idPengisianArray',
+            'paginator',
+            'search'
+        ));
     }
 
     // Edit Menu Pengisian Kas Kecil
