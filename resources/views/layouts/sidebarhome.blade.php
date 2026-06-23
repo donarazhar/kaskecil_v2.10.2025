@@ -389,8 +389,10 @@
             }
 
             .footer-links {
-                flex-direction: column;
-                gap: 0.5rem;
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 1rem;
             }
         }
 
