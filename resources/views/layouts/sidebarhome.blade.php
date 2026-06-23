@@ -454,9 +454,7 @@
                 <!-- Modern Navbar -->
                 <nav class="navbar navbar-expand navbar-light navbar-modern">
                     <a class="navbar-brand-modern" href="/">
-                        <div class="brand-icon">
-                            <i class="fas fa-wallet"></i>
-                        </div>
+                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo Masjid Al Azhar" style="width: 42px; height: 42px; object-fit: contain;">
                         <div class="brand-text">
                             <span class="brand-title">Kas Kecil Metode Imprest</span>
                             <span class="brand-subtitle">Masjid Al Azhar</span>
@@ -542,9 +540,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-3">
-                        <div class="brand-icon mx-auto mb-3" style="width: 64px; height: 64px; font-size: 2rem;">
-                            <i class="fas fa-wallet"></i>
-                        </div>
+                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" class="mx-auto mb-3" style="width: 64px; height: 64px; object-fit: contain; display: block;">
                         <h5 class="font-weight-bold mb-2">Kas Kecil APP</h5>
                         <p class="text-muted mb-0">Sistem Manajemen Kas Kecil</p>
                         <p class="text-muted">Masjid Agung Al Azhar</p>
