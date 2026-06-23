@@ -61,19 +61,10 @@
 
         /* Collapsed desktop */
         body.sidebar-collapsed .sidebar { width: 72px; }
-        body.sidebar-collapsed .sidebar .brand-name,
-        body.sidebar-collapsed .sidebar .nav-label,
-        body.sidebar-collapsed .sidebar .nav-text,
-        body.sidebar-collapsed .sidebar .nav-arrow,
         body.sidebar-collapsed .sidebar .section-label,
         body.sidebar-collapsed .sidebar .sub-menu,
         body.sidebar-collapsed .sidebar .user-info,
         body.sidebar-collapsed .sidebar .user-logout-btn { display: none !important; }
-        body.sidebar-collapsed .sidebar .nav-item-link { justify-content: center; padding: 10px; }
-        body.sidebar-collapsed .sidebar .nav-icon { margin: 0; }
-        body.sidebar-collapsed .sidebar .sidebar-brand { justify-content: center; padding: 16px 0; }
-        body.sidebar-collapsed .sidebar .sidebar-brand img.logo-img { margin: 0; }
-        body.sidebar-collapsed .sidebar .user-card { justify-content: center; padding: 10px 0; background: transparent; }
 
         /* Mobile hidden */
         @media (max-width: 767px) {
@@ -85,12 +76,14 @@
         .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 0 20px;
+            gap: 12px;
+            padding: 0 19px;
             height: var(--topbar-h);
             border-bottom: 1px solid var(--gray-100);
             flex-shrink: 0;
             text-decoration: none;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
         .sidebar-brand .logo-img {
@@ -136,7 +129,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 9px 12px;
+            padding: 9px 14px;
             border-radius: 8px;
             color: var(--gray-600);
             font-size: 13.5px;
@@ -149,6 +142,8 @@
             background: none;
             width: 100%;
             text-align: left;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
         .nav-item-link:hover {
@@ -165,9 +160,9 @@
         .nav-item-link.active .nav-icon { color: var(--blue); }
 
         .nav-icon {
-            width: 18px;
+            width: 24px;
             text-align: center;
-            font-size: 14px;
+            font-size: 15px;
             color: var(--gray-400);
             flex-shrink: 0;
             transition: color 0.15s;
@@ -234,11 +229,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 8px 10px;
+            padding: 8px 4px;
             border-radius: 10px;
             text-decoration: none;
             transition: background 0.15s;
             cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
         }
         .user-card:hover { background: var(--gray-50); }
 
