@@ -464,26 +464,15 @@
                     </a>
 
                     <ul class="navbar-nav ml-auto align-items-center">
-                        <li class="nav-item dropdown user-dropdown">
-                            <a class="nav-link dropdown-toggle user-trigger" href="#" id="userDropdown"
-                                role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="user-avatar" src="{{ asset('assets/sbadmin/img/login.png') }}" alt="User">
-                                <div class="user-info">
-                                    <span class="user-name">Guest</span>
-                                    <span class="user-role">Visitor</span>
-                                </div>
-                                <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--gray-600);"></i>
+                        <li class="nav-item d-flex align-items-center">
+                            <a class="nav-link text-secondary font-weight-bold" href="#" data-toggle="modal" data-target="#infoModal" style="margin-right: 0.5rem;">
+                                <i class="fas fa-info-circle"></i> Informasi
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-modern" aria-labelledby="userDropdown">
-                                <a class="dropdown-item-modern" href="/panel">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    <span>Login</span>
-                                </a>
-                                <a class="dropdown-item-modern" href="#" data-toggle="modal" data-target="#infoModal">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>Informasi</span>
-                                </a>
-                            </div>
+                        </li>
+                        <li class="nav-item d-flex align-items-center">
+                            <a class="btn btn-primary btn-sm" href="/panel" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: var(--radius-sm); font-weight: 600; padding: 0.4rem 1rem; box-shadow: var(--shadow-sm);">
+                                <i class="fas fa-sign-in-alt mr-1"></i> Login
+                            </a>
                         </li>
                     </ul>
                 </nav>
