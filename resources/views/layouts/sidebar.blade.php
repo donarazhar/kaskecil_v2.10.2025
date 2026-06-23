@@ -49,7 +49,7 @@
             top: 0;
             left: 0;
             height: 100vh;
-            width: var(--sidebar-w);
+            width: var(--sidebar-w) !important;
             background: var(--white);
             border-right: 1px solid var(--gray-200);
             display: flex;
@@ -60,7 +60,7 @@
         }
 
         /* Collapsed desktop */
-        body.sidebar-collapsed .sidebar { width: 72px; }
+        body.sidebar-collapsed .sidebar { width: 72px !important; }
         body.sidebar-collapsed .sidebar .section-label,
         body.sidebar-collapsed .sidebar .sub-menu,
         body.sidebar-collapsed .sidebar .user-info,
