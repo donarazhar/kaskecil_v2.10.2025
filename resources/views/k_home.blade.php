@@ -196,7 +196,7 @@
         </div>
     </div>
     <div class="stat-card fade-in delay-2">
-        <div class="stat-icon red"><i class="fas fa-arrow-trend-down"></i></div>
+        <div class="stat-icon red"><i class="fas fa-arrow-down"></i></div>
         <div class="stat-body">
             <div class="stat-label">Pengeluaran Kas</div>
             <div class="stat-value">Rp {{ number_format($pengeluaranbulanini->sum('jumlah'), 0, ',', '.') }}</div>
@@ -204,7 +204,7 @@
         </div>
     </div>
     <div class="stat-card fade-in delay-3">
-        <div class="stat-icon green"><i class="fas fa-arrow-trend-up"></i></div>
+        <div class="stat-icon green"><i class="fas fa-arrow-up"></i></div>
         <div class="stat-body">
             <div class="stat-label">Pengisian Kas</div>
             <div class="stat-value">Rp {{ number_format($pengisianbulanini->sum('jumlah'), 0, ',', '.') }}</div>
@@ -212,7 +212,7 @@
         </div>
     </div>
     <div class="stat-card fade-in delay-4">
-        <div class="stat-icon amber"><i class="fas fa-scale-balanced"></i></div>
+        <div class="stat-icon amber"><i class="fas fa-balance-scale"></i></div>
         <div class="stat-body">
             <div class="stat-label">Saldo Berjalan</div>
             <div class="stat-value">Rp {{ number_format($saldoberjalan->total_result ?? 0, 0, ',', '.') }}</div>
