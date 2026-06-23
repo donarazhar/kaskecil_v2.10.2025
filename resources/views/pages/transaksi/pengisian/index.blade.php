@@ -802,7 +802,7 @@
                                         @elseif (DB::table('transaksi_shadow')->where('id_pengisian', $d->id_pengisian)->exists())
                                             @if (Auth::user()->level == 'admin')
                                                 <a href="{{ route('cair', ['id' => $d->id_pengisian]) }}"
-                                                    class="status-badge status-belum-cair">
+                                                    class="status-badge status-belum-cair cair-confirm">
                                                     <i class="fas fa-times-circle"></i>
                                                     Belum Cair
                                                 </a>
@@ -1039,6 +1039,25 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
+                    }
+                });
+            });
+
+            $(".cair-confirm").click(function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                Swal.fire({
+                    title: "Konfirmasi Pencairan",
+                    text: "Apa benar kas ini sudah cair?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#0053C5",
+                    cancelButtonColor: "#ef4444",
+                    confirmButtonText: "Ya, Sudah Cair!",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
                     }
                 });
             });
