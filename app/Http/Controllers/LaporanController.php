@@ -11,7 +11,19 @@ class LaporanController extends Controller
     // Menampilkan halaman utama untuk memilih periode laporan.
     public function index()
     {
-        return view('pages.laporan.index');
+        $result = DB::table('transaksi')
+            ->select(
+                DB::raw('COALESCE(SUM(CASE WHEN kategori = "pembentukan" THEN jumlah ELSE 0 END), 0) AS total_pembentukan'),
+                DB::raw('COALESCE(SUM(CASE WHEN kategori = "pengisian" THEN jumlah ELSE 0 END), 0) AS total_pengisian'),
+                DB::raw('COALESCE(SUM(CASE WHEN kategori = "pengeluaran" THEN jumlah ELSE 0 END), 0) AS total_pengeluaran')
+            )
+            ->first();
+
+        $total_pembentukan = $result->total_pembentukan ?? 0;
+        $total_pengisian   = $result->total_pengisian   ?? 0;
+        $total_pengeluaran = $result->total_pengeluaran ?? 0;
+
+        return view('pages.laporan.index', compact('total_pembentukan', 'total_pengisian', 'total_pengeluaran'));
     }
 
     // Fungsi untuk mencetak laporan berdasarkan periode yang dipilih.

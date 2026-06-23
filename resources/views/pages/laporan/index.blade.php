@@ -1,396 +1,191 @@
 @extends('layouts.sidebar')
 @section('title', 'Laporan Kas Kecil')
-@section('header-title', 'Laporan Kas Kecil')
-
+@section('header-title', 'Laporan')
 @section('content')
-
 <style>
-    :root {
-        --primary-blue: #0053C5;
-        --primary-dark: #003d91;
-        --primary-light: #E8F1FD;
-        --primary-lighter: #F5F9FF;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --danger: #ef4444;
-        --info: #3b82f6;
-        --white: #ffffff;
-        --gray-50: #F9FAFB;
-        --gray-100: #F3F4F6;
-        --gray-200: #E5E7EB;
-        --gray-300: #D1D5DB;
-        --gray-400: #9CA3AF;
-        --gray-500: #6B7280;
-        --gray-600: #4B5563;
-        --gray-700: #374151;
-        --gray-800: #1F2937;
-        --gray-900: #111827;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    }
+:root{--blue:#0053C5;--blue-dk:#003d91;--blue-50:#eff6ff;--blue-100:#dbeafe;--green-50:#f0fdf4;--green-700:#15803d;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;}
+.ph{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+.ph-left h2{font-size:22px;font-weight:700;color:var(--gray-900);margin:0 0 2px;display:flex;align-items:center;gap:8px;}
+.ph-left h2 i{color:var(--blue);font-size:20px;}
+.ph-left p{font-size:13px;color:var(--gray-500);margin:0;}
+.panel{background:#fff;border:1px solid var(--gray-100);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--gray-100);}
+.panel-title{font-size:14px;font-weight:700;color:var(--gray-800);display:flex;align-items:center;gap:8px;margin:0;}
+.panel-title i{color:var(--blue);}
+.panel-body{padding:24px 20px;}
 
-    body {
-        background-color: var(--gray-50);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+/* Info note */
+.info-note{display:flex;align-items:flex-start;gap:12px;background:var(--blue-50);border:1px solid var(--blue-100);border-radius:10px;padding:14px 16px;margin-bottom:24px;}
+.info-note-icon{width:36px;height:36px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.info-note-icon i{color:#fff;font-size:16px;}
+.info-note-body h5{font-size:13px;font-weight:700;color:var(--gray-900);margin:0 0 3px;}
+.info-note-body p{font-size:12px;color:var(--gray-600);margin:0;line-height:1.5;}
 
-    .page-header {
-        background: var(--white);
-        border-radius: 20px;
-        padding: 32px 36px;
-        margin-bottom: 28px;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--gray-100);
-        position: relative;
-        overflow: hidden;
-    }
+/* Quick preset buttons */
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.quick-btn{padding:7px 14px;border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-600);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:border-color .15s,background .15s,color .15s;}
+.quick-btn:hover,.quick-btn.active{border-color:var(--blue);background:var(--blue-50);color:var(--blue);}
 
-    .page-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
-    }
+/* Date fields */
+.date-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;margin-bottom:20px;}
+.date-sep{display:flex;align-items:center;justify-content:center;padding-bottom:2px;color:var(--blue);font-size:16px;}
+.field-lbl{display:block;font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+.form-inp{width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:9px;font-size:13px;color:var(--gray-900);background:#fff;transition:border-color .15s,box-shadow .15s;}
+.form-inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-50);}
 
-    .page-header-content h1 {
-        color: var(--gray-900);
-        font-size: 28px;
-        font-weight: 700;
-        margin: 0 0 8px 0;
-        letter-spacing: -0.5px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
+/* Submit button */
+.btn-cetak{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s,transform .15s,box-shadow .15s;text-decoration:none;}
+.btn-cetak:hover{background:var(--blue-dk);color:#fff;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,83,197,.25);}
+.btn-cetak:active{transform:scale(.97);}
 
-    .page-header-content h1 i {
-        color: var(--primary-blue);
-        font-size: 32px;
-    }
+/* Stat cards */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;}
+.stat-card{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:10px;padding:16px;text-align:center;}
+.stat-card .stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:15px;}
+.stat-card .stat-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
+.stat-card .stat-val{font-size:16px;font-weight:800;color:var(--gray-900);}
 
-    .page-header-content p {
-        color: var(--gray-600);
-        font-size: 15px;
-        margin: 0;
-    }
-
-    .modern-card {
-        background: var(--white);
-        border-radius: 20px;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--gray-100);
-        overflow: hidden;
-    }
-
-    .modern-card-header {
-        padding: 24px 32px;
-        border-bottom: 1px solid var(--gray-100);
-        background: var(--white);
-    }
-
-    .modern-card-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--gray-900);
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .modern-card-title i {
-        color: var(--primary-blue);
-        font-size: 20px;
-    }
-
-    .modern-card-body {
-        padding: 32px;
-    }
-
-    .info-banner {
-        background: linear-gradient(135deg, var(--primary-lighter) 0%, #E0EFFF 100%);
-        border-left: 4px solid var(--primary-blue);
-        border-radius: 12px;
-        padding: 20px 24px;
-        margin-bottom: 28px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .info-banner-icon {
-        width: 48px;
-        height: 48px;
-        background: var(--primary-blue);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .info-banner-icon i {
-        font-size: 24px;
-        color: var(--white);
-    }
-
-    .info-banner-content h4 {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--gray-900);
-        margin: 0 0 4px 0;
-    }
-
-    .info-banner-content p {
-        font-size: 14px;
-        color: var(--gray-600);
-        margin: 0;
-    }
-
-    .form-section {
-        background: var(--gray-50);
-        border-radius: 16px;
-        padding: 28px;
-        border: 2px dashed var(--gray-200);
-    }
-
-    .form-group {
-        margin-bottom: 0;
-    }
-
-    .form-label {
-        display: block;
-        color: var(--gray-700);
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 10px;
-    }
-
-    .form-control {
-        padding: 13px 18px;
-        border: 2px solid var(--gray-200);
-        border-radius: 12px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        width: 100%;
-        background: var(--white);
-        color: var(--gray-900);
-        font-weight: 500;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary-blue);
-        box-shadow: 0 0 0 4px var(--primary-lighter);
-        outline: none;
-    }
-
-    .btn-modern {
-        padding: 13px 28px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 600;
-        border: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        cursor: pointer;
-        text-decoration: none;
-        box-shadow: var(--shadow-sm);
-        width: 100%;
-    }
-
-    .btn-modern i {
-        font-size: 16px;
-    }
-
-    .btn-modern:active {
-        transform: scale(0.98);
-    }
-
-    .btn-primary-modern {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
-        color: var(--white);
-    }
-
-    .btn-primary-modern:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-        color: var(--white);
-    }
-
-    .date-range-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--gray-700);
-        text-align: center;
-        padding: 0 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-    }
-
-    .date-range-icon {
-        font-size: 20px;
-        color: var(--primary-blue);
-    }
-
-    /* Quick Date Buttons */
-    .quick-dates {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-    }
-
-    .quick-date-btn {
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        border: 2px solid var(--gray-200);
-        background: var(--white);
-        color: var(--gray-700);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        flex: 1;
-        min-width: 120px;
-    }
-
-    .quick-date-btn:hover {
-        border-color: var(--primary-blue);
-        background: var(--primary-lighter);
-        color: var(--primary-blue);
-        transform: translateY(-2px);
-    }
-
-    @media (max-width: 768px) {
-        .page-header {
-            padding: 24px 20px;
-        }
-
-        .page-header-content h1 {
-            font-size: 22px;
-        }
-
-        .modern-card-body {
-            padding: 20px;
-        }
-
-        .form-section {
-            padding: 20px;
-        }
-
-        .date-range-label {
-            padding: 10px 0;
-        }
-
-        .quick-dates {
-            flex-direction: column;
-        }
-
-        .quick-date-btn {
-            min-width: 100%;
-        }
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .page-header,
-    .modern-card {
-        animation: fadeInUp 0.5s ease-out;
-    }
+@media(max-width:640px){.date-grid{grid-template-columns:1fr;}.date-sep{display:none;}.stat-row{grid-template-columns:1fr;}.quick-row{flex-direction:column;}}
+.fade-up{animation:fadeUp .3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 </style>
 
-<div class="page-header">
-    <div class="page-header-content">
-        <h1>
-            <i class="fas fa-file-alt"></i> 
-            Laporan Kas Kecil
-        </h1>
-        <p>Cetak laporan kas kecil berdasarkan periode tanggal</p>
+{{-- Page Header --}}
+<div class="ph fade-up">
+    <div class="ph-left">
+        <h2><i class="fas fa-file-alt"></i> Laporan Kas Kecil</h2>
+        <p>Cetak laporan kas kecil berdasarkan periode tanggal yang dipilih</p>
     </div>
 </div>
 
-<div class="modern-card">
-    <div class="modern-card-header">
-        <h6 class="modern-card-title">
-            <i class="fas fa-print"></i>
-            Cetak Laporan
-        </h6>
+{{-- Main Panel --}}
+<div class="panel fade-up">
+    <div class="panel-header">
+        <h6 class="panel-title"><i class="fas fa-print"></i> Cetak Laporan</h6>
     </div>
+    <div class="panel-body">
 
-    <div class="modern-card-body">
-        <!-- Info Banner -->
-        <div class="info-banner">
-            <div class="info-banner-icon">
-                <i class="fas fa-info-circle"></i>
-            </div>
-            <div class="info-banner-content">
-                <h4>Panduan Cetak Laporan</h4>
-                <p>Pilih tanggal awal dan tanggal akhir periode, kemudian klik tombol Cetak Laporan untuk menghasilkan dokumen PDF</p>
+        {{-- Info Note --}}
+        <div class="info-note">
+            <div class="info-note-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="info-note-body">
+                <h5>Panduan Cetak Laporan</h5>
+                <p>Pilih tanggal awal dan tanggal akhir periode laporan, atau gunakan tombol preset di bawah. Klik <strong>Cetak Laporan</strong> untuk membuka dokumen PDF di tab baru.</p>
             </div>
         </div>
 
-        <!-- Form Section -->
-        <div class="form-section">
-            <form action="{{ url('/laporan/cetaklaporan') }}" method="GET" target="_blank" id="formLaporan">
-                @csrf
-
-                <div class="row align-items-center">
-                    <div class="col-lg-5 mb-3 mb-lg-0">
-                        <label for="tanggalawal" class="form-label">
-                            <i class="fas fa-calendar-alt"></i> Tanggal Awal
-                        </label>
-                        <input type="date" name="tanggalawal" id="tanggalawal" class="form-control" required>
-                    </div>
-
-                    <div class="col-lg-2 mb-3 mb-lg-0">
-                        <div class="date-range-label">
-                            <i class="fas fa-arrow-right date-range-icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-5 mb-3 mb-lg-0">
-                        <label for="tanggalakhir" class="form-label">
-                            <i class="fas fa-calendar-check"></i> Tanggal Akhir
-                        </label>
-                        <input type="date" name="tanggalakhir" id="tanggalakhir" class="form-control" required>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-lg-12">
-                        <button type="submit" name="tampilkan" class="btn-modern btn-primary-modern">
-                            <i class="fas fa-print"></i>
-                            Cetak Laporan
-                        </button>
-                    </div>
-                </div>
-            </form>
+        {{-- Preset quick dates --}}
+        <div style="margin-bottom:10px;">
+            <span style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;">Periode Cepat</span>
         </div>
+        <div class="quick-row" id="quickRow">
+            <button type="button" class="quick-btn" data-preset="bulanini"><i class="fas fa-calendar"></i> Bulan Ini</button>
+            <button type="button" class="quick-btn" data-preset="bulanlalu"><i class="fas fa-history"></i> Bulan Lalu</button>
+            <button type="button" class="quick-btn" data-preset="tahunini"><i class="fas fa-calendar-alt"></i> Tahun Ini</button>
+            <button type="button" class="quick-btn" data-preset="q1">Q1 (Jan–Mar)</button>
+            <button type="button" class="quick-btn" data-preset="q2">Q2 (Apr–Jun)</button>
+            <button type="button" class="quick-btn" data-preset="q3">Q3 (Jul–Sep)</button>
+            <button type="button" class="quick-btn" data-preset="q4">Q4 (Okt–Des)</button>
+        </div>
+
+        {{-- Form --}}
+        <form action="{{ url('/laporan/cetaklaporan') }}" method="GET" target="_blank" id="formLaporan">
+            <div class="date-grid">
+                <div>
+                    <label class="field-lbl"><i class="fas fa-calendar-alt" style="color:var(--blue)"></i> Tanggal Awal</label>
+                    <input type="date" name="tanggalawal" id="tanggalawal" class="form-inp" required>
+                </div>
+                <div class="date-sep"><i class="fas fa-arrow-right"></i></div>
+                <div>
+                    <label class="field-lbl"><i class="fas fa-calendar-check" style="color:var(--blue)"></i> Tanggal Akhir</label>
+                    <input type="date" name="tanggalakhir" id="tanggalakhir" class="form-inp" required>
+                </div>
+            </div>
+
+            <button type="submit" name="tampilkan" class="btn-cetak">
+                <i class="fas fa-print"></i> Cetak Laporan
+            </button>
+        </form>
+
+        {{-- Stat preview cards --}}
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:var(--blue-50)"><i class="fas fa-wallet" style="color:var(--blue)"></i></div>
+                <div class="stat-label">Pembentukan</div>
+                <div class="stat-val" style="color:var(--blue)">Rp {{ number_format($total_pembentukan ?? 0, 0, ',', '.') }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background:var(--green-50)"><i class="fas fa-hand-holding-usd" style="color:var(--green-700)"></i></div>
+                <div class="stat-label">Pengisian</div>
+                <div class="stat-val" style="color:var(--green-700)">Rp {{ number_format($total_pengisian ?? 0, 0, ',', '.') }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background:#fef2f2"><i class="fas fa-money-bill-wave" style="color:#dc2626"></i></div>
+                <div class="stat-label">Pengeluaran</div>
+                <div class="stat-val" style="color:#dc2626">Rp {{ number_format($total_pengeluaran ?? 0, 0, ',', '.') }}</div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 @endsection
 
-@push('after-style')
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+@push('after-script')
+<script>
+$(function () {
+    var today = new Date();
+
+    function fmt(d) {
+        return d.toISOString().split('T')[0];
+    }
+
+    function setDates(awal, akhir, btn) {
+        $('#tanggalawal').val(fmt(awal));
+        $('#tanggalakhir').val(fmt(akhir));
+        $('.quick-btn').removeClass('active');
+        if (btn) $(btn).addClass('active');
+    }
+
+    $('.quick-btn').click(function () {
+        var preset = $(this).data('preset');
+        var y = today.getFullYear();
+        var m = today.getMonth();
+
+        if (preset === 'bulanini') {
+            setDates(new Date(y, m, 1), new Date(y, m + 1, 0), this);
+        } else if (preset === 'bulanlalu') {
+            setDates(new Date(y, m - 1, 1), new Date(y, m, 0), this);
+        } else if (preset === 'tahunini') {
+            setDates(new Date(y, 0, 1), new Date(y, 11, 31), this);
+        } else if (preset === 'q1') {
+            setDates(new Date(y, 0, 1), new Date(y, 2, 31), this);
+        } else if (preset === 'q2') {
+            setDates(new Date(y, 3, 1), new Date(y, 5, 30), this);
+        } else if (preset === 'q3') {
+            setDates(new Date(y, 6, 1), new Date(y, 8, 30), this);
+        } else if (preset === 'q4') {
+            setDates(new Date(y, 9, 1), new Date(y, 11, 31), this);
+        }
+    });
+
+    // Default: bulan ini
+    $('.quick-btn[data-preset="bulanini"]').trigger('click');
+
+    $('#formLaporan').submit(function (e) {
+        var awal = $('#tanggalawal').val();
+        var akhir = $('#tanggalakhir').val();
+        if (!awal || !akhir) {
+            e.preventDefault();
+            Swal.fire({ icon:'warning', title:'Perhatian!', text:'Tanggal awal dan akhir harus diisi.', confirmButtonColor:'#0053C5' });
+            return false;
+        }
+        if (new Date(akhir) < new Date(awal)) {
+            e.preventDefault();
+            Swal.fire({ icon:'warning', title:'Tanggal Tidak Valid!', text:'Tanggal akhir tidak boleh lebih awal dari tanggal awal.', confirmButtonColor:'#0053C5' });
+            return false;
+        }
+    });
+});
+</script>
 @endpush
