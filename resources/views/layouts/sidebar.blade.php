@@ -158,6 +158,7 @@
         .nav-item-link:hover {
             background: var(--gray-50);
             color: var(--blue);
+            text-decoration: none;
         }
 
         .nav-item-link.active {
@@ -222,7 +223,7 @@
             transition: background 0.15s;
         }
 
-        .sub-menu .sub-item:hover { background: var(--gray-50); color: var(--blue); }
+        .sub-menu .sub-item:hover { background: var(--gray-50); color: var(--blue); text-decoration: none; }
         .sub-menu .sub-item:hover::before { background: var(--blue); }
         .sub-menu .sub-item.active { color: var(--blue); font-weight: 600; background: var(--blue-50); }
         .sub-menu .sub-item.active::before { background: var(--blue); }

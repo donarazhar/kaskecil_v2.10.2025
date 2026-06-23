@@ -117,6 +117,11 @@ class UserController extends Controller
             $user = DB::table('users')->where('id', $id)->first();
 
             if ($user) {
+                // Cegah penghapusan user admin
+                if ($user->level === 'admin') {
+                    return Redirect::back()->with(['warning' => 'Mohon maaf, Anda tidak dapat menghapus akun administrator']);
+                }
+
                 // Menghapus pengguna jika ditemukan.
                 $delete = DB::table('users')->where('id', $id)->delete();
 

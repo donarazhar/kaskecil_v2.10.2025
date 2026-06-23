@@ -102,6 +102,7 @@
                 <a href="#" class="act-btn act-edit edit" id="{{ $user->id }}" title="Edit">
                     <i class="fas fa-pencil-alt"></i> <span>Edit</span>
                 </a>
+                @if($user->level != 'admin')
                 <form action="{{ route('users.destroy', $user->id) }}" method="post" style="flex:1;margin:0">
                     @csrf
                     @method('DELETE')
@@ -109,6 +110,7 @@
                         <i class="fas fa-trash"></i> <span>Hapus</span>
                     </button>
                 </form>
+                @endif
             </div>
         </div>
         @endforeach
