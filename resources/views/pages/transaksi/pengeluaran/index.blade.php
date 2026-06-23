@@ -203,9 +203,8 @@ textarea.form-inp-m{min-height:80px;resize:vertical;}
             @if($pengeluaranbulanini->count()>0)
             <tfoot>
                 <tr>
-                    <th colspan="5">Total Pengeluaran — {{ $namabulan[(int)($bulan??date('m'))] }} {{ $tahun??date('Y') }}</th>
-                    <th class="text-right">Rp {{ number_format($totalpengeluaran->total_pengeluaran??0,0,',','.') }}</th>
-                    <th></th>
+                    <th colspan="4" style="font-size: 14px; text-transform: uppercase;">Total Pengeluaran — {{ $namabulan[(int)($bulan??date('m'))] }} {{ $tahun??date('Y') }}</th>
+                    <th colspan="3" style="text-align: right; font-size: 16px; font-weight: 800; color: var(--blue-dk);">Rp {{ number_format($totalpengeluaran->total_pengeluaran??0,0,',','.') }}</th>
                 </tr>
             </tfoot>
             @endif
