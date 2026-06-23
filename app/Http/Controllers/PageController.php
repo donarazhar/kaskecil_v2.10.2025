@@ -98,7 +98,7 @@ class PageController extends Controller
             ->get();
 
         // Menggabungkan data pengisian dari kedua tabel, diurutkan, dan dibuat paginasi.
-        $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('tanggal');
+        $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('tanggal')->values();
         $combinedData = new \Illuminate\Pagination\LengthAwarePaginator(
             $combinedData->forPage(\Illuminate\Pagination\Paginator::resolveCurrentPage(), 4),
             $combinedData->count(),

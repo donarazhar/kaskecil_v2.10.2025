@@ -96,8 +96,8 @@ class HomepageController extends Controller
             ->orderBy('transaksi_shadow.created_at', 'ASC')
             ->get();
 
-        // Menggabungkan data pengisian dari tabel utama dan shadow, lalu diurutkan berdasarkan tanggal pembuatan.
-        $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('created_at');
+        // Menggabungkan data pengisian dari tabel utama dan shadow, lalu diurutkan berdasarkan tanggal terbaru.
+        $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('tanggal')->values();
         // Membuat paginasi untuk data gabungan.
         $combinedData = new \Illuminate\Pagination\LengthAwarePaginator(
             $combinedData->forPage(\Illuminate\Pagination\Paginator::resolveCurrentPage(), 4),
