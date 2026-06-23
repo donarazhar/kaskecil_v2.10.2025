@@ -56,6 +56,22 @@ class TransaksiController extends Controller
             // Konversi ke integer
             $jumlah_numeric = intval($jumlah_cleaned);
 
+            // Cek saldo berjalan jika kategori pengeluaran
+            if ($request->kategori == 'pengeluaran') {
+                $saldo_result = DB::table('transaksi')
+                    ->select(
+                        DB::raw('COALESCE(SUM(CASE WHEN kategori IN ("pembentukan", "pengisian") THEN jumlah ELSE 0 END), 0) - 
+                        COALESCE(SUM(CASE WHEN kategori = "pengeluaran" THEN jumlah ELSE 0 END), 0) AS total_result')
+                    )
+                    ->first();
+                
+                $saldo_berjalan = $saldo_result->total_result ?? 0;
+
+                if ($jumlah_numeric > $saldo_berjalan) {
+                    return redirect()->back()->with('warning', 'Mohon maaf pengeluaran tidak dapat diinput karena saldo berjalan tidak memadai');
+                }
+            }
+
             // Validasi untuk file yang diupload
             $request->validate([
                 'lampiran' => 'nullable|image|mimes:png,jpg,jpeg|max:2024',
@@ -308,6 +324,22 @@ class TransaksiController extends Controller
 
         // Ambil data transaksi berdasarkan ID
         $transaksi = DB::table('transaksi')->where('id', $id)->first();
+
+        // Cek saldo berjalan
+        $jumlah_numeric = intval($jumlah_cleaned);
+        $saldo_result = DB::table('transaksi')
+            ->select(
+                DB::raw('COALESCE(SUM(CASE WHEN kategori IN ("pembentukan", "pengisian") THEN jumlah ELSE 0 END), 0) - 
+                COALESCE(SUM(CASE WHEN kategori = "pengeluaran" THEN jumlah ELSE 0 END), 0) AS total_result')
+            )
+            ->first();
+        
+        $saldo_berjalan = $saldo_result->total_result ?? 0;
+        $max_allowed = $saldo_berjalan + $transaksi->jumlah;
+
+        if ($jumlah_numeric > $max_allowed) {
+            return redirect()->back()->with('warning', 'Mohon maaf pengeluaran tidak dapat diupdate karena saldo berjalan tidak memadai');
+        }
 
         // Proses Upload Foto hanya jika file diupload
         $lampiran = $transaksi->lampiran;
