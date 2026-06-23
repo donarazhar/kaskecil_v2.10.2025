@@ -25,6 +25,7 @@
                     <thead>
                         <tr>
                             <th>No.</th>
+                            <th>Foto</th>
                             <th>Nama</th>
                             <th>Username</th>
                             <th>Tindakan</th>
@@ -35,6 +36,9 @@
                             @forelse ($users as $user)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
+                                    <td>
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=random&color=fff&size=40" alt="Profile" class="rounded-circle">
+                                    </td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>
