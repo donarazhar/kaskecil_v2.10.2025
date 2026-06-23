@@ -1,850 +1,724 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="https://siap.al-azhar.id/upload/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="https://siap.al-azhar.id/upload/favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Kas Kecil APP</title>
+    <title>Kas Kecil APP &mdash; @yield('title', 'Dashboard')</title>
 
-    <!-- Custom fonts for this template-->
-    <link href="{{ asset('assets/sbadmin/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
+    <link href="{{ asset('assets/sbadmin/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="{{ asset('assets/sbadmin/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    @stack('after-style')
 
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
         :root {
-            --primary-blue: #0053C5;
-            --primary-dark: #003d91;
-            --sidebar-bg: linear-gradient(180deg, var(--primary-blue), var(--primary-dark));
-            --sidebar-hover: rgba(255, 255, 255, 0.15);
-            --sidebar-active: rgba(255, 255, 255, 0.25);
-            --text-white: #ffffff;
+            --blue:      #0053C5;
+            --blue-dark: #003d91;
+            --blue-50:   #eff6ff;
+            --blue-100:  #dbeafe;
+            --white:     #ffffff;
+            --gray-50:   #f9fafb;
+            --gray-100:  #f3f4f6;
+            --gray-200:  #e5e7eb;
+            --gray-400:  #9ca3af;
+            --gray-500:  #6b7280;
+            --gray-600:  #4b5563;
+            --gray-700:  #374151;
+            --gray-900:  #111827;
+            --sidebar-w: 260px;
+            --topbar-h:  64px;
         }
 
-        /* ===== SIDEBAR UTAMA ===== */
-        #accordionSidebar {
-            background: var(--sidebar-bg);
-            width: 260px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-            border-right: none;
-            color: var(--text-white);
-            transition: width 0.3s ease, margin-left 0.3s ease;
-        }
-
-        /* Sidebar Collapsed State */
-        #accordionSidebar.toggled {
-            width: 80px;
-            overflow-x: hidden;
-        }
-
-        #accordionSidebar.toggled .sidebar-brand-text {
-            display: none;
-        }
-
-        #accordionSidebar.toggled .nav-link span {
-            display: none;
-        }
-
-        #accordionSidebar.toggled .sidebar-heading {
-            display: none;
-        }
-
-        #accordionSidebar.toggled .nav-link {
-            justify-content: center;
-            padding: 12px;
-        }
-
-        #accordionSidebar.toggled .nav-link i {
-            margin-right: 0;
-            font-size: 20px;
-        }
-
-        #accordionSidebar.toggled .sidebar-brand {
-            padding: 20px 10px;
-        }
-
-        #accordionSidebar.toggled .sidebar-brand-icon {
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--gray-50);
             margin: 0;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Brand Section */
+        /* ═══════════════════════════════
+           SIDEBAR
+        ═══════════════════════════════ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-w);
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            z-index: 1040;
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+            overflow: hidden;
+        }
+
+        /* Collapsed desktop */
+        body.sidebar-collapsed .sidebar { width: 72px; }
+        body.sidebar-collapsed .sidebar .brand-name,
+        body.sidebar-collapsed .sidebar .nav-label,
+        body.sidebar-collapsed .sidebar .nav-text,
+        body.sidebar-collapsed .sidebar .nav-arrow,
+        body.sidebar-collapsed .sidebar .section-label,
+        body.sidebar-collapsed .sidebar .sub-menu { display: none !important; }
+        body.sidebar-collapsed .sidebar .nav-item-link { justify-content: center; padding: 10px; }
+        body.sidebar-collapsed .sidebar .nav-icon { margin: 0; }
+        body.sidebar-collapsed .sidebar .sidebar-brand { justify-content: center; padding: 16px 0; }
+        body.sidebar-collapsed .sidebar .sidebar-brand img.logo-img { margin: 0; }
+
+        /* Mobile hidden */
+        @media (max-width: 767px) {
+            .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; }
+            body.sidebar-open .sidebar { transform: translateX(0); }
+        }
+
+        /* ── Brand ── */
         .sidebar-brand {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-brand-text {
-            color: var(--text-white);
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar-brand-icon i {
-            color: var(--text-white);
-        }
-
-        /* Divider */
-        .sidebar-divider {
-            border-color: rgba(255, 255, 255, 0.2);
-            margin: 12px 20px;
-        }
-
-        #accordionSidebar.toggled .sidebar-divider {
-            margin: 12px 10px;
-        }
-
-        /* Sidebar Heading */
-        .sidebar-heading {
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.8px;
-            padding: 8px 20px;
-            transition: opacity 0.3s ease;
-        }
-
-        /* Nav Item */
-        .nav-item {
-            margin: 4px 10px;
-            position: relative;
-        }
-
-        .nav-link {
-            color: var(--text-white);
-            border-radius: 8px;
-            padding: 10px 16px;
             display: flex;
             align-items: center;
-            transition: all 0.3s ease;
-            position: relative;
+            gap: 10px;
+            padding: 0 20px;
+            height: var(--topbar-h);
+            border-bottom: 1px solid var(--gray-100);
+            flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .nav-link i {
-            color: rgba(255, 255, 255, 0.8);
-            width: 20px;
-            margin-right: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
+        .sidebar-brand .logo-img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            flex-shrink: 0;
         }
 
-        .nav-link span {
-            transition: opacity 0.3s ease;
-        }
-
-        .nav-link:hover {
-            background: var(--sidebar-hover);
-            color: var(--text-white);
-            transform: translateX(2px);
-        }
-
-        .nav-link:hover i {
-            color: var(--text-white);
-        }
-
-        .nav-item .nav-link.active {
-            background: var(--sidebar-active);
-            font-weight: 600;
-            color: white;
-        }
-
-        .nav-item .nav-link.active i {
-            color: white;
-        }
-
-        /* Tooltip untuk sidebar collapsed */
-        #accordionSidebar.toggled .nav-link {
-            position: relative;
-        }
-
-        #accordionSidebar.toggled .nav-link::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+        .brand-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--blue);
+            letter-spacing: -0.3px;
             white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            margin-left: 10px;
-            font-size: 13px;
-            z-index: 1000;
         }
 
-        #accordionSidebar.toggled .nav-link:hover::after {
-            opacity: 1;
+        /* ── Nav ── */
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px 10px 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gray-200) transparent;
         }
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
 
-        /* Collapse Menu */
-        .collapse-inner {
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 10px;
-            padding: 8px 0;
-            margin: 6px 12px;
-        }
-
-        .collapse-header {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 11px;
-            padding: 6px 16px;
-        }
-
-        .collapse-item {
-            color: rgba(255, 255, 255, 0.9);
-            padding: 8px 20px;
+        .section-label {
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            padding: 16px 12px 6px;
             display: block;
-            font-size: 13px;
-            transition: all 0.3s ease;
         }
 
-        .collapse-item:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
+        .nav-item { margin-bottom: 2px; }
+
+        .nav-item-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            color: var(--gray-600);
+            font-size: 13.5px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            user-select: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
         }
 
-        .collapse-item.active {
-            background: var(--sidebar-active);
-            color: white;
+        .nav-item-link:hover {
+            background: var(--gray-50);
+            color: var(--blue);
+        }
+
+        .nav-item-link.active {
+            background: var(--blue-50);
+            color: var(--blue);
             font-weight: 600;
         }
 
-        /* Hide collapse content when sidebar is toggled */
-        #accordionSidebar.toggled .collapse {
-            display: none !important;
+        .nav-item-link.active .nav-icon { color: var(--blue); }
+
+        .nav-icon {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--gray-400);
+            flex-shrink: 0;
+            transition: color 0.15s;
         }
 
-        /* Sidebar Toggle Button Styling */
-        #sidebarToggle {
-            background: rgba(255, 255, 255, 0.2) !important;
-            width: 40px !important;
-            height: 40px !important;
-            border: 2px solid rgba(255, 255, 255, 0.3) !important;
-            cursor: pointer !important;
-            transition: all 0.3s ease !important;
-            position: relative !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            outline: none !important;
-            z-index: 10 !important;
-            pointer-events: auto !important;
-            margin: 0 auto !important;
+        .nav-item-link:hover .nav-icon { color: var(--blue); }
+
+        .nav-text { flex: 1; white-space: nowrap; }
+
+        .nav-arrow {
+            font-size: 11px;
+            color: var(--gray-400);
+            transition: transform 0.2s;
+            flex-shrink: 0;
         }
 
-        #sidebarToggle:hover {
-            background: rgba(255, 255, 255, 0.3) !important;
-            border-color: rgba(255, 255, 255, 0.5) !important;
-            transform: scale(1.1) !important;
+        .nav-arrow.open { transform: rotate(90deg); }
+
+        /* Sub menu */
+        .sub-menu {
+            list-style: none;
+            margin: 2px 0 2px 28px;
+            padding: 0;
+            overflow: hidden;
         }
 
-        #sidebarToggle:active {
-            background: rgba(255, 255, 255, 0.4) !important;
-            transform: scale(0.95) !important;
-        }
-
-        #sidebarToggle:focus {
-            outline: none !important;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
-        }
-
-        #sidebarToggle::before {
-            content: '\f104';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            color: white !important;
-            font-size: 18px;
-            transition: transform 0.3s ease;
-            pointer-events: none;
-        }
-
-        #accordionSidebar.toggled #sidebarToggle::before {
-            transform: rotate(180deg);
-        }
-
-        /* Pastikan container toggle terlihat dan di tengah */
-        .text-center.d-none.d-md-inline {
-            padding: 15px 0;
-            z-index: 10;
-            position: relative;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
-
-        /* Untuk mobile - sidebar muncul dari kiri */
-        @media (max-width: 768px) {
-            #accordionSidebar {
-                position: fixed !important;
-                left: -260px !important;
-                top: 0 !important;
-                height: 100vh !important;
-                z-index: 9999 !important;
-                transition: left 0.3s ease !important;
-            }
-
-            body.sidebar-toggled #accordionSidebar {
-                left: 0 !important;
-            }
-
-            /* Overlay untuk mobile */
-            body.sidebar-toggled::before {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 9998;
-            }
-        }
-
-        /* Desktop Toggle Button in Topbar */
-        .sidebar-toggle-desktop {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            color: #858796;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            margin-right: 15px;
-        }
-
-        .sidebar-toggle-desktop:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: #4e73df;
-        }
-
-        .sidebar-toggle-desktop:focus {
-            outline: none;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            #accordionSidebar {
-                margin-left: 0;
-                position: fixed;
-                left: -260px;
-                width: 260px !important;
-                top: 0;
-                height: 100vh;
-                z-index: 9999;
-                transition: left 0.3s ease;
-            }
-
-            /* Ketika toggle di mobile, sidebar muncul dari kiri */
-            body.sidebar-toggled #accordionSidebar {
-                left: 0;
-            }
-
-            /* Jangan collapse sidebar di mobile, hanya hide */
-            #accordionSidebar.toggled {
-                width: 260px !important;
-            }
-
-            #accordionSidebar.toggled .sidebar-brand-text,
-            #accordionSidebar.toggled .nav-link span,
-            #accordionSidebar.toggled .sidebar-heading {
-                display: block !important;
-            }
-
-            #accordionSidebar.toggled .nav-link {
-                justify-content: flex-start !important;
-                padding: 10px 16px !important;
-            }
-
-            #accordionSidebar.toggled .nav-link i {
-                margin-right: 12px !important;
-                font-size: 16px !important;
-            }
-        }
-
-        /* Content wrapper adjustment */
-        #content-wrapper {
-            transition: margin-left 0.3s ease;
-        }
-
-        /* Topbar styling */
-        .topbar {
-            transition: all 0.3s ease;
-        }
-
-        /* Alert & Button Styling */
-        .btn-gradient-primary {
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
-            color: white;
-            border: none;
-        }
-
-        .btn-gradient-primary:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
-            color: white;
-        }
-
-        .btn-gradient-warning {
-            background: linear-gradient(135deg, #f6c23e, #f4b619);
-            color: white;
-            border: none;
-        }
-
-        .btn-gradient-warning:hover {
-            background: linear-gradient(135deg, #f4b619, #f6c23e);
-            color: white;
-        }
-
-        /* Page Wrapper */
-        #wrapper {
+        .sub-menu .sub-item {
             display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 7px;
+            color: var(--gray-500);
+            font-size: 13px;
+            font-weight: 400;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+            margin-bottom: 1px;
         }
+
+        .sub-menu .sub-item::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .sub-menu .sub-item:hover { background: var(--gray-50); color: var(--blue); }
+        .sub-menu .sub-item:hover::before { background: var(--blue); }
+        .sub-menu .sub-item.active { color: var(--blue); font-weight: 600; background: var(--blue-50); }
+        .sub-menu .sub-item.active::before { background: var(--blue); }
+
+        /* ── Sidebar Footer (user card) ── */
+        .sidebar-footer {
+            flex-shrink: 0;
+            border-top: 1px solid var(--gray-100);
+            padding: 12px 14px;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+        .user-card:hover { background: var(--gray-50); }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid var(--gray-100);
+        }
+
+        .user-info { flex: 1; min-width: 0; }
+        .user-info .u-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-800);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-info .u-role {
+            font-size: 11px;
+            color: var(--gray-400);
+        }
+
+        .user-logout-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-400);
+            font-size: 14px;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .user-logout-btn:hover { color: #ef4444; background: #fef2f2; }
+
+        /* ═══════════════════════════════
+           TOPBAR
+        ═══════════════════════════════ */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-w);
+            right: 0;
+            height: var(--topbar-h);
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1030;
+            gap: 12px;
+            transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        body.sidebar-collapsed .topbar { left: 72px; }
+
+        @media (max-width: 767px) {
+            .topbar { left: 0 !important; }
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--gray-500);
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
+        }
+        .hamburger:hover { background: var(--gray-100); color: var(--blue); }
+
+        /* Page title */
+        .page-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            flex: 1;
+        }
+
+        /* Topbar right */
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .topbar-avatar-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 10px;
+            transition: background 0.15s;
+        }
+        .topbar-avatar-btn:hover { background: var(--gray-50); }
+
+        .topbar-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gray-100);
+        }
+
+        .topbar-uname {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            white-space: nowrap;
+        }
+
+        /* ═══════════════════════════════
+           MAIN CONTENT
+        ═══════════════════════════════ */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            padding-top: var(--topbar-h);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        body.sidebar-collapsed .main-wrapper { margin-left: 72px; }
+
+        @media (max-width: 767px) {
+            .main-wrapper { margin-left: 0 !important; }
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 24px;
+        }
+
+        /* ── Footer ── */
+        .main-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--gray-100);
+            font-size: 12px;
+            color: var(--gray-400);
+            background: var(--white);
+            text-align: center;
+        }
+
+        /* ═══════════════════════════════
+           OVERLAY (mobile)
+        ═══════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1039;
+            backdrop-filter: blur(2px);
+        }
+        body.sidebar-open .sidebar-overlay { display: block; }
+
+        /* ═══════════════════════════════
+           DROPDOWN topbar
+        ═══════════════════════════════ */
+        .topbar-dropdown {
+            position: relative;
+        }
+
+        .topbar-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 180px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            z-index: 2000;
+        }
+
+        .topbar-dropdown.open .topbar-dropdown-menu { display: block; }
+
+        .topbar-dropdown-menu a,
+        .topbar-dropdown-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--gray-700);
+            text-decoration: none;
+            background: none;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .topbar-dropdown-menu a:hover,
+        .topbar-dropdown-menu button:hover { background: var(--gray-50); }
+        .topbar-dropdown-menu .danger { color: #ef4444; }
+        .topbar-dropdown-menu .danger:hover { background: #fef2f2; }
+
+        /* Global overrides */
+        .btn-primary { background-color: var(--blue) !important; border-color: var(--blue) !important; }
+        .btn-primary:hover { background-color: var(--blue-dark) !important; border-color: var(--blue-dark) !important; }
+        a { text-decoration: none; }
     </style>
 </head>
 
-<body id="page-top">
+<body>
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
+    <!-- ═══ SIDEBAR OVERLAY (mobile) ═══ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar">
 
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-left justify-content-left" href="/">
-                <div class="sidebar-brand-icon">
-                    <i class="fas fa-file-invoice"></i>
-                </div>
-                <div class="sidebar-brand-text mx-2">Kas Kecil APP</div>
-            </a>
+        <!-- Brand -->
+        <a href="/panel/beranda" class="sidebar-brand">
+            <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" class="logo-img">
+            <span class="brand-name">Kas Kecil App</span>
+        </a>
 
-            <hr class="sidebar-divider my-0">
+        <!-- Nav -->
+        <nav class="sidebar-nav">
 
             <!-- Dashboard -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/" data-tooltip="Dashboard">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
+            <div class="nav-item">
+                <a href="/panel/beranda"
+                   class="nav-item-link {{ request()->is('panel/beranda') ? 'active' : '' }}">
+                    <i class="fas fa-home nav-icon"></i>
+                    <span class="nav-text">Dashboard</span>
                 </a>
-            </li>
-
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Master Data
             </div>
+
+            <span class="section-label">Master Data</span>
 
             <!-- Master Data -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is(['master/aas', 'master/matanggaran']) ? '' : 'collapsed' }}"
-                    href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="{{ request()->is(['master/aas', 'master/matanggaran']) ? 'true' : 'false' }}"
-                    aria-controls="collapseTwo" data-tooltip="Master Data">
-                    <i class="fas fa-database"></i>
-                    <span>Master Data</span>
-                </a>
-                <div id="collapseTwo"
-                    class="collapse {{ request()->is(['master/aas', 'master/matanggaran']) ? 'show' : '' }}"
-                    aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Data Inputan</h6>
-                        <a class="collapse-item {{ request()->is('master/aas') ? 'active' : '' }}"
-                            href="/master/aas">Akun Data AAS</a>
-                        <a class="collapse-item {{ request()->is('master/matanggaran') ? 'active' : '' }}"
-                            href="/master/matanggaran">Akun Mata Anggaran</a>
-                    </div>
-                </div>
-            </li>
+            <div class="nav-item" id="nav-master">
+                <button type="button"
+                    class="nav-item-link {{ request()->is(['master/aas','master/matanggaran']) ? 'active' : '' }}"
+                    onclick="toggleSubMenu('sub-master','arrow-master')">
+                    <i class="fas fa-database nav-icon"></i>
+                    <span class="nav-text">Master Data</span>
+                    <i class="fas fa-chevron-right nav-arrow {{ request()->is(['master/aas','master/matanggaran']) ? 'open' : '' }}" id="arrow-master"></i>
+                </button>
+                <ul class="sub-menu" id="sub-master"
+                    style="{{ request()->is(['master/aas','master/matanggaran']) ? '' : 'display:none' }}">
+                    <li>
+                        <a href="/master/aas"
+                           class="sub-item {{ request()->is('master/aas') ? 'active' : '' }}">
+                            Akun Data AAS
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/master/matanggaran"
+                           class="sub-item {{ request()->is('master/matanggaran') ? 'active' : '' }}">
+                            Akun Mata Anggaran
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <span class="section-label">Transaksi</span>
 
             <!-- Transaksi -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? '' : 'collapsed' }}"
-                    href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="{{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? 'true' : 'false' }}"
-                    aria-controls="collapseUtilities" data-tooltip="Transaksi">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Transaksi</span>
-                </a>
-                <div id="collapseUtilities"
-                    class="collapse {{ request()->is(['transaksi/pembentukan', 'transaksi/pengeluaran', 'transaksi/pengisian', 'transaksi']) ? 'show' : '' }}"
-                    aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Data Transaksi</h6>
-                        <a class="collapse-item {{ request()->is('transaksi/pembentukan') ? 'active' : '' }}"
-                            href="/transaksi/pembentukan">Pembentukan Kas</a>
-                        <a class="collapse-item {{ request()->is('transaksi/pengeluaran') ? 'active' : '' }}"
-                            href="/transaksi/pengeluaran">Pengeluaran Kas</a>
-                        <a class="collapse-item {{ request()->is('transaksi/pengisian') ? 'active' : '' }}"
-                            href="/transaksi/pengisian">Pengisian Kas</a>
-                    </div>
-                </div>
-            </li>
+            <div class="nav-item">
+                <button type="button"
+                    class="nav-item-link {{ request()->is(['transaksi*']) ? 'active' : '' }}"
+                    onclick="toggleSubMenu('sub-transaksi','arrow-transaksi')">
+                    <i class="fas fa-exchange-alt nav-icon"></i>
+                    <span class="nav-text">Transaksi</span>
+                    <i class="fas fa-chevron-right nav-arrow {{ request()->is(['transaksi*']) ? 'open' : '' }}" id="arrow-transaksi"></i>
+                </button>
+                <ul class="sub-menu" id="sub-transaksi"
+                    style="{{ request()->is(['transaksi*']) ? '' : 'display:none' }}">
+                    <li>
+                        <a href="/transaksi/pembentukan"
+                           class="sub-item {{ request()->is('transaksi/pembentukan') ? 'active' : '' }}">
+                            Pembentukan Kas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/transaksi/pengeluaran"
+                           class="sub-item {{ request()->is('transaksi/pengeluaran') ? 'active' : '' }}">
+                            Pengeluaran Kas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/transaksi/pengisian"
+                           class="sub-item {{ request()->is('transaksi/pengisian') ? 'active' : '' }}">
+                            Pengisian Kas
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
             <!-- Laporan -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('laporan') ? 'active' : '' }}" href="/laporan"
-                    data-tooltip="Laporan">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Laporan</span>
+            <div class="nav-item">
+                <a href="/laporan"
+                   class="nav-item-link {{ request()->is('laporan') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt nav-icon"></i>
+                    <span class="nav-text">Laporan</span>
                 </a>
-            </li>
-
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Pengaturan
             </div>
+
+            <span class="section-label">Pengaturan</span>
 
             <!-- Pengguna -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('users') ? 'active' : '' }}" href="/users"
-                    data-tooltip="Pengguna">
-                    <i class="fas fa-users"></i>
-                    <span>Pengguna</span>
+            <div class="nav-item">
+                <a href="/users"
+                   class="nav-item-link {{ request()->is('users') ? 'active' : '' }}">
+                    <i class="fas fa-users nav-icon"></i>
+                    <span class="nav-text">Pengguna</span>
                 </a>
-            </li>
+            </div>
 
             <!-- Instansi -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('instansi') ? 'active' : '' }}" href="/instansi"
-                    data-tooltip="Instansi">
-                    <i class="fas fa-building"></i>
-                    <span>Instansi</span>
+            <div class="nav-item">
+                <a href="/instansi"
+                   class="nav-item-link {{ request()->is('instansi') ? 'active' : '' }}">
+                    <i class="fas fa-building nav-icon"></i>
+                    <span class="nav-text">Instansi</span>
                 </a>
-            </li>
-
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggle Button -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
 
-        </ul>
-        <!-- End of Sidebar -->
+        </nav>
 
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) - Mobile & Desktop -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <!-- Desktop Sidebar Toggle (Visible on all screens) -->
-                    <button class="sidebar-toggle-desktop d-none d-md-inline" id="sidebarToggleDesktop">
-                        <i class="fas fa-bars"></i>
-                    </button>
-
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span
-                                    class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                                @if(Auth::user()->foto)
-                                    <img class="img-profile rounded-circle"
-                                        src="{{ asset('uploads/users/' . Auth::user()->foto) }}" style="object-fit: cover;">
-                                @else
-                                    <img class="img-profile rounded-circle"
-                                        src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=random&color=fff&size=60">
-                                @endif
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#" data-toggle="modal"
-                                    data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
-
-                    </ul>
-
-                </nav>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-                    @yield('content')
+        <!-- User Card Footer -->
+        <div class="sidebar-footer">
+            <div class="user-card">
+                @if(Auth::user()->foto)
+                    <img src="{{ asset('uploads/users/' . Auth::user()->foto) }}" alt="Avatar" class="user-avatar">
+                @else
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=0053C5&color=fff&size=80" alt="Avatar" class="user-avatar">
+                @endif
+                <div class="user-info">
+                    <div class="u-name">{{ Auth::user()->name }}</div>
+                    <div class="u-role">Administrator</div>
                 </div>
-                <!-- /.container-fluid -->
-
+                <button class="user-logout-btn" data-toggle="modal" data-target="#logoutModal" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Masjid Agung Al Azhar by DalArmy 2024</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-
         </div>
-        <!-- End of Content Wrapper -->
 
-    </div>
-    <!-- End of Page Wrapper -->
+    </aside>
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Konfirmasi Logout</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+    <!-- ═══ TOPBAR ═══ -->
+    <header class="topbar" id="topbar">
+
+        <!-- Hamburger -->
+        <button class="hamburger" id="hamburger" aria-label="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Page title -->
+        <div class="page-title">@yield('header-title', 'Dashboard')</div>
+
+        <!-- Right: User dropdown -->
+        <div class="topbar-right">
+            <div class="topbar-dropdown" id="topbarDropdown">
+                <button class="topbar-avatar-btn" onclick="toggleTopbarDropdown()">
+                    @if(Auth::user()->foto)
+                        <img src="{{ asset('uploads/users/' . Auth::user()->foto) }}" alt="Avatar" class="topbar-avatar">
+                    @else
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=0053C5&color=fff&size=80" alt="Avatar" class="topbar-avatar">
+                    @endif
+                    <span class="topbar-uname d-none d-sm-inline">{{ Auth::user()->name }}</span>
+                    <i class="fas fa-chevron-down" style="font-size:11px; color:#9ca3af;"></i>
+                </button>
+                <div class="topbar-dropdown-menu">
+                    <button class="danger" data-toggle="modal" data-target="#logoutModal" onclick="closeTopbarDropdown()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </div>
-                <div class="modal-body">
+            </div>
+        </div>
+
+    </header>
+
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <div class="main-wrapper" id="mainWrapper">
+        <div class="content-area">
+            @yield('content')
+        </div>
+        <footer class="main-footer">
+            Copyright &copy; Masjid Agung Al Azhar &mdash; Kas Kecil App V.2.0 &mdash; DalArmy 2024
+        </footer>
+    </div>
+
+    <!-- ═══ LOGOUT MODAL ═══ -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius:16px; border:none; overflow:hidden;">
+                <div class="modal-header" style="border-bottom:1px solid #f3f4f6; padding:20px 24px;">
+                    <h5 class="modal-title" style="font-size:15px; font-weight:600; color:#111827;">Konfirmasi Logout</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding:20px 24px; font-size:14px; color:#4b5563;">
                     Apakah Anda yakin ingin keluar dari aplikasi?
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-gradient-warning" type="button" data-dismiss="modal">Batal</button>
-                    <a class="btn btn-primary" href="/proseslogout">Ya, Keluar</a>
+                <div class="modal-footer" style="border-top:1px solid #f3f4f6; padding:16px 24px; gap:8px;">
+                    <button type="button" data-dismiss="modal"
+                        style="padding:8px 20px; border-radius:8px; border:1.5px solid #e5e7eb; background:white; font-size:13px; font-weight:500; color:#374151; cursor:pointer;">
+                        Batal
+                    </button>
+                    <a href="/proseslogout"
+                        style="padding:8px 20px; border-radius:8px; background:#0053C5; color:white; font-size:13px; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="fas fa-sign-out-alt"></i> Ya, Keluar
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap core JavaScript-->
+    <!-- Scripts -->
     <script src="{{ asset('assets/sbadmin/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/sbadmin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Core plugin JavaScript-->
     <script src="{{ asset('assets/sbadmin/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages - DISABLED to prevent conflict -->
-    <!-- <script src="{{ asset('assets/sbadmin/js/sb-admin-2.min.js') }}"></script> -->
-
-    <!-- Additional Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('assets/js/lib/jquery.mask.min.js') }}"></script>
+    @stack('after-script')
+    @include('sweetalert::alert')
 
     <script>
-        // Enhanced Sidebar Toggle - Fixed Version for Mobile & Desktop
-        (function($) {
-            "use strict";
+        var isMobile = function () { return window.innerWidth < 768; };
 
-            // Check if mobile
-            function isMobile() {
-                return $(window).width() < 768;
+        // ── Hamburger toggle ──
+        document.getElementById('hamburger').addEventListener('click', function () {
+            if (isMobile()) {
+                document.body.classList.toggle('sidebar-open');
+            } else {
+                document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
             }
+        });
 
-            // Function to toggle sidebar
-            function toggleSidebar() {
-                console.log('=== Toggle Sidebar Function Called ===');
-                console.log('Is Mobile:', isMobile());
+        // ── Close on overlay click (mobile) ──
+        document.getElementById('sidebarOverlay').addEventListener('click', function () {
+            document.body.classList.remove('sidebar-open');
+        });
 
-                if (isMobile()) {
-                    // Mobile: hanya toggle visibility, tidak collapse
-                    $("body").toggleClass("sidebar-toggled");
-                    // Jangan tambahkan class 'toggled' ke sidebar di mobile
-                    const isShown = $("body").hasClass("sidebar-toggled");
-                    console.log('Mobile sidebar is now:', isShown ? 'SHOWN' : 'HIDDEN');
+        // ── Restore desktop state ──
+        if (!isMobile() && localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+        }
 
-                    // Di mobile, pastikan collapse menu tetap bisa dibuka
-                    if (isShown) {
-                        // Sidebar ditampilkan, jangan hide collapse
-                    } else {
-                        // Sidebar disembunyikan, tutup semua collapse
-                        $(".collapse").collapse('hide');
-                    }
-                } else {
-                    // Desktop: toggle collapse sidebar
-                    $("body").toggleClass("sidebar-toggled");
-                    $("#accordionSidebar").toggleClass("toggled");
+        // ── Sub menu toggle ──
+        function toggleSubMenu(menuId, arrowId) {
+            var menu  = document.getElementById(menuId);
+            var arrow = document.getElementById(arrowId);
+            if (!menu) return;
+            var isOpen = menu.style.display !== 'none' && menu.style.display !== '';
+            menu.style.display  = isOpen ? 'none' : 'block';
+            if (arrow) arrow.classList.toggle('open', !isOpen);
+        }
 
-                    // Close all collapse menus when toggling to collapsed state
-                    if ($("#accordionSidebar").hasClass("toggled")) {
-                        $(".collapse").collapse('hide');
-                    }
-
-                    const isToggled = $("#accordionSidebar").hasClass("toggled");
-                    console.log('Desktop sidebar is now:', isToggled ? 'COLLAPSED' : 'EXPANDED');
-                }
-
-                // Save state to localStorage (only for desktop)
-                if (!isMobile()) {
-                    const isToggled = $("#accordionSidebar").hasClass("toggled");
-                    localStorage.setItem('sidebarToggled', isToggled);
-                }
-            }
-
-            $(document).ready(function() {
-                console.log('=== Sidebar Script Initialized ===');
-                console.log('Window width:', $(window).width());
-                console.log('Is Mobile:', isMobile());
-
-                // Load saved sidebar state from localStorage (only for desktop)
-                if (!isMobile() && localStorage.getItem('sidebarToggled') === 'true') {
-                    $("body").addClass("sidebar-toggled");
-                    $("#accordionSidebar").addClass("toggled");
-                    $(".collapse").collapse('hide');
-                    console.log('Loaded saved state: COLLAPSED');
-                }
-
-                // Di mobile, pastikan sidebar tersembunyi by default
-                if (isMobile()) {
-                    // Sidebar sudah tersembunyi dengan CSS (left: -260px)
-                    // Tidak perlu addClass toggled
-                    console.log('Mobile: Sidebar hidden by default');
-                }
-
-                // Debug: Check if buttons exist
-                setTimeout(function() {
-                    console.log('=== Button Check ===');
-                    console.log('Bottom toggle button (#sidebarToggle):', $('#sidebarToggle').length);
-                    console.log('Top mobile toggle (#sidebarToggleTop):', $('#sidebarToggleTop')
-                    .length);
-                    console.log('Desktop toggle (#sidebarToggleDesktop):', $('#sidebarToggleDesktop')
-                        .length);
-                }, 100);
-
-                // Remove any existing click handlers first to prevent conflicts
-                $('#sidebarToggle, #sidebarToggleTop, #sidebarToggleDesktop').off('click');
-
-                // Method 1: Direct binding on specific button
-                $('#sidebarToggle').on('click', function(e) {
-                    console.log('>>> BOTTOM BUTTON CLICKED <<<');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    toggleSidebar();
-                    return false;
-                });
-
-                // Method 2: Event delegation for bottom button
-                $(document).on('click', '#sidebarToggle', function(e) {
-                    console.log('>>> BOTTOM BUTTON CLICKED (delegation) <<<');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    toggleSidebar();
-                    return false;
-                });
-
-                // Top mobile toggle
-                $('#sidebarToggleTop').on('click', function(e) {
-                    console.log('>>> TOP MOBILE BUTTON CLICKED <<<');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    toggleSidebar();
-                    return false;
-                });
-
-                // Desktop toggle (hamburger in topbar)
-                $('#sidebarToggleDesktop').on('click', function(e) {
-                    console.log('>>> DESKTOP BUTTON CLICKED <<<');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    toggleSidebar();
-                    return false;
-                });
-
-                // Prevent collapse menu opening when sidebar is toggled (ONLY on desktop)
-                $(document).on('click', '#accordionSidebar.toggled .nav-link[data-toggle="collapse"]', function(
-                    e) {
-                    if (!isMobile() && $("#accordionSidebar").hasClass("toggled")) {
-                        console.log('Desktop: Prevented collapse menu in toggled state');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }
-                });
-
-                // Auto-close sidebar on mobile after clicking a NON-COLLAPSE link
-                $(document).on('click', '.nav-link:not([data-toggle="collapse"])', function() {
-                    if (isMobile() && $("body").hasClass("sidebar-toggled")) {
-                        // Tutup sidebar setelah delay singkat
-                        setTimeout(function() {
-                            $("body").removeClass("sidebar-toggled");
-                            console.log('Mobile: Auto-closed sidebar after link click');
-                        }, 300);
-                    }
-                });
-
-                // Click outside sidebar to close (mobile only)
-                $(document).on('click', function(e) {
-                    if (isMobile() && $("body").hasClass("sidebar-toggled")) {
-                        // Jika klik di luar sidebar
-                        if (!$(e.target).closest('#accordionSidebar, #sidebarToggleTop').length) {
-                            $("body").removeClass("sidebar-toggled");
-                            console.log('Mobile: Closed sidebar (clicked outside)');
-                        }
-                    }
-                });
-
-                // Handle window resize
-                $(window).resize(function() {
-                    console.log('Window resized to:', $(window).width());
-                    if (isMobile()) {
-                        // Reset ke mobile mode
-                        $("body").removeClass("sidebar-toggled");
-                        $("#accordionSidebar").removeClass("toggled");
-                    } else {
-                        // Load desktop saved state
-                        if (localStorage.getItem('sidebarToggled') === 'true') {
-                            $("body").addClass("sidebar-toggled");
-                            $("#accordionSidebar").addClass("toggled");
-                        } else {
-                            $("body").removeClass("sidebar-toggled");
-                            $("#accordionSidebar").removeClass("toggled");
-                        }
-                    }
-                });
-
-                // REMOVED: Auto-test toggle (uncomment if needed for debugging)
-                /*
-                setTimeout(function() {
-                    $('#sidebarToggle').trigger('click');
-                    console.log('=== Test Toggle Triggered ===');
-                    setTimeout(function() {
-                        $('#sidebarToggle').trigger('click');
-                        console.log('=== Restored Original State ===');
-                    }, 500);
-                }, 1000);
-                */
-            });
-
-        })(jQuery);
+        // ── Topbar dropdown ──
+        function toggleTopbarDropdown() {
+            document.getElementById('topbarDropdown').classList.toggle('open');
+        }
+        function closeTopbarDropdown() {
+            document.getElementById('topbarDropdown').classList.remove('open');
+        }
+        document.addEventListener('click', function (e) {
+            var dd = document.getElementById('topbarDropdown');
+            if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+        });
     </script>
-
-    @stack('after-script')
-
 </body>
-
 </html>
