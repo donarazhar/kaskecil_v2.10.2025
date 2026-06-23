@@ -38,6 +38,12 @@ class UserController extends Controller
                 'password' => $hashedPassword,
             ];
 
+            if ($request->hasFile('foto')) {
+                $foto = 'user_' . time() . '.' . $request->file('foto')->getClientOriginalExtension();
+                $request->file('foto')->storeAs('public/uploads/users', $foto);
+                $data['foto'] = $foto;
+            }
+
             // Menyimpan data dan memberikan respon sukses.
             $simpan = DB::table('users')->insert($data);
             if ($simpan) {
@@ -68,15 +74,21 @@ class UserController extends Controller
         $password = $request->password;
 
         try {
-            // Enkripsi kata sandi baru.
-            $hashedPassword = Hash::make($password);
-
             // Menyiapkan data untuk diupdate.
             $data = [
                 'name' => $name,
                 'email' => $email,
-                'password' => $hashedPassword,
             ];
+
+            if (!empty($password)) {
+                $data['password'] = Hash::make($password);
+            }
+
+            if ($request->hasFile('foto')) {
+                $foto = 'user_' . time() . '.' . $request->file('foto')->getClientOriginalExtension();
+                $request->file('foto')->storeAs('public/uploads/users', $foto);
+                $data['foto'] = $foto;
+            }
 
             // Memperbarui data dan memberikan respon sukses.
             $update = DB::table('users')->where('id', $id)->update($data);

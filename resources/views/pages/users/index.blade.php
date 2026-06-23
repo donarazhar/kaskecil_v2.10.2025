@@ -37,7 +37,11 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
-                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=random&color=fff&size=40" alt="Profile" class="rounded-circle">
+                                        @if($user->foto)
+                                            <img src="{{ asset('storage/uploads/users/' . $user->foto) }}" alt="Profile" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                        @else
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=random&color=fff&size=40" alt="Profile" class="rounded-circle">
+                                        @endif
                                     </td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
@@ -81,8 +85,12 @@
                 </div>
                 <div class="card shadow col-lg-12">
                     <div class="card-body">
-                        <form action="{{ route('users.store') }}" method="post" id="frmUser">
+                        <form action="{{ route('users.store') }}" method="post" id="frmUser" enctype="multipart/form-data">
                             @csrf
+                            <div class="form-group">
+                                <label for="foto">Foto Profil</label>
+                                <input type="file" name="foto" id="foto" class="form-control" accept="image/*">
+                            </div>
                             <div class="form-group">
                                 <label for="">Nama</label>
                                 <input type="text" name="name" id="name" class="form-control">
