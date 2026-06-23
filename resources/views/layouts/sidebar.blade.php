@@ -567,8 +567,13 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span
                                     class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                                <img class="img-profile rounded-circle"
-                                    src="{{ asset('assets/sbadmin/img/undraw_profile.svg') }}">
+                                @if(Auth::user()->foto)
+                                    <img class="img-profile rounded-circle"
+                                        src="{{ asset('storage/uploads/users/' . Auth::user()->foto) }}" style="object-fit: cover;">
+                                @else
+                                    <img class="img-profile rounded-circle"
+                                        src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=random&color=fff&size=60">
+                                @endif
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
