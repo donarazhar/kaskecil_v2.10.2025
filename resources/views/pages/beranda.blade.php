@@ -74,15 +74,7 @@
     .stat-value { font-size: 20px; font-weight: 700; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .stat-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
 
-    /* ── Section Cards ── */
-    .section-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-    @media (max-width: 768px) { .section-grid-2 { grid-template-columns: 1fr; } }
-
+    /* ── Panel ── */
     .panel {
         background: #fff;
         border: 1px solid var(--gray-100);
@@ -110,38 +102,6 @@
 
     .panel-title i { color: var(--blue); font-size: 15px; }
 
-    .panel-body {
-        padding: 0;
-        max-height: 360px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--gray-200) transparent;
-    }
-
-    .panel-body::-webkit-scrollbar { width: 4px; }
-    .panel-body::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
-
-    /* ── Table ── */
-    .dash-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .dash-table thead th {
-        background: var(--gray-50);
-        padding: 10px 16px;
-        text-align: left;
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--gray-500);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: 1px solid var(--gray-200);
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-    .dash-table tbody td { padding: 12px 16px; border-bottom: 1px solid var(--gray-50); color: var(--gray-700); vertical-align: middle; }
-    .dash-table tbody tr:last-child td { border-bottom: none; }
-    .dash-table tbody tr:hover td { background: var(--gray-50); }
-    .dash-table tfoot th { padding: 12px 16px; background: var(--blue-50); color: var(--blue); font-size: 13px; font-weight: 700; border-top: 1px solid var(--blue-100); }
-
     /* ── Badge ── */
     .badge {
         display: inline-block;
@@ -150,26 +110,8 @@
         font-size: 11px;
         font-weight: 600;
     }
-    .badge-blue   { background: var(--blue-50);  color: var(--blue); }
     .badge-green  { background: var(--green-50);  color: var(--green-700); }
     .badge-red    { background: var(--red-50);    color: var(--red-700); }
-
-    /* ── Progress ── */
-    .prog-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 20px; }
-    .prog-item {}
-    .prog-row  { display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .prog-name { font-size: 13px; font-weight: 500; color: var(--gray-700); }
-    .prog-val  { font-size: 13px; font-weight: 700; color: var(--blue); }
-    .prog-bar  { height: 8px; background: var(--gray-100); border-radius: 10px; overflow: hidden; }
-    .prog-fill { height: 100%; border-radius: 10px; background: var(--blue); transition: width 1s ease-out; }
-    .prog-fill.c0 { background: linear-gradient(90deg, #0053C5, #2563eb); }
-    .prog-fill.c1 { background: linear-gradient(90deg, #22c55e, #16a34a); }
-    .prog-fill.c2 { background: linear-gradient(90deg, #3b82f6, #2563eb); }
-    .prog-fill.c3 { background: linear-gradient(90deg, #f59e0b, #d97706); }
-    .prog-fill.c4 { background: linear-gradient(90deg, #ef4444, #dc2626); }
-
-    /* ── Chart ── */
-    .chart-wrap { padding: 20px; height: 320px; }
 
     /* ── History Cards ── */
     .history-section { margin-bottom: 24px; }
@@ -279,126 +221,7 @@
     </div>
 </div>
 
-{{-- ROW 2: Mata Anggaran + Grafik --}}
-<div class="section-grid-2 fade-in delay-2">
 
-    {{-- Mata Anggaran --}}
-    <div class="panel">
-        <div class="panel-header">
-            <h6 class="panel-title"><i class="fas fa-list-alt"></i> Informasi Mata Anggaran</h6>
-        </div>
-        <div class="panel-body">
-            <table class="dash-table">
-                <thead>
-                    <tr>
-                        <th style="width:35%">Kode</th>
-                        <th>Nama Anggaran</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($matanggaran as $mata)
-                    <tr>
-                        <td><span class="badge badge-blue">{{ $mata->kode_matanggaran }}</span></td>
-                        <td>{{ $mata->nama_aas }}</td>
-                    </tr>
-                    @empty
-                    <tr><td colspan="2"><div class="empty"><i class="fas fa-folder-open"></i><p>Belum ada data mata anggaran</p></div></td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    {{-- Grafik Pengeluaran --}}
-    <div class="panel">
-        <div class="panel-header">
-            <h6 class="panel-title"><i class="fas fa-chart-bar"></i> Grafik Pengeluaran {{ $namaBulan }} {{ $tahunini }}</h6>
-        </div>
-        <div class="chart-wrap">
-            <canvas id="myPieChart"></canvas>
-        </div>
-    </div>
-
-</div>
-
-{{-- ROW 3: Rekap + Detail Transaksi --}}
-<div class="section-grid-2 fade-in delay-3">
-
-    {{-- Rekap Progress --}}
-    <div class="panel">
-        <div class="panel-header">
-            <h6 class="panel-title"><i class="fas fa-chart-pie"></i> Rekap {{ $namaBulan }} {{ $tahunini }}</h6>
-        </div>
-        @php
-            $vals = $rekapperbulan->pluck('total_perbulan')->toArray();
-            $maxVal = !empty($vals) ? max($vals) : 1;
-        @endphp
-        <div class="prog-list">
-            @forelse($rekapperbulan as $i => $data)
-            @php $pct = $maxVal ? round(($data->total_perbulan / $maxVal) * 100) : 0; @endphp
-            <div class="prog-item">
-                <div class="prog-row">
-                    <span class="prog-name">{{ $data->nama_aas }}</span>
-                    <span class="prog-val">Rp {{ number_format($data->total_perbulan, 0, ',', '.') }}</span>
-                </div>
-                <div class="prog-bar">
-                    <div class="prog-fill c{{ $i % 5 }}" style="width:{{ $pct }}%"></div>
-                </div>
-            </div>
-            @empty
-            <div class="empty"><i class="fas fa-chart-pie"></i><p>Belum ada data rekap bulan ini</p></div>
-            @endforelse
-        </div>
-    </div>
-
-    {{-- Detail Transaksi --}}
-    <div class="panel">
-        <div class="panel-header">
-            <h6 class="panel-title"><i class="fas fa-table"></i> Detail Pengeluaran {{ $namaBulan }} {{ $tahunini }}</h6>
-        </div>
-        <div class="panel-body">
-            <table class="dash-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Tanggal</th>
-                        <th>Kode</th>
-                        <th>Nama Akun</th>
-                        <th>Status</th>
-                        <th class="text-right">Jumlah</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($pengeluaranbulanini as $d)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td style="white-space:nowrap">{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YY') }}</td>
-                        <td><span class="badge badge-blue">{{ $d->kode_matanggaran }}</span></td>
-                        <td>{{ $d->nama_aas }}</td>
-                        <td>
-                            @if($d->status == 'k') <span class="badge badge-green">Kredit</span>
-                            @elseif($d->status == 'd') <span class="badge badge-red">Debet</span>
-                            @endif
-                        </td>
-                        <td class="text-right"><strong>{{ number_format($d->jumlah, 0, ',', '.') }}</strong></td>
-                    </tr>
-                    @empty
-                    <tr><td colspan="6"><div class="empty"><i class="fas fa-inbox"></i><p>Belum ada transaksi bulan ini</p></div></td></tr>
-                    @endforelse
-                </tbody>
-                @if($pengeluaranbulanini->count() > 0)
-                <tfoot>
-                    <tr>
-                        <th colspan="5">Total Pengeluaran</th>
-                        <th class="text-right">{{ number_format($pengeluaranbulanini->sum('jumlah'), 0, ',', '.') }}</th>
-                    </tr>
-                </tfoot>
-                @endif
-            </table>
-        </div>
-    </div>
-
-</div>
 
 {{-- ROW 4: History Pengisian Kas --}}
 <div class="panel history-section fade-in delay-4">
@@ -446,60 +269,9 @@
 
 @endsection
 
-@push('after-style')
-<link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-@endpush
-
 @push('after-script')
 <script>
-    // Bar Chart
-    var ctx = document.getElementById('myPieChart').getContext('2d');
-    var data = <?php echo json_encode($pengeluaranbulanini) ?>;
-    var colors = ['#0053C5','#22c55e','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: data.map(d => d.kode_matanggaran),
-            datasets: [{
-                label: 'Pengeluaran',
-                data: data.map(d => d.jumlah),
-                backgroundColor: colors.map(c => c + 'cc'),
-                borderColor: colors,
-                borderWidth: 2,
-                borderRadius: 6,
-                borderSkipped: false,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(17,24,39,0.9)',
-                    padding: 12, cornerRadius: 8,
-                    callbacks: {
-                        label: ctx => 'Rp ' + ctx.parsed.y.toLocaleString('id-ID')
-                    }
-                }
-            },
-            scales: {
-                x: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: '#374151' } },
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.04)' },
-                    ticks: {
-                        font: { size: 11 }, color: '#6b7280',
-                        callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'Jt' : v >= 1e3 ? (v/1e3).toFixed(0)+'Rb' : v
-                    }
-                }
-            },
-            animation: { duration: 1200, easing: 'easeOutQuart' }
-        }
-    });
-
-    // Animate progress bars
+    // Animate progress bars on load (if any remain)
     document.querySelectorAll('.prog-fill').forEach(function(el) {
         var w = el.style.width;
         el.style.width = '0';
