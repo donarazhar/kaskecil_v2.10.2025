@@ -246,21 +246,24 @@
             margin-bottom: 36px;
         }
 
-        .form-header .avatar-ring {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
+        .form-header .logo-img-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
             background: var(--blue-50);
-            border: 3px solid var(--blue-100);
+            border: 2px solid var(--blue-100);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
+            padding: 10px;
+            box-shadow: 0 4px 14px rgba(0, 83, 197, 0.12);
         }
 
-        .form-header .avatar-ring i {
-            font-size: 28px;
-            color: var(--primary);
+        .form-header .logo-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .form-header h2 {
@@ -587,8 +590,8 @@
             <div class="form-container">
 
                 <div class="form-header">
-                    <div class="avatar-ring">
-                        <i class="fas fa-user-circle"></i>
+                    <div class="logo-img-wrap">
+                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo Kas Kecil">
                     </div>
                     <h2>Selamat Datang Kembali</h2>
                     <p>Masukkan kredensial Anda untuk mengakses dashboard</p>
