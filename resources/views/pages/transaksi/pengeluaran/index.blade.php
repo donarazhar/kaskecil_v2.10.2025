@@ -357,6 +357,27 @@ $(function () {
     });
 
     setTimeout(function () { $('.flash-alert').fadeOut('slow'); }, 5000);
+
+    @if(Session::has('warning'))
+    Swal.fire({
+        title: 'Perhatian!',
+        text: "{{ Session::get('warning') }}",
+        icon: 'error',
+        confirmButtonColor: '#0053C5',
+        confirmButtonText: 'Tutup'
+    });
+    @endif
+
+    @if(Session::has('success'))
+    Swal.fire({
+        title: 'Berhasil!',
+        text: "{{ Session::get('success') }}",
+        icon: 'success',
+        confirmButtonColor: '#0053C5',
+        confirmButtonText: 'Tutup',
+        timer: 3000
+    });
+    @endif
 });
 </script>
 @endpush
