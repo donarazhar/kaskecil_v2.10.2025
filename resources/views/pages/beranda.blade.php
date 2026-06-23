@@ -1,128 +1,60 @@
 @extends('layouts.sidebar')
 @section('title', 'Beranda')
-@section('header-title', 'Beranda')
+@section('header-title', 'Dashboard')
 @section('content')
 
 <style>
     :root {
-        --primary-blue: #0053C5;
-        --primary-dark: #003d91;
-        --primary-light: #e8f1fd;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --danger: #ef4444;
-        --info: #3b82f6;
-        --gray-50: #f9fafb;
-        --gray-100: #f3f4f6;
-        --gray-200: #e5e7eb;
-        --gray-300: #d1d5db;
-        --gray-600: #4b5563;
-        --gray-700: #374151;
-        --gray-800: #1f2937;
-        --gray-900: #111827;
-        --white: #ffffff;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        --blue:      #0053C5;
+        --blue-dark: #003d91;
+        --blue-50:   #eff6ff;
+        --blue-100:  #dbeafe;
+        --green-50:  #f0fdf4;
+        --green-500: #22c55e;
+        --green-700: #15803d;
+        --red-50:    #fef2f2;
+        --red-500:   #ef4444;
+        --red-700:   #b91c1c;
+        --amber-50:  #fffbeb;
+        --amber-500: #f59e0b;
+        --amber-700: #b45309;
+        --gray-50:   #f9fafb;
+        --gray-100:  #f3f4f6;
+        --gray-200:  #e5e7eb;
+        --gray-300:  #d1d5db;
+        --gray-400:  #9ca3af;
+        --gray-500:  #6b7280;
+        --gray-600:  #4b5563;
+        --gray-700:  #374151;
+        --gray-800:  #1f2937;
+        --gray-900:  #111827;
     }
 
-    /* Global Styles */
-    body {
-        background: var(--gray-50);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* ── Stat Cards ── */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
     }
 
-    .container-fluid {
-        padding: 24px;
-    }
+    @media (max-width: 1024px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px)  { .stat-grid { grid-template-columns: 1fr; } }
 
-    /* Page Header */
-    .page-header {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
-        border-radius: 16px;
-        padding: 24px 32px;
-        margin-bottom: 32px;
-        box-shadow: var(--shadow-lg);
+    .stat-card {
+        background: #fff;
+        border: 1px solid var(--gray-100);
+        border-radius: 14px;
+        padding: 20px;
         display: flex;
         align-items: center;
         gap: 16px;
-        animation: slideDown 0.5s ease-out;
+        transition: box-shadow 0.2s, transform 0.2s;
     }
 
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
+    .stat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .page-header i {
-        font-size: 32px;
-        color: rgba(255, 255, 255, 0.9);
-    }
-
-    .page-header-content h1 {
-        color: var(--white);
-        font-size: 30px;
-        font-weight: 700;
-        margin: 0;
-        letter-spacing: -0.5px;
-    }
-
-    .page-header-content p {
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 14px;
-        margin: 4px 0 0;
-    }
-
-    /* Stats Cards */
-    .stats-card {
-        background: var(--white);
-        border-radius: 12px;
-        padding: 12px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--gray-100);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stats-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(180deg, var(--primary-blue), var(--primary-dark));
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .stats-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-xl);
-    }
-
-    .stats-card:hover::before {
-        opacity: 1;
-    }
-
-    .stats-card-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        margin-bottom: 16px;
-    }
-
-    .stats-card-icon {
+    .stat-icon {
         width: 48px;
         height: 48px;
         border-radius: 12px;
@@ -130,848 +62,412 @@
         align-items: center;
         justify-content: center;
         font-size: 20px;
-        background: var(--primary-light);
-        color: var(--primary-blue);
+        flex-shrink: 0;
+    }
+    .stat-icon.blue   { background: var(--blue-50);  color: var(--blue); }
+    .stat-icon.green  { background: var(--green-50);  color: var(--green-500); }
+    .stat-icon.red    { background: var(--red-50);    color: var(--red-500); }
+    .stat-icon.amber  { background: var(--amber-50);  color: var(--amber-500); }
+
+    .stat-body { flex: 1; min-width: 0; }
+    .stat-label { font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .stat-value { font-size: 20px; font-weight: 700; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stat-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+    /* ── Section Cards ── */
+    .section-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 768px) { .section-grid-2 { grid-template-columns: 1fr; } }
+
+    .panel {
+        background: #fff;
+        border: 1px solid var(--gray-100);
+        border-radius: 14px;
+        overflow: hidden;
     }
 
-    .stats-card-icon.success {
-        background: #d1fae5;
-        color: var(--success);
-    }
-
-    .stats-card-icon.warning {
-        background: #fef3c7;
-        color: var(--warning);
-    }
-
-    .stats-card-icon.info {
-        background: #dbeafe;
-        color: var(--info);
-    }
-
-    .stats-card-icon.danger {
-        background: #fee2e2;
-        color: var(--danger);
-    }
-
-    .stats-card-label {
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--gray-600);
-        margin-bottom: 8px;
-    }
-
-    .stats-card-value {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--gray-900);
-        line-height: 1.2;
-        margin-bottom: 4px;
-    }
-
-    .stats-card-footer {
-        font-size: 13px;
-        color: var(--gray-600);
+    .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--gray-100);
         display: flex;
         align-items: center;
-        gap: 4px;
+        justify-content: space-between;
     }
 
-    .stats-card-footer i {
-        font-size: 11px;
-    }
-
-    /* Content Cards */
-    .content-card {
-        background: var(--white);
-        border-radius: 16px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--gray-100);
-        overflow: hidden;
-        height: 100%;
-    }
-
-    .content-card-header {
-        padding: 20px 24px;
-        border-bottom: 1px solid var(--gray-200);
-        background: var(--white);
-    }
-
-    .content-card-title {
-        font-size: 16px;
+    .panel-title {
+        font-size: 14px;
         font-weight: 700;
-        color: var(--gray-900);
-        margin: 0;
+        color: var(--gray-800);
         display: flex;
         align-items: center;
         gap: 8px;
-    }
-
-    .content-card-title i {
-        color: var(--primary-blue);
-        font-size: 18px;
-    }
-
-    .content-card-body {
-        padding: 24px;
-        max-height: 450px;
-        overflow-y: auto;
-    }
-
-    /* Custom Scrollbar */
-    .content-card-body::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .content-card-body::-webkit-scrollbar-track {
-        background: var(--gray-100);
-        border-radius: 10px;
-    }
-
-    .content-card-body::-webkit-scrollbar-thumb {
-        background: var(--gray-300);
-        border-radius: 10px;
-    }
-
-    .content-card-body::-webkit-scrollbar-thumb:hover {
-        background: var(--gray-600);
-    }
-
-    /* Modern Table */
-    .modern-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        font-size: 13px;
-    }
-
-    .modern-table thead {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-
-    .modern-table thead th {
-        background: var(--gray-50);
-        color: var(--gray-700);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 11px;
-        letter-spacing: 0.5px;
-        padding: 12px 16px;
-        text-align: left;
-        border-bottom: 2px solid var(--gray-200);
-    }
-
-    .modern-table tbody td {
-        padding: 14px 16px;
-        border-bottom: 1px solid var(--gray-100);
-        color: var(--gray-800);
-        vertical-align: middle;
-    }
-
-    .modern-table tbody tr {
-        transition: background-color 0.2s ease;
-    }
-
-    .modern-table tbody tr:hover {
-        background-color: var(--gray-50);
-    }
-
-    .modern-table tfoot th {
-        padding: 16px;
-        background: var(--primary-light);
-        color: var(--primary-blue);
-        font-weight: 700;
-        border-top: 2px solid var(--primary-blue);
-    }
-
-    /* Badge Styles */
-    .badge-modern {
-        padding: 4px 12px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-    }
-
-    .badge-success {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .badge-danger {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    .badge-info {
-        background: #dbeafe;
-        color: #1e40af;
-    }
-
-    /* Progress Bars */
-    .progress-item {
-        margin-bottom: 24px;
-    }
-
-    .progress-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-
-    .progress-label {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--gray-800);
-    }
-
-    .progress-value {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--primary-blue);
-    }
-
-    .progress-bar-container {
-        height: 10px;
-        background: var(--gray-200);
-        border-radius: 10px;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .progress-bar-fill {
-        height: 100%;
-        border-radius: 10px;
-        transition: width 1s ease-out;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .progress-bar-fill::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        animation: shimmer 2s infinite;
-    }
-
-    @keyframes shimmer {
-        0% {
-            transform: translateX(-100%);
-        }
-
-        100% {
-            transform: translateX(100%);
-        }
-    }
-
-    .progress-bar-fill.primary {
-        background: linear-gradient(90deg, var(--primary-blue), var(--primary-dark));
-    }
-
-    .progress-bar-fill.success {
-        background: linear-gradient(90deg, #10b981, #059669);
-    }
-
-    .progress-bar-fill.warning {
-        background: linear-gradient(90deg, #f59e0b, #d97706);
-    }
-
-    .progress-bar-fill.danger {
-        background: linear-gradient(90deg, #ef4444, #dc2626);
-    }
-
-    .progress-bar-fill.info {
-        background: linear-gradient(90deg, #3b82f6, #2563eb);
-    }
-
-    /* History Card */
-    .history-card {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
-        border-radius: 16px;
-        padding: 20px;
-        color: var(--white);
-        box-shadow: var(--shadow-lg);
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s ease;
-    }
-
-    .history-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-        pointer-events: none;
-    }
-
-    .history-card:hover {
-        transform: translateY(-4px);
-    }
-
-    .history-card-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
-    }
-
-    .history-card-icon {
-        width: 40px;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-    }
-
-    .history-card-label {
-        font-size: 13px;
-        font-weight: 600;
-        opacity: 0.9;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .history-card-details {
-        font-size: 12px;
-        opacity: 0.85;
-        margin-bottom: 8px;
-        line-height: 1.5;
-    }
-
-    .history-card-value {
-        font-size: 20px;
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
-
-    /* Chart Container */
-    .chart-container {
-        position: relative;
-        height: 300px;
-        padding: 16px;
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-    }
-
-    .empty-state i {
-        font-size: 64px;
-        color: var(--gray-300);
-        margin-bottom: 16px;
-        opacity: 0.7;
-    }
-
-    .empty-state h3 {
-        color: var(--gray-700);
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-
-    .empty-state p {
-        color: var(--gray-500);
-        font-size: 14px;
         margin: 0;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .container-fluid {
-            padding: 16px;
-        }
+    .panel-title i { color: var(--blue); font-size: 15px; }
 
-        .page-header {
-            padding: 20px;
-        }
-
-        .page-header-content h1 {
-            font-size: 20px;
-        }
-
-        .stats-card-value {
-            font-size: 24px;
-        }
-
-        .content-card-body {
-            padding: 16px;
-        }
-
-        .modern-table {
-            font-size: 12px;
-        }
-
-        .modern-table thead th,
-        .modern-table tbody td {
-            padding: 10px 12px;
-        }
+    .panel-body {
+        padding: 0;
+        max-height: 360px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--gray-200) transparent;
     }
 
-    /* Animation Classes */
-    .fade-in {
-        animation: fadeIn 0.5s ease-out;
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+
+    /* ── Table ── */
+    .dash-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .dash-table thead th {
+        background: var(--gray-50);
+        padding: 10px 16px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--gray-200);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+    .dash-table tbody td { padding: 12px 16px; border-bottom: 1px solid var(--gray-50); color: var(--gray-700); vertical-align: middle; }
+    .dash-table tbody tr:last-child td { border-bottom: none; }
+    .dash-table tbody tr:hover td { background: var(--gray-50); }
+    .dash-table tfoot th { padding: 12px 16px; background: var(--blue-50); color: var(--blue); font-size: 13px; font-weight: 700; border-top: 1px solid var(--blue-100); }
+
+    /* ── Badge ── */
+    .badge {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-blue   { background: var(--blue-50);  color: var(--blue); }
+    .badge-green  { background: var(--green-50);  color: var(--green-700); }
+    .badge-red    { background: var(--red-50);    color: var(--red-700); }
+
+    /* ── Progress ── */
+    .prog-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 20px; }
+    .prog-item {}
+    .prog-row  { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .prog-name { font-size: 13px; font-weight: 500; color: var(--gray-700); }
+    .prog-val  { font-size: 13px; font-weight: 700; color: var(--blue); }
+    .prog-bar  { height: 8px; background: var(--gray-100); border-radius: 10px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 10px; background: var(--blue); transition: width 1s ease-out; }
+    .prog-fill.c0 { background: linear-gradient(90deg, #0053C5, #2563eb); }
+    .prog-fill.c1 { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .prog-fill.c2 { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+    .prog-fill.c3 { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .prog-fill.c4 { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+    /* ── Chart ── */
+    .chart-wrap { padding: 20px; height: 320px; }
+
+    /* ── History Cards ── */
+    .history-section { margin-bottom: 24px; }
+
+    .history-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        padding: 20px;
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
+    @media (max-width: 1024px) { .history-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px)  { .history-grid { grid-template-columns: 1fr; } }
 
-        to {
-            opacity: 1;
-        }
+    .hist-card {
+        border: 1.5px solid var(--gray-100);
+        border-radius: 12px;
+        padding: 16px;
+        background: #fff;
+        transition: box-shadow 0.2s, transform 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
-    .slide-up {
-        animation: slideUp 0.5s ease-out;
+    .hist-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+    .hist-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+
+    .hist-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--blue-50);
+        color: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
     }
 
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .hist-amount {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--gray-900);
     }
 
-    /* Spacing Utilities */
-    .mb-32 {
-        margin-bottom: 32px;
-    }
+    .hist-meta { font-size: 12px; color: var(--gray-500); display: flex; flex-direction: column; gap: 3px; }
+    .hist-meta span { display: flex; align-items: center; gap: 5px; }
 
-    .mb-24 {
-        margin-bottom: 24px;
-    }
+    /* ── Empty State ── */
+    .empty { text-align: center; padding: 48px 20px; }
+    .empty i { font-size: 48px; color: var(--gray-300); margin-bottom: 12px; display: block; }
+    .empty p { font-size: 14px; color: var(--gray-400); margin: 0; }
+
+    /* ── Pagination ── */
+    .pagi-wrap { padding: 16px 20px; border-top: 1px solid var(--gray-100); display: flex; justify-content: center; }
+    .pagi-wrap .pagination { margin: 0; }
+    .pagi-wrap .page-item .page-link { font-size: 13px; color: var(--blue); border-color: var(--gray-200); }
+    .pagi-wrap .page-item.active .page-link { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    /* fade in */
+    .fade-in { animation: fi 0.4s ease both; }
+    @keyframes fi { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .delay-1 { animation-delay: .05s; }
+    .delay-2 { animation-delay: .10s; }
+    .delay-3 { animation-delay: .15s; }
+    .delay-4 { animation-delay: .20s; }
+    .delay-5 { animation-delay: .25s; }
+    .delay-6 { animation-delay: .30s; }
 </style>
 
-<!-- Main Content -->
-<div id="content-wrapper" class="d-flex flex-column">
-    <div class="container-fluid">
-
-        <!-- Page Header -->
-        <div class="page-header fade-in">
-            <i class="fas fa-home"></i>
-            <div class="page-header-content">
-                <h1>Dashboard Kas Kecil</h1>
-                <p>Sistem Manajemen Kas Kecil Metode Imprest</p>
-            </div>
+{{-- STAT CARDS --}}
+<div class="stat-grid">
+    <div class="stat-card fade-in delay-1">
+        <div class="stat-icon blue"><i class="fas fa-wallet"></i></div>
+        <div class="stat-body">
+            <div class="stat-label">Pembentukan Kas</div>
+            <div class="stat-value">Rp {{ number_format($pembentukan->sum('jumlah'), 0, ',', '.') }}</div>
+            <div class="stat-sub">Awal periode</div>
         </div>
-
-        <!-- Stats Cards -->
-        <div class="row mb-32">
-            <!-- Pembentukan Kas Kecil -->
-            <div class="col-xl-3 col-md-6 mb-4 slide-up" style="animation-delay: 0.1s">
-                <div class="stats-card">
-                    <div class="stats-card-header">
-                        <div>
-                            <div class="stats-card-label">Pembentukan Kas</div>
-                            <div class="stats-card-value">
-                                {{ 'Rp ' . number_format($pembentukan->sum('jumlah'), 0, ',', '.') }}
-                            </div>
-                        </div>
-                        <div class="stats-card-icon">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                    </div>
-                    <div class="stats-card-footer">
-                        <i class="fas fa-circle"></i>
-                        Awal Proses
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pengeluaran Kas -->
-            <div class="col-xl-3 col-md-6 mb-4 slide-up" style="animation-delay: 0.2s">
-                <div class="stats-card">
-                    <div class="stats-card-header">
-                        <div>
-                            <div class="stats-card-label">Pengeluaran Kas</div>
-                            <div class="stats-card-value">
-                                {{ 'Rp ' . number_format($pengeluaranbulanini->sum('jumlah'), 0, ',', '.') }}
-                            </div>
-                        </div>
-                        <div class="stats-card-icon danger">
-                            <i class="fas fa-arrow-down"></i>
-                        </div>
-                    </div>
-                    <div class="stats-card-footer">
-                        <i class="fas fa-circle"></i>
-                        Bulan ini
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pengisian Kas -->
-            <div class="col-xl-3 col-md-6 mb-4 slide-up" style="animation-delay: 0.3s">
-                <div class="stats-card">
-                    <div class="stats-card-header">
-                        <div>
-                            <div class="stats-card-label">Pengisian Kas</div>
-                            <div class="stats-card-value">
-                                {{ 'Rp ' . number_format($pengisianbulanini->sum('jumlah'), 0, ',', '.') }}
-                            </div>
-                        </div>
-                        <div class="stats-card-icon success">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                    </div>
-                    <div class="stats-card-footer">
-                        <i class="fas fa-circle"></i>
-                        Bulan ini
-                    </div>
-                </div>
-            </div>
-
-            <!-- Saldo Berjalan -->
-            <div class="col-xl-3 col-md-6 mb-4 slide-up" style="animation-delay: 0.4s">
-                <div class="stats-card">
-                    <div class="stats-card-header">
-                        <div>
-                            <div class="stats-card-label">Saldo Berjalan</div>
-                            <div class="stats-card-value">
-                                {{ 'Rp ' . number_format($saldoberjalan->total_result ?? 0, 0, ',', '.') }}
-                            </div>
-                        </div>
-                        <div class="stats-card-icon info">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                    </div>
-                    <div class="stats-card-footer">
-                        <i class="fas fa-circle"></i>
-                        Saldo Terkini
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Section -->
-        <div class="row mb-32">
-            <!-- Informasi Mata Anggaran -->
-            <div class="col-xl-6 col-lg-6 mb-4">
-                <div class="content-card">
-                    <div class="content-card-header">
-                        <h6 class="content-card-title">
-                            <i class="fas fa-list-alt"></i>
-                            Informasi Mata Anggaran
-                        </h6>
-                    </div>
-                    <div class="content-card-body">
-                        <table class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 30%;">Kode</th>
-                                    <th style="width: 70%;">Nama Anggaran</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($matanggaran as $mata)
-                                <tr>
-                                    <td>
-                                        <span class="badge-modern badge-info">
-                                            {{ $mata->kode_matanggaran }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $mata->nama_aas }}</td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="2">
-                                        <div class="empty-state">
-                                            <i class="fas fa-folder-open"></i>
-                                            <h3>Belum Ada Data</h3>
-                                            <p>Mata anggaran belum tersedia</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grafik Pengeluaran Anggaran -->
-            <div class="col-xl-6 col-lg-6 mb-4">
-                <div class="content-card">
-                    <div class="content-card-header">
-                        <h6 class="content-card-title">
-                            <i class="fas fa-chart-bar"></i>
-                            Grafik Pengeluaran Anggaran
-                        </h6>
-                    </div>
-                    <div class="content-card-body">
-                        <div class="chart-container">
-                            <canvas id="myPieChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Rekap Bulanan Section -->
-        <div class="row mb-32">
-            <!-- Rekap Bulanan Progress -->
-            <div class="col-lg-6 mb-4">
-                <div class="content-card">
-                    <div class="content-card-header">
-                        <h6 class="content-card-title">
-                            <i class="fas fa-chart-pie"></i>
-                            Rekap Bulan {{ $namaBulan }} {{ $tahunini }}
-                        </h6>
-                    </div>
-                    <div class="content-card-body">
-                        @php
-                        $colors = ['primary', 'success', 'info', 'warning', 'danger'];
-                        // FIX: Check if collection is not empty before getting max
-                        $totalPerbulanArray = $rekapperbulan->pluck('total_perbulan')->toArray();
-                        $maxTotalPerbulan = !empty($totalPerbulanArray) ? max($totalPerbulanArray) : 1;
-                        @endphp
-
-                        @forelse ($rekapperbulan as $index => $data)
-                        @php
-                        $percentage = $maxTotalPerbulan !== 0 ? ($data->total_perbulan / $maxTotalPerbulan) * 100 : 0;
-                        $colorClass = $percentage == 100 ? 'primary' : $colors[$index % count($colors)];
-                        @endphp
-
-                        <div class="progress-item">
-                            <div class="progress-header">
-                                <span class="progress-label">{{ $data->nama_aas }}</span>
-                                <span class="progress-value">
-                                    Rp {{ number_format($data->total_perbulan, 0, ',', '.') }}
-                                </span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill {{ $colorClass }}"
-                                    style="width: {{ $percentage }}%"></div>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="empty-state">
-                            <i class="fas fa-chart-pie"></i>
-                            <h3>Belum Ada Data Rekap</h3>
-                            <p>Data rekap pengeluaran bulan ini masih kosong</p>
-                        </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-
-            <!-- Datatables Perbulan -->
-            <div class="col-lg-6 mb-4">
-                <div class="content-card">
-                    <div class="content-card-header">
-                        <h6 class="content-card-title">
-                            <i class="fas fa-table"></i>
-                            Detail Transaksi Bulan {{ $namaBulan }} {{ $tahunini }}
-                        </h6>
-                    </div>
-                    <div class="content-card-body">
-                        <table class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%;">No</th>
-                                    <th style="width: 12%;">Tanggal</th>
-                                    <th style="width: 10%;">Kode</th>
-                                    <th style="width: 25%;">Nama Akun</th>
-                                    <th style="width: 10%;">Status</th>
-                                    <th style="width: 18%;" class="text-right">Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($pengeluaranbulanini as $d)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YY') }}</td>
-                                    <td>
-                                        <span class="badge-modern badge-info">
-                                            {{ $d->kode_matanggaran }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $d->nama_aas }}</td>
-                                    <td>
-                                        @if ($d->status == 'k')
-                                        <span class="badge-modern badge-success">Kredit</span>
-                                        @elseif ($d->status == 'd')
-                                        <span class="badge-modern badge-danger">Debet</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-right">
-                                        <strong>{{ number_format($d->jumlah, 0, ',', '.') }}</strong>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="6">
-                                        <div class="empty-state">
-                                            <i class="fas fa-inbox"></i>
-                                            <h3>Belum Ada Transaksi</h3>
-                                            <p>Belum ada transaksi bulan ini</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                            @if($pengeluaranbulanini->count() > 0)
-                            <tfoot>
-                                <tr>
-                                    <th colspan="5" class="text-center">Total Pengeluaran</th>
-                                    <th class="text-right">
-                                        {{ number_format($pengeluaranbulanini->sum('jumlah'), 0, ',', '.') }}
-                                    </th>
-                                </tr>
-                            </tfoot>
-                            @endif
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- History Pengisian Kas -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="content-card">
-                    <div class="content-card-header">
-                        <h6 class="content-card-title">
-                            <i class="fas fa-history"></i>
-                            History Pengisian Kas
-                        </h6>
-                    </div>
-                    <div class="content-card-body">
-                        @if(isset($combinedData) && $combinedData->count() > 0)
-                        <div class="row">
-                            @foreach ($combinedData as $data)
-                            @if (is_object($data))
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="history-card">
-                                    <div class="history-card-header">
-                                        <div class="history-card-icon">
-                                            <i class="fas fa-money-bill-wave"></i>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <div class="history-card-label">Pengisian Kas</div>
-                                            @if (isset($data->id_pengisian))
-                                            @if (DB::table('transaksi')->where('id_pengisian', $data->id_pengisian)->exists())
-                                            <span class="badge-modern badge-success">Sudah Cair</span>
-                                            @elseif (DB::table('transaksi_shadow')->where('id_pengisian', $data->id_pengisian)->exists())
-                                            <span class="badge-modern badge-danger">Belum Cair</span>
-                                            @endif
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="history-card-details">
-                                        @if (isset($data->tanggal))
-                                        <div>
-                                            <i class="fas fa-calendar-alt"></i>
-                                            {{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('DD MMMM YYYY') }}
-                                        </div>
-                                        @endif
-                                        @if (isset($data->perincian))
-                                        <div>
-                                            <i class="fas fa-file-alt"></i>
-                                            {{ $data->perincian }}
-                                        </div>
-                                        @endif
-                                    </div>
-                                    <div class="history-card-value">
-                                        {{ 'Rp ' . number_format($data->jumlah ?? 0, 0, ',', '.') }}
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-                            @endforeach
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="d-flex justify-content-center mt-4">
-                            {{ $combinedData->links('vendor.pagination.bootstrap-5') }}
-                        </div>
-                        @else
-                        <div class="empty-state">
-                            <i class="fas fa-history"></i>
-                            <h3>Belum Ada History</h3>
-                            <p>History pengisian kas masih kosong</p>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
+    <div class="stat-card fade-in delay-2">
+        <div class="stat-icon red"><i class="fas fa-arrow-trend-down"></i></div>
+        <div class="stat-body">
+            <div class="stat-label">Pengeluaran Kas</div>
+            <div class="stat-value">Rp {{ number_format($pengeluaranbulanini->sum('jumlah'), 0, ',', '.') }}</div>
+            <div class="stat-sub">Bulan {{ $namaBulan }}</div>
+        </div>
+    </div>
+    <div class="stat-card fade-in delay-3">
+        <div class="stat-icon green"><i class="fas fa-arrow-trend-up"></i></div>
+        <div class="stat-body">
+            <div class="stat-label">Pengisian Kas</div>
+            <div class="stat-value">Rp {{ number_format($pengisianbulanini->sum('jumlah'), 0, ',', '.') }}</div>
+            <div class="stat-sub">Bulan {{ $namaBulan }}</div>
+        </div>
+    </div>
+    <div class="stat-card fade-in delay-4">
+        <div class="stat-icon amber"><i class="fas fa-scale-balanced"></i></div>
+        <div class="stat-body">
+            <div class="stat-label">Saldo Berjalan</div>
+            <div class="stat-value">Rp {{ number_format($saldoberjalan->total_result ?? 0, 0, ',', '.') }}</div>
+            <div class="stat-sub">Saldo terkini</div>
+        </div>
+    </div>
+</div>
+
+{{-- ROW 2: Mata Anggaran + Grafik --}}
+<div class="section-grid-2 fade-in delay-2">
+
+    {{-- Mata Anggaran --}}
+    <div class="panel">
+        <div class="panel-header">
+            <h6 class="panel-title"><i class="fas fa-list-alt"></i> Informasi Mata Anggaran</h6>
+        </div>
+        <div class="panel-body">
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th style="width:35%">Kode</th>
+                        <th>Nama Anggaran</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($matanggaran as $mata)
+                    <tr>
+                        <td><span class="badge badge-blue">{{ $mata->kode_matanggaran }}</span></td>
+                        <td>{{ $mata->nama_aas }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="2"><div class="empty"><i class="fas fa-folder-open"></i><p>Belum ada data mata anggaran</p></div></td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- Grafik Pengeluaran --}}
+    <div class="panel">
+        <div class="panel-header">
+            <h6 class="panel-title"><i class="fas fa-chart-bar"></i> Grafik Pengeluaran {{ $namaBulan }} {{ $tahunini }}</h6>
+        </div>
+        <div class="chart-wrap">
+            <canvas id="myPieChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+{{-- ROW 3: Rekap + Detail Transaksi --}}
+<div class="section-grid-2 fade-in delay-3">
+
+    {{-- Rekap Progress --}}
+    <div class="panel">
+        <div class="panel-header">
+            <h6 class="panel-title"><i class="fas fa-chart-pie"></i> Rekap {{ $namaBulan }} {{ $tahunini }}</h6>
+        </div>
+        @php
+            $vals = $rekapperbulan->pluck('total_perbulan')->toArray();
+            $maxVal = !empty($vals) ? max($vals) : 1;
+        @endphp
+        <div class="prog-list">
+            @forelse($rekapperbulan as $i => $data)
+            @php $pct = $maxVal ? round(($data->total_perbulan / $maxVal) * 100) : 0; @endphp
+            <div class="prog-item">
+                <div class="prog-row">
+                    <span class="prog-name">{{ $data->nama_aas }}</span>
+                    <span class="prog-val">Rp {{ number_format($data->total_perbulan, 0, ',', '.') }}</span>
+                </div>
+                <div class="prog-bar">
+                    <div class="prog-fill c{{ $i % 5 }}" style="width:{{ $pct }}%"></div>
+                </div>
+            </div>
+            @empty
+            <div class="empty"><i class="fas fa-chart-pie"></i><p>Belum ada data rekap bulan ini</p></div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- Detail Transaksi --}}
+    <div class="panel">
+        <div class="panel-header">
+            <h6 class="panel-title"><i class="fas fa-table"></i> Detail Pengeluaran {{ $namaBulan }} {{ $tahunini }}</h6>
+        </div>
+        <div class="panel-body">
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tanggal</th>
+                        <th>Kode</th>
+                        <th>Nama Akun</th>
+                        <th>Status</th>
+                        <th class="text-right">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($pengeluaranbulanini as $d)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td style="white-space:nowrap">{{ \Carbon\Carbon::parse($d->tanggal)->isoFormat('DD/MM/YY') }}</td>
+                        <td><span class="badge badge-blue">{{ $d->kode_matanggaran }}</span></td>
+                        <td>{{ $d->nama_aas }}</td>
+                        <td>
+                            @if($d->status == 'k') <span class="badge badge-green">Kredit</span>
+                            @elseif($d->status == 'd') <span class="badge badge-red">Debet</span>
+                            @endif
+                        </td>
+                        <td class="text-right"><strong>{{ number_format($d->jumlah, 0, ',', '.') }}</strong></td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="6"><div class="empty"><i class="fas fa-inbox"></i><p>Belum ada transaksi bulan ini</p></div></td></tr>
+                    @endforelse
+                </tbody>
+                @if($pengeluaranbulanini->count() > 0)
+                <tfoot>
+                    <tr>
+                        <th colspan="5">Total Pengeluaran</th>
+                        <th class="text-right">{{ number_format($pengeluaranbulanini->sum('jumlah'), 0, ',', '.') }}</th>
+                    </tr>
+                </tfoot>
+                @endif
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{{-- ROW 4: History Pengisian Kas --}}
+<div class="panel history-section fade-in delay-4">
+    <div class="panel-header">
+        <h6 class="panel-title"><i class="fas fa-clock-rotate-left"></i> History Pengisian Kas</h6>
+        <span style="font-size:12px; color:var(--gray-400);">Terbaru di atas</span>
+    </div>
+
+    @if(isset($combinedData) && $combinedData->count() > 0)
+    <div class="history-grid">
+        @foreach($combinedData as $data)
+        @if(is_object($data))
+        <div class="hist-card">
+            <div class="hist-top">
+                <div class="hist-icon"><i class="fas fa-money-bill-wave"></i></div>
+                @if(isset($data->id_pengisian))
+                    @if(DB::table('transaksi')->where('id_pengisian', $data->id_pengisian)->exists())
+                        <span class="badge badge-green">Sudah Cair</span>
+                    @else
+                        <span class="badge badge-red">Belum Cair</span>
+                    @endif
+                @endif
+            </div>
+            <div class="hist-amount">Rp {{ number_format($data->jumlah ?? 0, 0, ',', '.') }}</div>
+            <div class="hist-meta">
+                @if(isset($data->tanggal))
+                <span><i class="fas fa-calendar-alt"></i> {{ \Carbon\Carbon::parse($data->tanggal)->isoFormat('DD MMM YYYY') }}</span>
+                @endif
+                @if(isset($data->perincian))
+                <span><i class="fas fa-file-alt"></i> {{ Str::limit($data->perincian, 40) }}</span>
+                @endif
+            </div>
+        </div>
+        @endif
+        @endforeach
+    </div>
+
+    <div class="pagi-wrap">
+        {{ $combinedData->links('vendor.pagination.bootstrap-5') }}
+    </div>
+    @else
+    <div class="empty"><i class="fas fa-clock-rotate-left"></i><p>History pengisian kas masih kosong</p></div>
+    @endif
 </div>
 
 @endsection
 
 @push('after-style')
 <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 @endpush
 
 @push('after-script')
-<script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
-
 <script>
-    // Bar Chart - Pengeluaran Anggaran
-    var ctxPie = document.getElementById('myPieChart').getContext('2d');
-    var pengeluaranData = <?php echo json_encode($pengeluaranbulanini); ?>;
+    // Bar Chart
+    var ctx = document.getElementById('myPieChart').getContext('2d');
+    var data = <?php echo json_encode($pengeluaranbulanini) ?>;
+    var colors = ['#0053C5','#22c55e','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
 
-    // Modern color palette
-    var backgroundColors = [
-        'rgba(0, 83, 197, 0.8)',
-        'rgba(16, 185, 129, 0.8)',
-        'rgba(59, 130, 246, 0.8)',
-        'rgba(245, 158, 11, 0.8)',
-        'rgba(239, 68, 68, 0.8)',
-        'rgba(139, 92, 246, 0.8)',
-        'rgba(236, 72, 153, 0.8)',
-    ];
-
-    var borderColors = [
-        'rgb(0, 83, 197)',
-        'rgb(16, 185, 129)',
-        'rgb(59, 130, 246)',
-        'rgb(245, 158, 11)',
-        'rgb(239, 68, 68)',
-        'rgb(139, 92, 246)',
-        'rgb(236, 72, 153)',
-    ];
-
-    var myPieChart = new Chart(ctxPie, {
+    new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: pengeluaranData.map(data => data.kode_matanggaran),
+            labels: data.map(d => d.kode_matanggaran),
             datasets: [{
                 label: 'Pengeluaran',
-                data: pengeluaranData.map(data => data.jumlah),
-                backgroundColor: backgroundColors,
-                borderColor: borderColors,
+                data: data.map(d => d.jumlah),
+                backgroundColor: colors.map(c => c + 'cc'),
+                borderColor: colors,
                 borderWidth: 2,
-                borderRadius: 8,
+                borderRadius: 6,
                 borderSkipped: false,
             }]
         },
@@ -979,113 +475,35 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: false
-                },
+                legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    cornerRadius: 8,
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
+                    backgroundColor: 'rgba(17,24,39,0.9)',
+                    padding: 12, cornerRadius: 8,
                     callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
-                            }
-                            return label;
-                        }
+                        label: ctx => 'Rp ' + ctx.parsed.y.toLocaleString('id-ID')
                     }
                 }
             },
             scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            size: 11,
-                            weight: '600'
-                        },
-                        color: '#374151'
-                    }
-                },
+                x: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: '#374151' } },
                 y: {
                     beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)',
-                        drawBorder: false
-                    },
+                    grid: { color: 'rgba(0,0,0,0.04)' },
                     ticks: {
-                        font: {
-                            size: 11
-                        },
-                        color: '#6b7280',
-                        callback: function(value, index, values) {
-                            if (value >= 1000000) {
-                                return (value / 1000000).toFixed(1) + 'Jt';
-                            } else if (value >= 1000) {
-                                return (value / 1000).toFixed(0) + 'Rb';
-                            } else {
-                                return value;
-                            }
-                        }
+                        font: { size: 11 }, color: '#6b7280',
+                        callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'Jt' : v >= 1e3 ? (v/1e3).toFixed(0)+'Rb' : v
                     }
                 }
             },
-            animation: {
-                duration: 1500,
-                easing: 'easeOutQuart'
-            }
+            animation: { duration: 1200, easing: 'easeOutQuart' }
         }
     });
 
-    // Animate progress bars on load
-    document.addEventListener('DOMContentLoaded', function() {
-        const progressBars = document.querySelectorAll('.progress-bar-fill');
-        progressBars.forEach((bar, index) => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 100 + (index * 100));
-        });
-    });
-
-    // Add smooth scroll behavior
-    document.documentElement.style.scrollBehavior = 'smooth';
-
-    // Animate stats cards on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-
-    // Observe all animated elements
-    document.querySelectorAll('.slide-up').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'all 0.6s ease-out';
-        observer.observe(el);
+    // Animate progress bars
+    document.querySelectorAll('.prog-fill').forEach(function(el) {
+        var w = el.style.width;
+        el.style.width = '0';
+        setTimeout(function() { el.style.width = w; }, 200);
     });
 </script>
 @endpush
