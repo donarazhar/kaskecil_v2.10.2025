@@ -480,7 +480,8 @@
             <!-- Dashboard -->
             <div class="nav-item">
                 <a href="/panel/beranda"
-                   class="nav-item-link {{ request()->is('panel/beranda') ? 'active' : '' }}">
+                   class="nav-item-link {{ request()->is('panel/beranda') ? 'active' : '' }}"
+                   title="Dashboard">
                     <i class="fas fa-home nav-icon"></i>
                     <span class="nav-text">Dashboard</span>
                 </a>
@@ -492,7 +493,8 @@
             <div class="nav-item" id="nav-master">
                 <button type="button"
                     class="nav-item-link {{ request()->is(['master/aas','master/matanggaran']) ? 'active' : '' }}"
-                    onclick="toggleSubMenu('sub-master','arrow-master')">
+                    onclick="toggleSubMenu('sub-master','arrow-master')"
+                    title="Master Data">
                     <i class="fas fa-database nav-icon"></i>
                     <span class="nav-text">Master Data</span>
                     <i class="fas fa-chevron-right nav-arrow {{ request()->is(['master/aas','master/matanggaran']) ? 'open' : '' }}" id="arrow-master"></i>
@@ -520,7 +522,8 @@
             <div class="nav-item">
                 <button type="button"
                     class="nav-item-link {{ request()->is(['transaksi*']) ? 'active' : '' }}"
-                    onclick="toggleSubMenu('sub-transaksi','arrow-transaksi')">
+                    onclick="toggleSubMenu('sub-transaksi','arrow-transaksi')"
+                    title="Transaksi">
                     <i class="fas fa-exchange-alt nav-icon"></i>
                     <span class="nav-text">Transaksi</span>
                     <i class="fas fa-chevron-right nav-arrow {{ request()->is(['transaksi*']) ? 'open' : '' }}" id="arrow-transaksi"></i>
@@ -551,7 +554,8 @@
             <!-- Laporan -->
             <div class="nav-item">
                 <a href="/laporan"
-                   class="nav-item-link {{ request()->is('laporan') ? 'active' : '' }}">
+                   class="nav-item-link {{ request()->is('laporan') ? 'active' : '' }}"
+                   title="Laporan">
                     <i class="fas fa-file-alt nav-icon"></i>
                     <span class="nav-text">Laporan</span>
                 </a>
@@ -562,7 +566,8 @@
             <!-- Pengguna -->
             <div class="nav-item">
                 <a href="/users"
-                   class="nav-item-link {{ request()->is('users') ? 'active' : '' }}">
+                   class="nav-item-link {{ request()->is('users') ? 'active' : '' }}"
+                   title="Pengguna">
                     <i class="fas fa-users nav-icon"></i>
                     <span class="nav-text">Pengguna</span>
                 </a>
@@ -571,7 +576,8 @@
             <!-- Instansi -->
             <div class="nav-item">
                 <a href="/instansi"
-                   class="nav-item-link {{ request()->is('instansi') ? 'active' : '' }}">
+                   class="nav-item-link {{ request()->is('instansi') ? 'active' : '' }}"
+                   title="Instansi">
                     <i class="fas fa-building nav-icon"></i>
                     <span class="nav-text">Instansi</span>
                 </a>
@@ -703,6 +709,19 @@
 
         // ── Sub menu toggle ──
         function toggleSubMenu(menuId, arrowId) {
+            // Jika sidebar sedang dalam mode collapsed, maka expand sidebar terlebih dahulu
+            if (document.body.classList.contains('sidebar-collapsed')) {
+                document.body.classList.remove('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', 'false');
+                
+                // Paksa menu yang diklik langsung terbuka
+                var menu  = document.getElementById(menuId);
+                var arrow = document.getElementById(arrowId);
+                if (menu) menu.style.display = 'block';
+                if (arrow) arrow.classList.add('open');
+                return;
+            }
+
             var menu  = document.getElementById(menuId);
             var arrow = document.getElementById(arrowId);
             if (!menu) return;
