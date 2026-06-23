@@ -60,10 +60,7 @@
 .empty-state{text-align:center;padding:60px 20px;}
 .empty-state i{font-size:48px;color:var(--gray-300);display:block;margin-bottom:12px;}
 .empty-state p{font-size:14px;color:var(--gray-400);margin:0;}
-.pagi{padding:16px 20px;border-top:1px solid var(--gray-100);display:flex;justify-content:center;}
-.pagi .pagination{margin:0;}
-.pagi .page-link{font-size:13px;color:var(--blue);border-color:var(--gray-200);border-radius:8px !important;}
-.pagi .page-item.active .page-link{background:var(--blue);border-color:var(--blue);color:#fff;}
+
 /* Modal */
 .modal-content{border:none;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.15);}
 .modal-header{padding:18px 22px 14px;border-bottom:1px solid var(--gray-100);border-radius:16px 16px 0 0;}
@@ -172,13 +169,17 @@ textarea.form-inp-m{min-height:80px;resize:vertical;}
                     <td style="text-align:right;font-weight:700;white-space:nowrap;">Rp {{ number_format($d->jumlah,0,',','.') }}</td>
                     <td style="text-align:center">
                         @if(isset($d->id_pengisian))
-                            @if(DB::table('transaksi')->where('id_pengisian', $d->id_pengisian)->exists())
-                                <span class="status-cair"><i class="fas fa-check-circle"></i> Sudah Cair</span>
-                            @elseif(DB::table('transaksi_shadow')->where('id_pengisian', $d->id_pengisian)->exists())
+                            @if(in_array($d->id_pengisian, $cair_ids))
+                                <span class="badge badge-success px-3 py-2" style="font-size: 13px; font-weight: 600; border-radius: 6px;">
+                                    <i class="fas fa-check-circle mr-1"></i> Sudah Cair
+                                </span>
+                            @else
                                 @if(Auth::user()->level == 'admin')
                                 <a href="{{ route('cair', ['id' => $d->id_pengisian]) }}" class="status-belum cair-confirm">
                                     <i class="fas fa-times-circle"></i> Belum Cair
                                 </a>
+                                @else
+                                <span class="status-belum"><i class="fas fa-times-circle"></i> Belum Cair</span>
                                 @endif
                             @endif
                         @endif

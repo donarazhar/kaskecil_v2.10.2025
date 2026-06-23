@@ -32,6 +32,14 @@ class MasterController extends Controller
     // Menyimpan data Akun AAS baru ke database.
     public function storeaas(Request $request)
     {
+        // Validasi input
+        $request->validate([
+            'kode_aas' => 'required|string|unique:akun_aas,kode_aas',
+            'nama_aas' => 'required|string|max:255',
+            'status' => 'required|string',
+            'kategori' => 'required|string'
+        ]);
+
         // Mengambil data dari request.
         $kode_aas = $request->kode_aas;
         $nama_aas = $request->nama_aas;
@@ -134,6 +142,13 @@ class MasterController extends Controller
     // Menyimpan data Mata Anggaran baru.
     public function storematanggaran(Request $request)
     {
+        // Validasi input
+        $request->validate([
+            'kode_matanggaran' => 'required|string|unique:akun_matanggaran,kode_matanggaran',
+            'kode_aas' => 'required|exists:akun_aas,kode_aas',
+            'saldo_matanggaran' => 'required|string'
+        ]);
+
         // Mengambil data dan membersihkan format angka.
         $kode_matanggaran = $request->kode_matanggaran;
         $kode_aas = $request->kode_aas;

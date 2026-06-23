@@ -22,6 +22,14 @@ class UserController extends Controller
     // Menyimpan data pengguna baru ke dalam database.
     public function store(Request $request)
     {
+        // Validasi input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:6',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
         // Mengambil data dari request.
         $name = $request->name;
         $email = $request->email;
@@ -140,11 +148,18 @@ class UserController extends Controller
     // Memperbarui kata sandi pengguna di database.
     public function UpdatePassword(Request $request, $id)
     {
-        // Mencari pengguna dan memperbarui kata sandi.
-        $user = DB::table('users')->where('id', $id)->first();
-        $user->update([
-            'password' => $request->kata_sandi_baru,
+        // Validasi input
+        $request->validate([
+            'kata_sandi_baru' => 'required|string|min:6',
         ]);
+
+        // Mencari pengguna dan memperbarui kata sandi dengan di hash.
+        DB::table('users')->where('id', $id)->update([
+            'password' => Hash::make($request->kata_sandi_baru),
+        ]);
+
+        // Mengambil email user untuk pesan alert
+        $user = DB::table('users')->where('id', $id)->first();
 
         // Menampilkan notifikasi sukses dan mengalihkan kembali.
         Alert::success('Sukses', "Kata sandi {$user->email} sukses direset");

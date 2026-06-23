@@ -56,6 +56,15 @@ class TransaksiController extends Controller
             // Konversi ke integer
             $jumlah_numeric = intval($jumlah_cleaned);
 
+            // Validasi input utama
+            $request->validate([
+                'jumlah' => 'required|string',
+                'kategori' => 'required|in:pembentukan,pengisian,pengeluaran',
+                'tanggal' => 'required|date',
+                'perincian' => 'required|string|max:500',
+                'kode_matanggaran' => 'required|exists:akun_matanggaran,kode_matanggaran',
+            ]);
+
             // Cek saldo berjalan jika kategori pengeluaran
             if ($request->kategori == 'pengeluaran') {
                 $saldo_result = DB::table('transaksi')
@@ -215,8 +224,8 @@ class TransaksiController extends Controller
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->where('transaksi.kategori', $pengeluaran)
-            ->whereRaw('MONTH(tanggal)="' . $bulan . '"')
-            ->whereRaw('YEAR(tanggal)="' . $tahun . '"');
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun);
 
         // Tambahkan pencarian jika ada keyword
         if (!empty($search)) {
@@ -249,8 +258,8 @@ class TransaksiController extends Controller
         $totalpengeluaran = DB::table('transaksi')
             ->select(DB::raw('SUM(jumlah) AS total_pengeluaran'))
             ->where('kategori', 'pengeluaran')
-            ->whereRaw('MONTH(tanggal)="' . $bulan . '"')
-            ->whereRaw('YEAR(tanggal)="' . $tahun . '"');
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun);
 
         // Tambahkan filter pencarian untuk total jika ada keyword
         if (!empty($search)) {
@@ -456,7 +465,7 @@ class TransaksiController extends Controller
         $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('tanggal');
 
         // Implementasi pagination manual
-        $perPage = 5;
+        $perPage = 10;
         $currentPage = request()->get('page', 1);
         $offset = ($currentPage - 1) * $perPage;
 
@@ -473,7 +482,8 @@ class TransaksiController extends Controller
             ]
         );
 
-        $idPengisianArray = $combinedData->pluck('id_pengisian')->all();
+        $idPengisianArray = $combinedData->pluck('id_pengisian')->filter()->toArray();
+        $cair_ids = count($idPengisianArray) > 0 ? DB::table('transaksi')->whereIn('id_pengisian', $idPengisianArray)->pluck('id_pengisian')->toArray() : [];
 
         return view('pages.transaksi.pengisian.index', compact(
             'pengisian',
@@ -482,7 +492,8 @@ class TransaksiController extends Controller
             'pengisianShadow',
             'idPengisianArray',
             'paginator',
-            'search'
+            'search',
+            'cair_ids'
         ));
     }
 
@@ -511,6 +522,15 @@ class TransaksiController extends Controller
     // Update Menu Pengeluaran Kas Kecil
     public function storePengisian(Request $request)
     {
+        // Validasi input
+        $request->validate([
+            'jumlah' => 'required|string',
+            'perincian' => 'required|string|max:500',
+            'kategori' => 'required|in:pengisian',
+            'tanggal' => 'required|date',
+            'kode_matanggaran' => 'required|exists:akun_matanggaran,kode_matanggaran',
+        ]);
+
         $pengisian = "pengisian";
         // Combine the results from both queries
         $id_pengisian = DB::table('transaksi')

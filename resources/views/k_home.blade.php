@@ -168,11 +168,6 @@
     .empty i { font-size: 48px; color: var(--gray-300); margin-bottom: 12px; display: block; }
     .empty p { font-size: 14px; color: var(--gray-400); margin: 0; }
 
-    /* ── Pagination ── */
-    .pagi-wrap { padding: 16px 20px; border-top: 1px solid var(--gray-100); display: flex; justify-content: center; }
-    .pagi-wrap .pagination { margin: 0; }
-    .pagi-wrap .page-item .page-link { font-size: 13px; color: var(--blue); border-color: var(--gray-200); }
-    .pagi-wrap .page-item.active .page-link { background: var(--blue); border-color: var(--blue); color: #fff; }
 
     /* fade in */
     .fade-in { animation: fi 0.4s ease both; }
@@ -236,7 +231,7 @@
             <div class="hist-top">
                 <div class="hist-icon"><i class="fas fa-money-bill-wave"></i></div>
                 @if(isset($data->id_pengisian))
-                    @if(DB::table('transaksi')->where('id_pengisian', $data->id_pengisian)->exists())
+                    @if(in_array($data->id_pengisian, $cair_ids))
                         <span class="badge badge-green">Sudah Cair</span>
                     @else
                         <span class="badge badge-red">Belum Cair</span>

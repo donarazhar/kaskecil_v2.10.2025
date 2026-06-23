@@ -36,9 +36,17 @@
             --shadow-lg: 0 8px 24px rgba(0, 83, 197, 0.12);
             --radius-sm: 8px;
             --radius-md: 12px;
-            --radius-lg: 16px;
             --radius-xl: 20px;
         }
+
+        /* ── Global Pagination Style ── */
+        .pagi, .pagi-wrap { padding: 24px 20px; border-top: 1px solid var(--gray-100); display: flex; justify-content: center; background: var(--white); border-radius: 0 0 14px 14px; }
+        .pagi .pagination, .pagi-wrap .pagination { margin: 0; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+        .pagi .page-item:not(:first-child) .page-link, .pagi-wrap .page-item:not(:first-child) .page-link { margin-left: 0; }
+        .pagi .page-item .page-link, .pagi-wrap .page-item .page-link { font-size: 13px; font-weight: 600; color: var(--gray-600); background: #fff; border: 1.5px solid var(--gray-200); border-radius: 8px !important; min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; padding: 0 10px; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.02); text-decoration: none; }
+        .pagi .page-item .page-link:hover, .pagi-wrap .page-item .page-link:hover { background: var(--gray-50); color: var(--primary); border-color: var(--gray-300); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.04); }
+        .pagi .page-item.active .page-link, .pagi-wrap .page-item.active .page-link { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(0,83,197,0.3); transform: translateY(-2px); }
+        .pagi .page-item.disabled .page-link, .pagi-wrap .page-item.disabled .page-link { color: var(--gray-400); background: var(--gray-50); border-color: var(--gray-200); cursor: not-allowed; transform: none; box-shadow: none; pointer-events: none; }
 
         * {
             margin: 0;

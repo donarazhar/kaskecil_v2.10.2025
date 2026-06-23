@@ -53,8 +53,8 @@ class HomepageController extends Controller
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->where('transaksi.kategori', 'pengeluaran')
-            ->whereRaw('MONTH(tanggal)="' . $bulanini . '"')
-            ->whereRaw('YEAR(tanggal)="' . $tahunini . '"')
+            ->whereMonth('tanggal', $bulanini)
+            ->whereYear('tanggal', $tahunini)
             ->get();
 
         // Mengambil data pengisian pada bulan dan tahun ini.
@@ -63,8 +63,8 @@ class HomepageController extends Controller
             ->leftJoin('akun_matanggaran', 'transaksi.kode_matanggaran', '=', 'akun_matanggaran.kode_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
             ->where('transaksi.kategori', 'pengisian')
-            ->whereRaw('MONTH(tanggal)="' . $bulanini . '"')
-            ->whereRaw('YEAR(tanggal)="' . $tahunini . '"')
+            ->whereMonth('tanggal', $bulanini)
+            ->whereYear('tanggal', $tahunini)
             ->get();
 
         // Menghitung saldo berjalan dari semua transaksi.
@@ -106,7 +106,11 @@ class HomepageController extends Controller
             \Illuminate\Pagination\Paginator::resolveCurrentPage()
         );
 
+        // N+1 Query Fix: Ambil semua id_pengisian yang sudah cair
+        $allIds = $combinedData->pluck('id_pengisian')->filter()->toArray();
+        $cair_ids = count($allIds) > 0 ? DB::table('transaksi')->whereIn('id_pengisian', $allIds)->pluck('id_pengisian')->toArray() : [];
+
         // Mengirimkan semua data yang telah diolah ke view 'k_home'.
-        return view('k_home', compact('matanggaran', 'pembentukan', 'rekapperbulan', 'pengeluaranbulanini', 'pengisianbulanini', 'tahunini', 'namaBulan', 'saldoberjalan', 'combinedData'));
+        return view('k_home', compact('matanggaran', 'pembentukan', 'rekapperbulan', 'pengeluaranbulanini', 'pengisianbulanini', 'tahunini', 'namaBulan', 'saldoberjalan', 'combinedData', 'cair_ids'));
     }
 }

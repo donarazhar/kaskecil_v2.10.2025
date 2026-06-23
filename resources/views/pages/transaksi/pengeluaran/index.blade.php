@@ -60,10 +60,7 @@
 .empty-state{text-align:center;padding:60px 20px;}
 .empty-state i{font-size:48px;color:var(--gray-300);display:block;margin-bottom:12px;}
 .empty-state p{font-size:14px;color:var(--gray-400);margin:0;}
-.pagi{padding:16px 20px;border-top:1px solid var(--gray-100);display:flex;justify-content:center;}
-.pagi .pagination{margin:0;}
-.pagi .page-link{font-size:13px;color:var(--blue);border-color:var(--gray-200);border-radius:8px !important;}
-.pagi .page-item.active .page-link{background:var(--blue);border-color:var(--blue);color:#fff;}
+
 .modal-content{border:none;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.15);}
 .modal-header{padding:18px 22px 14px;border-bottom:1px solid var(--gray-100);border-radius:16px 16px 0 0;}
 .modal-title-text{font-size:15px;font-weight:700;color:var(--gray-900);display:flex;align-items:center;gap:8px;margin:0;}
