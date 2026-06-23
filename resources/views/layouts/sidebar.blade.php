@@ -641,7 +641,7 @@
             @yield('content')
         </div>
         <footer class="main-footer">
-            Copyright &copy; Masjid Agung Al Azhar &mdash; Kas Kecil App V.2.0 &mdash; DalArmy 2024
+            Copyright &copy; Masjid Agung Al Azhar &mdash; Kas Kecil App V.2.0 &mdash; DalArmy 2023
         </footer>
     </div>
 

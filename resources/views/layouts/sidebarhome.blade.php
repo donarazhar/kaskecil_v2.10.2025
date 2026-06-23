@@ -486,7 +486,7 @@
             <footer class="footer-modern">
                 <div class="footer-content">
                     <div class="footer-text">
-                        © {{ date('Y') }} Masjid Agung Al Azhar — Dibuat dengan <i class="fas fa-heart text-danger"></i> oleh <strong>Dal Army</strong>
+                        © 2023 Masjid Agung Al Azhar — Dibuat dengan <i class="fas fa-heart text-danger"></i> oleh <strong>Dal Army</strong>
                     </div>
                     <div class="footer-links">
                         <a href="#" class="footer-link">Tentang</a>
@@ -549,7 +549,7 @@
                     <hr>
                     <div class="small text-muted">
                         <p class="mb-2"><i class="fas fa-code mr-2 text-primary"></i>Version 2.0.0</p>
-                        <p class="mb-0"><i class="fas fa-copyright mr-2 text-primary"></i>{{ date('Y') }} - Dal Army</p>
+                        <p class="mb-0"><i class="fas fa-copyright mr-2 text-primary"></i>2023 - Dal Army</p>
                     </div>
                 </div>
                 <div class="modal-footer">
