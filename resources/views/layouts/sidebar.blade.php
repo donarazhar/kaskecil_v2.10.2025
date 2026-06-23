@@ -569,7 +569,7 @@
                                     class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
                                 @if(Auth::user()->foto)
                                     <img class="img-profile rounded-circle"
-                                        src="{{ asset('storage/uploads/users/' . Auth::user()->foto) }}" style="object-fit: cover;">
+                                        src="{{ asset('uploads/users/' . Auth::user()->foto) }}" style="object-fit: cover;">
                                 @else
                                     <img class="img-profile rounded-circle"
                                         src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=random&color=fff&size=60">

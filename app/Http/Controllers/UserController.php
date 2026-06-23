@@ -40,7 +40,7 @@ class UserController extends Controller
 
             if ($request->hasFile('foto')) {
                 $foto = 'user_' . time() . '.' . $request->file('foto')->getClientOriginalExtension();
-                $request->file('foto')->storeAs('public/uploads/users', $foto);
+                $request->file('foto')->move(public_path('uploads/users'), $foto);
                 $data['foto'] = $foto;
             }
 
@@ -86,7 +86,7 @@ class UserController extends Controller
 
             if ($request->hasFile('foto')) {
                 $foto = 'user_' . time() . '.' . $request->file('foto')->getClientOriginalExtension();
-                $request->file('foto')->storeAs('public/uploads/users', $foto);
+                $request->file('foto')->move(public_path('uploads/users'), $foto);
                 $data['foto'] = $foto;
             }
 
