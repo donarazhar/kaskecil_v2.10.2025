@@ -36,9 +36,7 @@ class InstansiController extends Controller
         $instansi = Instansi::findOrFail($id);
         // Memperbarui data instansi dengan data dari request.
         $instansi->update($request->all());
-        // Menampilkan notifikasi sukses.
-        Alert::success('Sukses', 'Profile instansi berhasil diupdate');
-        // Mengalihkan kembali ke halaman index instansi.
-        return redirect()->route('instansi.index');
+        // Mengalihkan kembali ke halaman index instansi dengan flash message.
+        return redirect('/instansi')->with('success', 'Profil instansi berhasil diperbarui');
     }
 }

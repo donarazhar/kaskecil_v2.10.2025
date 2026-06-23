@@ -26,6 +26,7 @@ class InstansiRequest extends FormRequest
         return [
             'nama' => 'required',
             'alamat' => 'required',
+            'pimpinan' => 'required',
         ];
     }
 }
