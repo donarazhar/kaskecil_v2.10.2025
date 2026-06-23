@@ -405,8 +405,8 @@ class TransaksiController extends Controller
             });
         }
 
-        $pengisian = $pengisianQuery->orderBy('created_at', 'ASC')->get();
-        $pengisianShadow = $pengisianShadowQuery->orderBy('created_at', 'ASC')->get();
+        $pengisian = $pengisianQuery->orderBy('tanggal', 'DESC')->orderBy('created_at', 'DESC')->get();
+        $pengisianShadow = $pengisianShadowQuery->orderBy('tanggal', 'DESC')->orderBy('created_at', 'DESC')->get();
 
         $matanggaran = DB::table('akun_matanggaran')
             ->leftJoin('akun_aas', 'akun_matanggaran.kode_aas', '=', 'akun_aas.kode_aas')
@@ -421,7 +421,7 @@ class TransaksiController extends Controller
             ->first();
 
         // Gabungkan data dan buat collection untuk pagination manual
-        $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('created_at');
+        $combinedData = $pengisian->merge($pengisianShadow)->sortByDesc('tanggal');
 
         // Implementasi pagination manual
         $perPage = 5;
