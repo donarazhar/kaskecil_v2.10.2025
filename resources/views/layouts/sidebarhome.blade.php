@@ -78,6 +78,7 @@
 
         .navbar-brand-modern:hover {
             color: var(--primary) !important;
+            text-decoration: none !important;
         }
 
         .brand-icon {
