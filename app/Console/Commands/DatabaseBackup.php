@@ -34,42 +34,43 @@ class DatabaseBackup extends Command
         }
         $fullPath = $backupPath . DIRECTORY_SEPARATOR . $filename;
 
-        $dbHost = config('database.connections.mysql.host');
-        $dbPort = config('database.connections.mysql.port');
-        $dbUser = config('database.connections.mysql.username');
-        $dbPass = config('database.connections.mysql.password');
-        $dbName = config('database.connections.mysql.database');
+        try {
+            $dbName = config('database.connections.mysql.database');
+            $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+            $tableKey = 'Tables_in_' . $dbName;
 
-        $mysqldumpPath = 'mysqldump';
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $laragonMysqlPath = glob('C:\\laragon\\bin\\mysql\\*\\bin\\mysqldump.exe');
-            if (!empty($laragonMysqlPath)) {
-                $mysqldumpPath = '"' . $laragonMysqlPath[0] . '"';
+            $sql = "-- Database Backup: " . $dbName . "\n";
+            $sql .= "-- Generated: " . Carbon::now()->format('Y-m-d H:i:s') . "\n\n";
+
+            foreach ($tables as $table) {
+                $tableName = $table->$tableKey ?? (array_values((array)$table)[0]);
+
+                $createTable = \Illuminate\Support\Facades\DB::select("SHOW CREATE TABLE `$tableName`");
+                $sql .= "DROP TABLE IF EXISTS `$tableName`;\n";
+                $sql .= $createTable[0]->{'Create Table'} . ";\n\n";
+
+                $rows = \Illuminate\Support\Facades\DB::table($tableName)->get();
+                foreach ($rows as $row) {
+                    $rowArray = (array) $row;
+                    $keys = array_map(function($key) { return "`$key`"; }, array_keys($rowArray));
+                    $values = array_map(function($value) {
+                        if ($value === null) return 'NULL';
+                        return "'" . addslashes($value) . "'";
+                    }, array_values($rowArray));
+
+                    $sql .= "INSERT INTO `$tableName` (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $values) . ");\n";
+                }
+                $sql .= "\n";
             }
-        }
 
-        $passwordParam = empty($dbPass) ? '' : '--password="' . $dbPass . '"';
-        $command = sprintf(
-            '%s --user="%s" %s --host="%s" --port="%s" "%s" > "%s"',
-            $mysqldumpPath,
-            $dbUser,
-            $passwordParam,
-            $dbHost,
-            $dbPort,
-            $dbName,
-            $fullPath
-        );
+            file_put_contents($fullPath, $sql);
 
-        $returnVar = NULL;
-        $output  = NULL;
-        exec($command, $output, $returnVar);
-
-        if ($returnVar === 0) {
             $this->info("Backup successfully created at " . $fullPath);
             Log::info("Database backup created: " . $filename);
-        } else {
-            $this->error("Backup failed. Command: " . $command);
-            Log::error("Database backup failed: " . implode("\n", $output));
+        } catch (\Throwable $e) {
+            $this->error("Backup failed: " . $e->getMessage());
+            Log::error("Database backup failed: " . $e->getMessage());
+            throw $e;
         }
     }
 }

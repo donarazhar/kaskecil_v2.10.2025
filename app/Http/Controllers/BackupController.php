@@ -42,8 +42,8 @@ class BackupController extends Controller
         try {
             Artisan::call('db:backup');
             Alert::success('Berhasil', 'Backup database berhasil dibuat!');
-        } catch (\Exception $e) {
-            Alert::error('Gagal', 'Terjadi kesalahan saat membuat backup: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            Alert::error('Gagal', 'Terjadi kesalahan: ' . $e->getMessage());
         }
 
         return redirect()->back();
