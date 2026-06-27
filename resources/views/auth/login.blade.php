@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Login Aplikasi Kas Kecil Metode Imprest">
+    <meta name="description" content="Login Al Azhar Petty Cash System (APCS) Metode Imprest">
     <link rel="shortcut icon" href="https://siap.al-azhar.id/upload/favicon.ico" type="image/x-icon">
-    <title>Kas Kecil App | Login</title>
+    <title>Login - Al Azhar Petty Cash System</title>
 
     <link href="{{ asset('assets/sbadmin/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -288,10 +288,10 @@
         <!-- Header -->
         <div class="card-top">
             <div class="logo-box">
-                <img src="{{ asset('assets/img/logo.png') }}" alt="Logo Kas Kecil">
+                <img src="{{ asset('assets/img/logo.png') }}" alt="Logo APCS">
             </div>
             <h1>Selamat Datang</h1>
-            <p>Silakan masuk ke akun Anda untuk<br>mengakses aplikasi kas kecil</p>
+            <p>Silakan masuk ke akun Anda untuk<br>mengakses aplikasi APCS</p>
         </div>
 
         <!-- Error Alert -->
@@ -361,7 +361,7 @@
 
         <!-- Footer -->
         <div class="card-foot">
-            <p>Kas Kecil App V.2.0 &mdash; Metode Imprest</p>
+            <p>Al Azhar Petty Cash System (APCS) V.2.10.2025 &mdash; Metode Imprest</p>
             <p>© 2025 <strong>Masjid Agung Al Azhar</strong></p>
         </div>
 

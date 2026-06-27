@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="https://siap.al-azhar.id/upload/favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Kas Kecil APP &mdash; @yield('title', 'Dashboard')</title>
+    <title>@yield('title', 'Beranda') - Al Azhar Petty Cash System</title>
 
     <link href="{{ asset('assets/sbadmin/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -478,7 +478,11 @@
         <!-- Brand -->
         <a href="/panel/beranda" class="sidebar-brand">
             <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" class="logo-img">
-            <span class="brand-name">Kas Kecil App</span>
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; overflow: hidden;">
+                <span class="brand-name" style="font-size: 18px; font-weight: 800; line-height: 1; margin-bottom: 2px;">APCS</span>
+                <span style="font-size: 10px; color: var(--gray-500); line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Al Azhar Petty Cash System</span>
+                <span style="font-size: 9px; color: var(--gray-400); line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Metode Imprest</span>
+            </div>
         </a>
 
         <!-- Nav -->
@@ -651,7 +655,7 @@
             @yield('content')
         </div>
         <footer class="main-footer">
-            Copyright &copy; Masjid Agung Al Azhar &mdash; Kas Kecil App V.2.0 &mdash; DalArmy 2023
+            Copyright &copy; Masjid Agung Al Azhar &mdash; Al Azhar Petty Cash System (APCS) V.2.10.2025 &mdash; DalArmy 2023
         </footer>
     </div>
 

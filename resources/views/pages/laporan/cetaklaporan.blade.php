@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Kas Kecil - {{ date('d-m-Y', strtotime($periodeawal)) }} s.d {{ date('d-m-Y', strtotime($periodeakhir)) }}</title>
+    <title>Laporan APCS - {{ date('d-m-Y', strtotime($periodeawal)) }} s.d {{ date('d-m-Y', strtotime($periodeakhir)) }}</title>
 
     <style>
         body {
@@ -194,7 +194,7 @@
             <div class="report-title">Yayasan Pesantren Islam Al Azhar</div>
             <div class="report-subtitle">Masjid Agung Al Azhar</div>
             <div class="report-period">
-                Kas Kecil Periode {{ date('d-m-Y', strtotime($periodeawal)) }} s.d {{ date('d-m-Y', strtotime($periodeakhir)) }}
+                Laporan APCS Periode {{ date('d-m-Y', strtotime($periodeawal)) }} s.d {{ date('d-m-Y', strtotime($periodeakhir)) }}
             </div>
         </div>
 

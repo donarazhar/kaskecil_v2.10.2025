@@ -1,5 +1,5 @@
 @extends('layouts.sidebar')
-@section('title', 'Laporan Kas Kecil')
+@section('title', 'Laporan APCS')
 @section('header-title', 'Laporan')
 @section('content')
 <style>

@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Dashboard Kas Kecil - Masjid Agung Al Azhar">
+    <meta name="description" content="Dashboard Al Azhar Petty Cash System (APCS) - Masjid Agung Al Azhar">
     <meta name="author" content="Masjid Agung Al Azhar">
     <link rel="shortcut icon" href="https://siap.al-azhar.id/upload/favicon.ico" type="image/x-icon" />
 
-    <title>@yield('title', 'Kas Kecil APP')</title>
+    <title>@yield('title', 'Beranda') - Al Azhar Petty Cash System</title>
 
     <!-- Fonts & Icons -->
     <link href="{{ asset('assets/sbadmin/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
@@ -466,18 +466,14 @@
                 <nav class="navbar navbar-expand navbar-light navbar-modern">
                     <a class="navbar-brand-modern" href="/">
                         <img src="{{ asset('assets/img/logo.png') }}" alt="Logo Masjid Al Azhar" style="width: 42px; height: 42px; object-fit: contain;">
-                        <div class="brand-text">
-                            <span class="brand-title">Kas Kecil Metode Imprest</span>
-                            <span class="brand-subtitle">Masjid Al Azhar</span>
+                        <div class="brand-text" style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; overflow: hidden;">
+                            <span class="brand-title" style="font-size: 18px; font-weight: 800; line-height: 1; margin-bottom: 2px;">APCS</span>
+                            <span class="brand-subtitle" style="text-transform: none; font-size: 10px; color: var(--gray-500); line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Al Azhar Petty Cash System</span>
+                            <span class="brand-subtitle" style="text-transform: none; font-size: 9px; color: var(--gray-400); line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Metode Imprest</span>
                         </div>
                     </a>
 
                     <ul class="navbar-nav ml-auto align-items-center">
-                        <li class="nav-item d-flex align-items-center">
-                            <a class="nav-link text-secondary font-weight-bold" href="#" data-toggle="modal" data-target="#infoModal" style="margin-right: 0.5rem;">
-                                <i class="fas fa-info-circle"></i> Informasi
-                            </a>
-                        </li>
                         <li class="nav-item d-flex align-items-center">
                             <a class="btn btn-primary btn-sm" href="/panel" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: var(--radius-sm); font-weight: 600; padding: 0.4rem 1rem; box-shadow: var(--shadow-sm);">
                                 <i class="fas fa-sign-in-alt mr-1"></i> Login
@@ -499,9 +495,9 @@
                         © 2023 Masjid Agung Al Azhar — Dibuat dengan <i class="fas fa-heart text-danger"></i> oleh <strong>Dal Army</strong>
                     </div>
                     <div class="footer-links">
-                        <a href="#" class="footer-link">Tentang</a>
-                        <a href="#" class="footer-link">Bantuan</a>
-                        <a href="#" class="footer-link">Kontak</a>
+                        <a href="#" class="footer-link" data-toggle="modal" data-target="#infoModal">Tentang</a>
+                        <a href="#" class="footer-link" data-toggle="modal" data-target="#helpModal">Bantuan</a>
+                        <a href="#" class="footer-link" data-toggle="modal" data-target="#contactModal">Kontak</a>
                     </div>
                 </div>
             </footer>
@@ -538,33 +534,167 @@
 
     <!-- Info Modal -->
     <div class="modal fade modal-modern" id="infoModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-info-circle"></i>
-                        Informasi Aplikasi
+                        Tentang Aplikasi
                     </h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="text-center mb-3">
+                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="text-center mb-4">
                         <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" class="mx-auto mb-3" style="width: 64px; height: 64px; object-fit: contain; display: block;">
-                        <h5 class="font-weight-bold mb-2">Kas Kecil APP</h5>
-                        <p class="text-muted mb-0">Sistem Manajemen Kas Kecil</p>
-                        <p class="text-muted">Masjid Agung Al Azhar</p>
+                        <h5 class="font-weight-bold mb-1">Al Azhar Petty Cash System (APCS)</h5>
+                        <p class="text-muted font-italic mb-0">Sistem Pengelolaan Kas Kecil (Metode Imprest)</p>
                     </div>
-                    <hr>
-                    <div class="small text-muted">
-                        <p class="mb-2"><i class="fas fa-code mr-2 text-primary"></i>Version 2.0.0</p>
-                        <p class="mb-0"><i class="fas fa-copyright mr-2 text-primary"></i>2023 - Dal Army</p>
+                    
+                    <h6 class="font-weight-bold text-primary mb-2">Pengertian Metode Imprest</h6>
+                    <p class="text-justify mb-3" style="font-size: 0.95rem; line-height: 1.6; color: var(--gray-700);">
+                        Metode Imprest (Dana Tetap) adalah sistem pengelolaan kas kecil di mana instansi/perusahaan menetapkan sejumlah dana kas kecil dengan nilai yang tetap dan tidak berubah. Pada awal periode, dana kas kecil dibentuk dengan mendebit akun Kas Kecil dan mengkredit Kas/Bank. Sepanjang periode, setiap pengeluaran kas kecil tidak langsung dicatat dalam jurnal. Sebaliknya, kasir kas kecil hanya mengumpulkan bukti-bukti transaksi, dan jumlah uang tunai yang tersisa ditambah dengan total bukti pengeluaran harus selalu sama dengan jumlah dana tetap awal.
+                    </p>
+                    <p class="text-justify mb-0" style="font-size: 0.95rem; line-height: 1.6; color: var(--gray-700);">
+                        Pencatatan resmi ke jurnal baru dilakukan saat kas kecil akan diisi kembali. Jumlah pengisian kembali adalah sama persis dengan total pengeluaran yang telah dilakukan. Jurnal pengisian kembali dilakukan dengan mendebit akun-akun Beban yang relevan dan mengkredit akun Kas/Bank (Kas Besar). Tujuan metode ini adalah untuk menjaga saldo akun Kas Kecil di buku besar agar selalu berada pada jumlah tetap yang ditetapkan, sekaligus memberikan kontrol yang ketat karena semua pengeluaran harus dipertanggungjawabkan sebelum dana diisi ulang.
+                    </p>
+                    <hr class="mt-4 mb-3">
+                    <div class="text-center small" style="color: var(--gray-500);">
+                        <i class="fas fa-copyright mr-1 text-primary"></i> Dibuat tahun 2023 oleh <strong>DAL Army</strong>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="button" data-dismiss="modal">
                         <i class="fas fa-check mr-2"></i>Mengerti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal fade modal-modern" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-question-circle"></i>
+                        Bantuan & Alur Penggunaan
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="max-height: 75vh; overflow-y: auto; padding: 2rem 2.5rem;">
+                    <div class="text-center mb-4">
+                        <h5 class="font-weight-bold mb-1 text-primary">Panduan Penggunaan APCS</h5>
+                        <p class="text-muted font-italic mb-0">Langkah-langkah alur sistem kas kecil (Metode Imprest)</p>
+                    </div>
+                    
+                    <div class="workflow-steps" style="position: relative; padding-left: 24px; border-left: 2px solid var(--gray-200); margin-left: 10px;">
+                        
+                        <!-- Step 1 -->
+                        <div style="position: relative; margin-bottom: 1.75rem;">
+                            <div style="position: absolute; left: -33px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--primary);"></div>
+                            <h6 class="font-weight-bold mb-1 text-gray-900" style="font-size: 0.95rem;">1. Registrasi Akun Pengguna</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem; line-height: 1.5;">Untuk menjaga keamanan sistem, pembuatan akun administrator atau petugas kasir tidak dapat dilakukan secara mandiri. Silakan menghubungi tim <strong>DAL Army</strong> untuk proses registrasi dan otorisasi akses Anda.</p>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div style="position: relative; margin-bottom: 1.75rem;">
+                            <div style="position: absolute; left: -33px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--primary);"></div>
+                            <h6 class="font-weight-bold mb-1 text-gray-900" style="font-size: 0.95rem;">2. Konfigurasi Master Data</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem; line-height: 1.5;">Sebelum mencatat transaksi, pastikan Anda telah melengkapi <strong>Master Data</strong>. Input seluruh <strong>Akun AAS</strong> dan <strong>Mata Anggaran</strong> yang berlaku di instansi Anda agar dapat dipilih saat penjurnalan pengeluaran.</p>
+                        </div>
+                        
+                        <!-- Step 3 -->
+                        <div style="position: relative; margin-bottom: 1.75rem;">
+                            <div style="position: absolute; left: -33px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--primary);"></div>
+                            <h6 class="font-weight-bold mb-1 text-gray-900" style="font-size: 0.95rem;">3. Pembentukan Dana Awal</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem; line-height: 1.5;">Masuk ke menu <strong>Pembentukan Kas Kecil</strong> untuk menentukan dan menginput jumlah uang awal yang menjadi batas saldo dana tetap <em>(Imprest Fund)</em> bagi keperluan operasional instansi Anda.</p>
+                        </div>
+                        
+                        <!-- Step 4 -->
+                        <div style="position: relative; margin-bottom: 1.75rem;">
+                            <div style="position: absolute; left: -33px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--primary);"></div>
+                            <h6 class="font-weight-bold mb-1 text-gray-900" style="font-size: 0.95rem;">4. Pencatatan Transaksi Pengeluaran</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem; line-height: 1.5;">Setiap kali terjadi pembayaran atau pengeluaran, catat rinciannya pada menu <strong>Pengeluaran Kas Kecil</strong>. Saldo tunai fisik Anda akan berkurang, namun saldo laporan tidak akan di-jurnal secara resmi sebelum dilakukan pengisian kembali.</p>
+                        </div>
+                        
+                        <!-- Step 5 -->
+                        <div style="position: relative; margin-bottom: 1.75rem;">
+                            <div style="position: absolute; left: -33px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--primary);"></div>
+                            <h6 class="font-weight-bold mb-1 text-gray-900" style="font-size: 0.95rem;">5. Pengisian Kembali (Reimbursement)</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem; line-height: 1.5;">Jika sisa dana fisik sudah menipis, ajukan pengisian ulang melalui menu <strong>Pengisian Kas Kecil</strong>. Sistem akan merekap pengeluaran Anda, dan jumlah yang diisi harus persis sama dengan total pengeluaran agar saldo kembali ke angka awal.</p>
+                        </div>
+                        
+                        <!-- Step 6 -->
+                        <div style="position: relative;">
+                            <div style="position: absolute; left: -33px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--primary);"></div>
+                            <h6 class="font-weight-bold mb-1 text-gray-900" style="font-size: 0.95rem;">6. Cetak Laporan Bukti (Opsional)</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem; line-height: 1.5;">Anda dapat mencetak riwayat pergerakan kas atau surat penggantian melalui menu <strong>Laporan</strong> sebagai bukti pertanggungjawaban fisik pada saat audit keuangan.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">
+                        <i class="fas fa-check mr-2"></i>Mengerti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade modal-modern" id="contactModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-address-book"></i>
+                        Kontak & Dukungan
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding: 2rem 2.5rem;">
+                    <div class="text-center mb-4">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 15px;">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h5 class="font-weight-bold mb-1 text-gray-900">Hubungi Tim Dukungan</h5>
+                        <p class="text-muted font-italic mb-0" style="font-size: 0.9rem;">Punya pertanyaan atau kendala teknis? Kami siap membantu melalui saluran berikut:</p>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- WhatsApp -->
+                        <a href="https://wa.me/6288214740182" target="_blank" style="display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; text-decoration: none; transition: transform 0.2s;">
+                            <div style="width: 44px; height: 44px; border-radius: 12px; background: #22c55e; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div style="color: #166534;">
+                                <h6 class="font-weight-bold mb-0">WhatsApp DAL Army</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">0882-1474-0182</p>
+                            </div>
+                        </a>
+                        
+                        <!-- Email -->
+                        <a href="mailto:donarazhar@gmail.com" target="_blank" style="display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-radius: 12px; background: var(--primary-light); border: 1px solid #bfdbfe; text-decoration: none; transition: transform 0.2s;">
+                            <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div style="color: var(--primary-dark);">
+                                <h6 class="font-weight-bold mb-0">Email Dukungan</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">donarazhar@gmail.com</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        <i class="fas fa-times mr-2"></i>Tutup
                     </button>
                 </div>
             </div>
