@@ -181,6 +181,8 @@
     .delay-6 { animation-delay: .30s; }
 </style>
 
+
+
 {{-- STAT CARDS --}}
 <div class="stat-grid">
     <div class="stat-card fade-in delay-1">
@@ -264,6 +266,24 @@
 </div>
 
 @endsection
+@push('after-script')
+<script>
+    // Memastikan SweetAlert berjalan setelah script dipanggil
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            title: 'Keamanan Data Penting!',
+            html: '<p style="font-size: 14px; text-align: left;">Untuk menghindari kehilangan data akibat kerusakan server atau peretasan, pastikan anda <strong style="color: #d97706;">selalu melakukan backup data setelah melakukan pekerjaan / meninggalkan sistem</strong> dan men-download file backup database ke komputer pribadi anda melalui menu <strong>Backup Database</strong>.</p>',
+            icon: 'warning',
+            iconColor: '#f59e0b',
+            confirmButtonText: 'Saya Mengerti',
+            confirmButtonColor: '#0053C5',
+            backdrop: 'rgba(0,0,0,0.4)',
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        });
+    });
+</script>
+@endpush
 
 @push('after-script')
 <script>

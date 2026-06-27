@@ -92,5 +92,11 @@ Route::middleware(['auth:user'])->group(
 
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
         Route::get('/laporan/cetaklaporan', [LaporanController::class, 'cetaklaporan'])->name('cetaklaporan');
+
+        // Backup Database
+        Route::get('/backup', [\App\Http\Controllers\BackupController::class, 'index'])->name('backup.index');
+        Route::post('/backup/create', [\App\Http\Controllers\BackupController::class, 'create'])->name('backup.create');
+        Route::get('/backup/download/{name}', [\App\Http\Controllers\BackupController::class, 'download'])->name('backup.download');
+        Route::post('/backup/delete/{name}', [\App\Http\Controllers\BackupController::class, 'delete'])->name('backup.delete');
     }
 );

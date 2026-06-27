@@ -594,6 +594,16 @@
                 </a>
             </div>
 
+            <!-- Backup -->
+            <div class="nav-item">
+                <a href="/backup"
+                   class="nav-item-link {{ request()->is('backup') ? 'active' : '' }}"
+                   title="Backup Database">
+                    <i class="fas fa-database nav-icon"></i>
+                    <span class="nav-text">Backup Database</span>
+                </a>
+            </div>
+
         </nav>
 
         <!-- User Card Footer -->
